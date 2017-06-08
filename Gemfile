@@ -74,14 +74,10 @@ gem 'coffee-rails', '~> 4.2'
 #  04. Front End
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Use Foundation for Sites by ZURB as the front end framework
-gem 'foundation-rails', '~> 6.3'
 # Use Font Awesome Icons
 gem 'font-awesome-rails', '~> 4.7'
 # Kaminari for record pagination
 gem 'kaminari', '~> 1.0', '>= 1.0.1'
-# Charting library for admin dashboard
-gem 'chartkick', '~> 2.2', '>= 2.2.3'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
