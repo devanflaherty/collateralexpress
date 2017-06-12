@@ -20,7 +20,7 @@ export default class Header extends React.Component {
     const {name} = this.props;
     return (
       <header className={name}>
-        <Get url="/welcome.json">
+        <Get url="/application.json">
           {(error, response, isLoading) => {
           if(error) {
             return (<div>Something bad happened: {error.message}</div>)
