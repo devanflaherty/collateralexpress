@@ -1,19 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+/* eslint no-console: 0 */
+// Run this example by adding <%= javascript_pack_tag 'hello_vue' %> and
+// <%= stylesheet_pack_tag 'hello_vue' %> to the head of your layout file,
+// like app/views/layouts/application.html.erb.
+// All it does is render <div>Hello Vue</div> at the bottom of the page.
 
-import Header from './components/Layout/Header'
-import Footer from './components/Layout/Footer'
-
+import Vue from 'vue'
+import Header from './components/header/index.vue'
+import Footer from './components/footer/index.vue'
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <Header name="react" />,
-    document.querySelector('header')
-  )
-
-  ReactDOM.render(
-    <Footer name="footer" />,
-    document.querySelector('footer')
-  )
+  // const header = new Vue(Header).$mount('#header')
+  // const footer = new Vue(Footer).$mount('#footer')
+  new Vue({
+    el: '#header',
+    render: h => h(Header)
+  })
 })
