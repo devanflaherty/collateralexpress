@@ -1,0 +1,25 @@
+body > header {
+  height: 6rem;
+  @include flex;
+  @include flex-align(center, middle);
+  .row {
+    flex: 1 0 100%;
+  }
+  #logo {
+    img {
+      height: 2rem;
+    }
+  }
+  #navBar {
+    #links {
+      display: inline-block;
+      float: right;
+      a {
+        margin-left: 1rem;
+      }
+    }
+    #navToggle {
+      float: right;
+    }
+  }
+}

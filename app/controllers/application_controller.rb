@@ -1,21 +1,37 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-  def index
+  before_action :get_links
+
+  private
+
+  def get_links
     @links = [
       {
-        name: "Link1",
-        url: "http://saltagency.co"
+        name: "Home",
+        url: "/"
       },
       {
-        name: "link 2",
-        url: "#hello"
-      }
+        name: "Send a Request",
+        url: "/projects/new"
+      },
+      {
+        name: "How It Works",
+        url: "/how-it-works"
+      },
+      {
+        name: "Gallery",
+        url: "/gallery"
+      },
+      {
+        name: "FAQ",
+        url: "/faq"
+      },
+      {
+        name: "Contact",
+        url: "#launchContact"
+      },
     ];
-
-    respond_to do |format|
-      format.html
-      format.json { render :json => @links }
-    end
   end
+
 end
