@@ -1,3 +1,13 @@
 #navToggle {
   background: black;
 }
+
+#links {
+  a {
+    color: $medium-gray;
+    font-weight: 600;
+    &:hover {
+      color: $black;
+    }
+  }
+}

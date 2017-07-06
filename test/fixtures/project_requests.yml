@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  contact: one
+  user: 
+  title: MyString
+  permalink: MyString
+  business_unit: MyString
+  due_date: 2017-06-15
+  target: MyString
+  existing: false
+  description: MyText
+  deliverable_quantity: 
+  files: MyText
+  translation: false
+  asset_ref: MyString
+  status: MyString
+  flag: false
+
+two:
+  contact: two
+  user: 
+  title: MyString
+  permalink: MyString
+  business_unit: MyString
+  due_date: 2017-06-15
+  target: MyString
+  existing: false
+  description: MyText
+  deliverable_quantity: 
+  files: MyText
+  translation: false
+  asset_ref: MyString
+  status: MyString
+  flag: false

@@ -1,0 +1,16 @@
+.flex {
+  @include flex;
+  &-center {
+    @include flex;
+    @include flex-align(center, middle);
+  }
+  &-center-stretch {
+    @include flex;
+    @include flex-align(center, middle);
+    flex-direction: column;
+  }
+}
+
+.expand {
+  max-width: 100%;
+}
