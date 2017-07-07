@@ -72,9 +72,6 @@
     },
     created(){
       this.getProjects()
-    },
-    updated() {
-      console.log(this.projects)
     }
   }
 </script>

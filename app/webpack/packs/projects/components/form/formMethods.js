@@ -29,11 +29,9 @@ const FormMethods = {
           Axios.post('/projects/', axiosConfig)
           .then(function (response) {
             // IF SUCCESFUll
-            vm.$emit('messageEmit', vm.project.title + " has been created!")
-            vm.updateProject(response.data.project)
-
-            vm.$router.push({ name: 'show', params: { id: vm.project.id }})
-            bus.$emit('showReveal','new', vm.project, 'congratulations, you just created your project.');
+            bus.$emit('uploadMedia', response.data.project.id)
+            bus.$emit('messageEmit', vm.project.title + " has been created!")
+            bus.$emit('showReveal','new', vm.project.title, 'congratulations, you just created your project.', vm.project.id);
             vm.postTime = new Date()
 
             for(var f in response.data.flash) {
@@ -54,16 +52,14 @@ const FormMethods = {
           // ** If the project does exist let's update it
           Axios.patch('/projects/' + this.project.id, axiosConfig)
           .then(function (response) {
-            vm.$emit('messageEmit', vm.project.title + " has been updated!")
-            vm.updateProject(response.data.project)
+            bus.$emit('uploadMedia', response.data.project.id)
+            bus.$emit('messageEmit', vm.project.title + " has been updated!")
+            // And then we will launch the Foundation Reveal
+            bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', vm.project.id);
+
             // If post time is update the contact component will Listen
             // Then contact will trigger a post
             vm.postTime = new Date()
-
-            // After update is succesful we are going to route to the show page
-            vm.$router.push({ name: 'show', params: { id: vm.project.id }})
-            // And then we will launch the Foundation Reveal
-            bus.$emit('showReveal','update', vm.project, 'congratulations, you just updated your project.');
 
             // We also want to grab the flash that was sent in the response
             for(var f in response.data.flash) {
@@ -71,7 +67,7 @@ const FormMethods = {
               // for each flash message that matches notice
               if(flash[0] == 'notice') {
                 // We will update the parents flash data
-                vm.$emit('flashEmit', flash[1])
+                bus.$emit('flashEmit', flash[1])
               }
             }
           })
@@ -99,7 +95,7 @@ const FormMethods = {
         for(var f in response.data.flash) {
           var flash = response.data.flash[f]
           if(flash[0] == 'notice') {
-            vm.$emit('flashEmit', flash[1])
+            bus.$emit('flashEmit', flash[1])
           }
         }
         // If Delete is succesfull we route to the list page

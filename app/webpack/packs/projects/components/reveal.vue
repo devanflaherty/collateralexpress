@@ -13,6 +13,11 @@
       <p>I'm a cool paragraph that lives inside of an even cooler modal. Wins!</p>
     </div>
 
+    <div v-if="reveal.type == 'new' || reveal.type == 'update'">
+      <router-link :to="{name: 'show', params: { id: reveal.project_id}}" class="button">View Project</router-link>
+      <router-link :to="{name: 'list'}" class="button">Continue Editing</router-link>
+    </div>
+
     <button v-if="reveal.type == 'delete'" @click="deleteEmit" class="button alert">Delete</button>
 
     <button class="close-button" data-close aria-label="Close modal" type="button">
@@ -23,7 +28,7 @@
 
 <script>
   import bus from '../../bus'
-  
+
   export default {
     name: 'Reveal',
     data() {

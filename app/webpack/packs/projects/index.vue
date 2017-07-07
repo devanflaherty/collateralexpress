@@ -1,6 +1,5 @@
 <template>
   <div id="projectApp">
-    <vue-progress-bar id="progressBar"></vue-progress-bar>
     <div class="row">
       <div class="columns">
         <h2>{{page_title}}</h2>
@@ -16,10 +15,8 @@
       <router-view
         :reveal-type="reveal.type"
         :contactSession="contactSession"
-        @messageEmit="updateMessage"
         @visibleEmit="updateVisibility"
         :flash="flash"
-        @flashEmit="updateFlash"
         v-show="visible">
       </router-view>
     </transition>
@@ -31,8 +28,6 @@
       :flash="flash">
     </Reveal>
     <!-- @deleteRequest="deleteProject" -->
-
-
   </div>
 </template>
 
@@ -91,19 +86,23 @@ export default {
     updateFlash(flash) {
       this.flash = flash
     },
-    // updateRevealType(type) {
-    //   this.reveal_type = type
-    // },
     showReveal(type) {
       $('#reveal').foundation('open');
     },
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('showReveal', (type, title, msg) => {
+    bus.$on('messageEmit', (msg) => {
+      this.updateMessage(msg)
+    })
+    bus.$on('flashEmit', (flash) => {
+      this.updateFlash(flash)
+    })
+    bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
       this.reveal.title = title
       this.reveal.msg = msg
+      this.reveal.project_id = pid
       this.showReveal()
     });
   },
@@ -120,10 +119,6 @@ export default {
     //height: 100vh;
     overflow-y: scroll;
   }
-}
-#progressBar {
-  position: fixed;
-  top: 0;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s

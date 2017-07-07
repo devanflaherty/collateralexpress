@@ -1,58 +1,176 @@
 <template>
   <div class="row">
-    <div class="columns">
+    <!-- Project Info -->
+    <div class="columns medium-7">
+      <AdminUpdates :project="project"></AdminUpdates>
 
-      <Status :project="project"></Status>
+      <div id="projectShow">
+        <h2>{{project.title}}</h2>
+        <span v-if="project.existing" class="exists-tag-true">
+          Existing Project
+        </span>
+        <span v-else class="exists-tag-false">
+          new Project
+        </span>
 
-      <div class="form-card">
-        <div class="card-content">
-          <h3>{{this.$route.params}}</h3>
-          <h3>{{project.title}}</h3>
-          <p>{{project.description}}</p>
+        <div class="dates">
+          <icon name="calendar"></icon>
+          <span class="created-date">{{project.created_at}}</span>
+          <icon name="arrow-right"></icon>
+          <span class="due-date">{{project.due_date}}</span>
         </div>
       </div>
+
+      <div class="description">
+        <h3>Project Description</h3>
+        {{project.description}}
+      </div>
+
+      <div class="reference" v-if="project.reference">
+        <h3>Link to reference</h3>
+        <a :href="project.reference" target="_blank">View Link</a>
+      </div>
+
+      <div class="files" v-if="project.medias">
+        <h3>Files</h3>
+        <div class="row small-3-up">
+          <div class="column" v-for="media in project.medias">
+            <div class="card">
+              <img :src="media.file.thumb.url">
+              {{media.name}}
+              <a :href="media.file.url" class="button rounded">
+                <icon name="download"></icon> Download
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="deliverInfo">
+        <hr>
+        <!-- add comma breaker -->
+        <div class="tactics" v-if="project.tactic">
+          <h3>Tactics</h3>
+          <span v-for="tactic in project.tactic">{{tactic}}</span>
+        </div>
+
+        <div class="target" v-if="project.target">
+          <h3>Target</h3>
+          <h4>{{project.target}}</h4>
+        </div>
+
+        <div class="business-unit" v-if="project.business_unit">
+          <h4>Business Unit: {{project.business_unit}}</h4>
+        </div>
+
+        <div class="translation" v-if="project.translation">
+          <h4>Needs translation</h4>
+        </div>
+      </div>
+
+    </div>
+    <!-- close Project Panel -->
+
+
+    <!-- Contact Info -->
+    <div class="columns medium-5">
+      <h3>Contact Information</h3>
+
+      <ul>
+        <li v-if="contact.avatar">
+          <span>Avatar</span>
+          <h5>{{contact.avatar}}</h5>
+        </li>
+        <li v-if="contact.full_name">
+          <span>Name</span>
+          <h5>{{contact.full_name}}</h5>
+        </li>
+        <li v-if="contact.email">
+          <span>Email</span>
+          <h5>{{contact.email}}</h5>
+        </li>
+        <li v-if="contact.phone">
+          <span>Phone</span>
+          <h5>{{contact.phone}}</h5>
+        </li>
+        <li v-if="contact.branch">
+          <span>Branch</span>
+          <h5>{{contact.branch}}</h5>
+        </li>
+        <li v-if="contact.position">
+          <span>Position</span>
+          <h5>{{contact.position}}</h5>
+        </li>
+      </ul>
+
+        <div class="form-card">
+          <div class="card-content">
+            <h3>{{project.title}}</h3>
+            <p>{{project.description}}</p>
+          </div>
+        </div>
+
     </div>
   </div>
 </template>
 
 <script>
   import Axios from "axios"
-
-  import Status from "./components/form/status.vue"
+  import bus from "../bus.js"
+  import AdminUpdates from "./components/form/adminUpdates.vue"
 
   export default {
     name: 'Show',
     components: {
-      Status
+      AdminUpdates
     },
     data() {
       return {
-        project: {}
+        loading: false,
+        project: {},
+        contact: {},
+        error: null
       }
     },
+    watch: {
+      '$route': 'fetchData'
+    },
+    created() {
+      this.fetchData()
+    },
     methods: {
+      fetchData() {
+        this.error = this.post = null
+        this.loading = true
+        this.getProject()
+      },
       getProject() {
         if (this.$route.params.id) {
           var pid = this.$route.params.id
           var vm = this
 
           Axios.get('/api/v1/projects/' + pid + '.json')
-            .then( response => {
-              var {id, title, description, status, contact_id, user_id, flag} = response.data;
-                this.project = Object.assign({}, this.project, response.data)
+          .then( response => {
+              vm.loading = false
+              vm.project = response.data.project
+              vm.contact = response.data.contact
 
-                document.title = this.project.title + " | Collateral Express"
-            }).catch(error => {
-              console.log(error)
-            })
+              document.title = vm.project.title + " | Collateral Express"
+          }).catch(error => {
+            // Push to 404
+            vm.$router.push({ name: 'list' })
+            console.log(error)
+          })
         }
       }
     },
-    created(){
-      this.getProject()
-    },
     beforeRouteUpdate (to, from, next) {
-      this.getProject()
+      this.fetchData()
+      next()
+    },
+    beforeRouteLeave (to, from, next) {
+      // Before we leave the current view
+      bus.$emit('projectEmit');
       next()
     }
   }

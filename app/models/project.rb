@@ -10,7 +10,7 @@ class Project < ApplicationRecord
     title_changed?
   end
 
-  # mount_uploaders :files, MediaUploader
+  mount_uploader :asset, AssetUploader
 
   belongs_to :contact, optional: true
   belongs_to :user

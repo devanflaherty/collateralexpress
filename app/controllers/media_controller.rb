@@ -3,6 +3,7 @@ class MediaController < ApplicationController
   def create
     @media = Media.new(file: params[:file])
     @media.project = Project.find_by_id(params[:project_id])
+
     if @media.save!
       respond_to do |format|
         format.json{ render :json => @media }
@@ -23,11 +24,4 @@ class MediaController < ApplicationController
 
   protected
 
-   def remember_id
-     @id = id
-   end
-
-   def remove_id_directory
-     FileUtils.remove_dir("#{Rails.root}/public/uploads/media/file/#{@id}", :force => true)
-   end
 end

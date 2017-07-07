@@ -35,6 +35,11 @@ const ProgressMixin = {
     set (num) {
       this.$Progress.set(num)
     }
+  },
+  mounted() {
+    bus.$on('progressEmit', (val) => {
+      this.set(val);
+    })
   }
 }
 

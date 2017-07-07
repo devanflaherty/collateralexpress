@@ -1,5 +1,7 @@
 <template>
-  <form v-on:submit.prevent="onSubmit" id="formGuts" enctype="multipart/form-data">
+  <form v-on:submit.prevent="onSubmit" id="formGuts">
+    <vue-progress-bar id="progressBar"></vue-progress-bar>
+
     <!-- <div id="formContainer" class="row expand"> -->
       <!-- <div id="infoPanel" class="columns"></div> -->
       <!-- <div id="formPanel" class="small-12 medium-12 columns"> -->
@@ -14,7 +16,7 @@
       Delete
     </a>
 
-    <Status :project="project"></Status>
+    <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status>
 
     <hr>
 
@@ -141,8 +143,6 @@
 </template>
 
 <script>
-import $ from 'jquery';
-import Foundation from "foundation-sites/dist/js/npm"
 import Axios from "axios"
 
 // App Components
@@ -158,25 +158,6 @@ let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
 Axios.defaults.headers.common['X-CSRF-Token'] = token
 Axios.defaults.headers.common['Accept'] = 'application/json'
 
-var empty = {
-    id: null,
-    title: '',
-    slug: '',
-    user_id: 1,
-    contact_id: null,
-    status:'',
-    description:'',
-    files: [],
-    media: [],
-    tactic: [],
-    due_date:'',
-    existing: '',
-    business_unit:'',
-    target:'',
-    flag: '',
-    archive: ''
-}
-
 export default {
   name: 'NewForm',
   props: ['message', 'reveal-type', 'flash', 'contact-session'],
@@ -189,25 +170,25 @@ export default {
   },
   data() {
     return {
+      loading: false,
       errors: [],
       formError: true,
       project: {
         id: null,
-        title: '',
-        slug: '',
+        title: null,
+        slug: null,
         user_id: 1,
         contact_id: null,
-        status:'',
-        description:'',
-        files: [],
+        status: "",
+        description: null,
         medias: [],
         tactic: [],
-        due_date:'',
-        existing: '',
-        business_unit:'',
-        target:'',
-        flag: '',
-        archive: ''
+        due_date: null,
+        existing: false,
+        business_unit: null,
+        target: null,
+        flag: false,
+        archive: false
       },
       tactic_other: '',
       available_tactics: [],
@@ -230,28 +211,74 @@ export default {
     },
     EmptyProject() {
       // we first want to create a object that is equal to our empty project
-      var setSess = empty;
+      var empty = {
+        id: null,
+        title: null,
+        slug: null,
+        user_id: 1,
+        contact_id: null,
+        status: "",
+        description: null,
+        medias: [],
+        tactic: [],
+        due_date: null,
+        existing: false,
+        business_unit: null,
+        target: null,
+        flag: false,
+        archive: false
+      };
       // If we find that there is a current ContactSession
       // Then we will change the empty project state to include
       // the contactSession id for contact_id
       if(this.contactSession != "") {
-        setSess.contact_id = this.contactSession
+        empty.contact_id = this.contactSession
       }
-      return setSess
+      return empty
     },
   },
   watch: {
+    '$route': 'fetchData',
     tactic_other(other) {
       this.setTactics(other)
     }
   },
   methods: {
+    fetchData() {
+      this.loading = true
+      this.getProject()
+    },
+    getProject() {
+      var vm = this
+      if (this.$route.params.id) {
+        Axios.get('/api/v1/projects/' + this.$route.params.id  + '.json')
+          .then( response => {
+            vm.loading = false
+            vm.updateProject(response.data.project)
+            vm.project.status = response.data.project.status
+            console.log(vm.project.status)
+            console.log(response.data.project.status)
+
+            if(vm.contactSession && vm.project.contact_id == null) {
+              vm.updateContact({id: vm.contactSession})
+            }
+
+            document.title = "Edit " + vm.project.title + " | Collateral Express"
+          }).catch(error => {
+            // project does not exist
+            // Create a new project or browse the project list
+            console.log(error)
+          })
+      }
+      this.getTactics()
+    },
     updateProject(project) {
       this.project = project
     },
     updateContact(contact) {
       this.project.contact_id = contact.id
     },
+
     setTactics(tactic) {
       var vm = this
       var tArray = this.project.tactic.filter(function(tactic) {
@@ -261,42 +288,35 @@ export default {
       this.project.tactic = tArray
       this.project.tactic.push(tactic)
     },
-    getProject() {
-      var vm = this
-      if (this.projectId) {
-        Axios.get('/api/v1/projects/' + this.projectId  + '.json')
-          .then( response => {
-            // var {id, title, description, status, contact_id, user_id, flag} = response.data;
-            // var newProj = Object.assign({}, this.project, response.data)
-
-            vm.updateProject(response.data);
-            console.log(response.data)
-
-            if(this.contactSession && this.project.contact_id == null) {
-              vm.updateContact({id: this.contactSession})
-            }
-
-            document.title = "Edit " + this.project.title + " | Collateral Express"
-          }).catch(error => {
-            console.log(error)
-          })
-      }
-
+    getTactics() {
       // Get Available tactics
+      var vm = this
       Axios.get('/api/v1/projects/new.json')
         .then( response => {
+          console.log(response.data.tactics)
           vm.available_tactics = response.data.tactics
         }).catch(error => {
           console.log(error)
         })
     }
   },
-  // created() {
-  //   // Get Project Data
-  //   this.getProject()
-  // },
+  created() {
+    this.fetchData()
+  },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
+    bus.$on('projectEmit', (project) => {
+      this.updateProject(project)
+    })
+    bus.$on('projectPropSet', (key, val) => {
+      this.$set(this.project, key, val)
+    })
+
+    bus.$on('mediaEmit', (media) => {
+      console.log('media emit')
+      this.project.medias = media
+    })
+
     bus.$on('errors-changed', (errors) => {
       this.veeErrors.clear();
       this.$validator.validateAll();
@@ -306,36 +326,38 @@ export default {
 
       this.veeErrors.errors = filtered
     });
-
-    bus.$on('mediaEmit', (media) => {
-      this.project.medias = media
-    })
   },
-  beforeRouteEnter (to, from, next) {
-      next(vm => {
-        // before we get to the new route
-        // lets see if there is a route param of :id
-        if (vm.$route.params.id) {
-          // If it's there lets get that projects data
-          vm.getProject()
-        } else {
-          // If it's not then we are going to set the project data to an empty state
-          vm.updateProject(vm.EmptyProject);
-        }
-      })
+  beforeRouteUpdate (to, from, next) {
+    this.fetchData()
+    next()
   },
+  // beforeRouteEnter (to, from, next) {
+  //     next(vm => {
+  //       // before we get to the new route
+  //       // lets see if there is a route param of :id
+  //       if (!vm.$route.params.id) {
+  //       //   console.log('param id present')
+  //       //   // If it's there lets get that projects data
+  //       //   vm.getProject()
+  //       // } else {
+  //       //   vm.getTactics()
+  //         // If it's not then we are going to set the project data to an empty state
+  //         bus.$emit('projectEmit');
+  //       }
+  //     })
+  // },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current view
-    if (!this.$route.params.id) {
-      // If there is no route param of :id
-      if(this.postTime != "") {
-        // And if the postTime is not empty
-        // Then we will update the project state to be empty
-        // So if we leave a project and go to create a new we have a blank state
-        this.updateProject(this.EmptyProject);
-      }
-    }
+    $('#reveal').foundation('close');
+    bus.$emit('progressEmit', 0)
     next()
   }
 }
 </script>
+
+<style scoped lang="scss">
+#progressBar {
+  position: fixed;
+  top: 0;
+}
+</style>

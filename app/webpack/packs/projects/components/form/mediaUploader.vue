@@ -2,32 +2,37 @@
   <div class="row">
     <div class="small-12 column">
       <h3>Files</h3>
-      <transition-group name="mediaList" tag="ul" class="row small-up-4">
+      <transition-group name="mediaList" tag="ul" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
         <li class="column" v-for="media in mediaFiles" v-bind:key="media">
           <img :src="media.file.thumb.url" @click="removeMedia(media.id)">
         </li>
       </transition-group>
 
-      <h3>Add Files</h3>
-      <Dropzone
-        ref="mediaFiles"
-        id="mediaFiles"
-        url="/media"
-        :upload-multiple="true"
-        parallel-uploads="10"
-        param-name="file"
-        v-on:vdropzone-success="uploadSuccess()"
-        v-on:vdropzone-mounted="$notify({title: 'success'})"
-        useFontAwesome>
-          <!-- Optional parameters if any! -->
-          <input type="hidden" name="utf8" value="✓">
-          <input type="hidden" name="authenticity_token" :value="token">
-          <input type="hidden" name="project_id" :value="projectId">
-          <!--<input type="hidden" name="project[title]" :value="project.title"> -->
-      </Dropzone>
+        <h3>Add Files</h3>
+        <Dropzone
+          ref="dropzoneUploader"
+          id="dropzoneUploader"
+          url="/media"
+          :auto-process-queue="false"
+          :showRemoveLink="true"
+          :upload-multiple="true"
+          :max-number-of-files="6"
+          parallel-uploads="10"
+          param-name="file"
+          v-on:vdropzone-success="uploadSuccess()"
+          useFontAwesome>
+            <!-- Optional parameters if any! -->
+            <input type="hidden" name="utf8" value="✓">
+            <input type="hidden" name="authenticity_token" :value="token">
+            <input id="projectId" type="hidden" name="project_id" :value="projectId ? projectId : projectParam">
+            <!--<input type="hidden" name="project[title]" :value="project.title"> -->
+        </Dropzone>
+        <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
+
     </div>
   </div>
 </template>
+
 
 <script>
   import Axios from "axios"
@@ -43,18 +48,37 @@
       Dropzone
     },
     data() {
-      return {}
+      return {
+
+      }
+    },
+    computed: {
+      projectParam() {
+        var proj = this.projectId
+        if(this.projectId) {
+          proj = this.projectId
+        }
+        return proj
+      }
     },
     methods: {
+      processDropzone() {
+        this.$refs.dropzoneUploader.processQueue()
+        bus.$emit('process')
+      },
       uploadSuccess() {
         //add transition to state
         var vm = this
         this.$notify({title: 'File Succesfully added'})
         Axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
-            bus.$emit("mediaEmit", response.data.medias)
-          })
-        this.$refs.mediaFiles.removeAllFiles()
+            console.log('media updated')
+            console.log(response.data.project.medias)
+            bus.$emit("mediaEmit", response.data.project.medias)
+        })
+
+        // $('#uploader').foundation('close');
+        this.$refs.dropzoneUploader.removeAllFiles()
       },
       removeMedia(id) {
         var vm = this
@@ -70,6 +94,17 @@
           bus.$emit("mediaEmit", filteredMedia)
         })
       },
+    },
+    mounted() {
+      bus.$on('uploadMedia', (pid) => {
+        console.log('uploadMedia Emission')
+        var projInput = document.getElementById('projectId')
+        projInput.value = pid
+        this.processDropzone()
+      })
+      if(this.mediaFiles.length > 0) {
+        this.uploader = false
+      }
     }
   }
 

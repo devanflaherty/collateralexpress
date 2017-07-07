@@ -19,10 +19,8 @@ class ProjectsController < ApplicationController
 
         session[:current_contact_id] = @project.contact_id
 
-        format.html { redirect_to(projects_path) }
         format.json { render json: { project: @project, flash: flash} }
       else
-        format.html { render 'new'}
         format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
       end
     end
@@ -53,6 +51,9 @@ class ProjectsController < ApplicationController
 
   def destroy
     @project = Project.friendly.find(params[:id])
+    @project.medias.each do |m|
+      m.destroy
+    end
     @project.destroy
     flash[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
@@ -89,8 +90,8 @@ class ProjectsController < ApplicationController
         :user_id,
         :archive,
         :flag,
-        :files_cache,
-        { :files  => [] },
+        :asset,
+        :legal_review,
         { :tactic => [] }
         )
     end
