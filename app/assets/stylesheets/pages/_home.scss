@@ -1,0 +1,92 @@
+#hero {
+  .row {
+    .column {
+    }
+  }
+
+  .hero-container {
+    position: relative;
+    overflow: hidden;
+    padding: 4rem;
+    @include flex;
+    @include flex-align(center, middle);
+    .hero-card {
+      position: relative;
+      justify-content: space-between;
+      width: 50%;
+      height: 24rem;
+      background: rgba($primary-color, 0.8);
+      background-blend-mode: multiply;
+      padding: 2rem;
+      color: $white;
+
+      // .card overrides
+      border: none;
+      .button {
+        border-width: 4px;
+        margin: 0;
+      }
+    }
+  }
+}
+
+#homeSteps {
+  .row {
+    .columns {
+      .card {
+        background: white;
+        height: 100%;
+        padding: 2rem;
+        border: none;
+        justify-content: space-between;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
+        .step-image {
+          height: 10rem;
+          @include flex;
+          @include flex-align(center,middle);
+          img {
+            flex: 0 1 auto;
+          }
+        }
+        p {
+          margin-bottom: 4rem;
+        }
+        .card-buttons {
+          @include flex;
+          .button {
+            flex: 1 0 auto;
+            margin-bottom: 0
+          }
+        }
+
+        //@include aspect-ratio(3,3.75);
+        .card-face {
+          height: 100%;
+          width:100%;
+          position: absolute;
+          top: 0; left: 0;
+          .card-content {
+            height: 100%;
+            padding: 2rem;
+            @include flex;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+  }
+}
+
+#assets {
+  margin: 0;
+  padding: 6rem;
+  .row {
+    position: relative;
+  }
+
+  .button {
+    color: $white;
+    font-weight: 600;
+  }
+}

@@ -31,3 +31,8 @@
 
 en:
   hello: "Hello world"
+  site_name: "Collateral Express"
+  projects:
+    created: "Project was created succefully."
+    updated: ""
+    destroyed: ""

@@ -1,0 +1,25 @@
+<% @page_title = "Projects" %>
+
+<% if !flash[:notice].blank? %>
+  <%= flash[:notice] %>
+<% end %>
+
+<h3><%= link_to("Add New Project", new_project_path, :class => 'button') %></h3>
+
+<% @projects.each do |p| %>
+  <h2><%= p.title %></h2><br>
+  <div class="row">
+    <div class="columns">
+      <%= link_to("Show", project_path(p), :class => 'button') %>
+      <%= link_to("Edit", edit_project_path(p), :class => 'button secondary') %>
+    </div>
+  </div>
+  <%= p.slug %><br>
+  <%= p.description %><br>
+
+  <h4>Contact</h4>
+
+  <h4>Assigned User</h4>
+  <%= p.user.full_name %>
+  <hr style="margin: 3rem 0">
+<% end %>

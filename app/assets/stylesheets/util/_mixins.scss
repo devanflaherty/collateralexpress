@@ -1,0 +1,51 @@
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+  &:before {
+    display: block;
+    content: "";
+    width: 100%;
+    padding-top: ($height / $width) * 100%;
+  }
+}
+
+@mixin cover-card() {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+@mixin pad($padding: null, $bp: null) {
+  @if ($bp) {
+    @include breakpoint($bp){
+      padding-top: $padding;
+      padding-bottom: $padding;
+    }
+  } @else {
+    padding-top: $padding;
+    padding-bottom: $padding;
+  }
+}
+
+.pad-small {
+  @include pad(2rem);
+  &-medium {
+    @include pad(2rem, medium);
+  }
+  &-large {
+    @include pad(2rem, large);
+  }
+}
+
+.pad-default {
+  @include pad(4rem);
+  &-medium {
+    @include pad(4rem, medium);
+  }
+  &-large {
+    @include pad(4rem, large);
+  }
+}

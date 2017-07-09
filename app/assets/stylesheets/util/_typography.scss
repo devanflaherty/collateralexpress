@@ -1,0 +1,10 @@
+.serif {
+  font-family: $serif;
+  text-transform: none;
+}
+h1, h2, h3, h4 {
+  text-transform: uppercase;
+}
+blockquote {
+  font-family: $condensed;
+}
