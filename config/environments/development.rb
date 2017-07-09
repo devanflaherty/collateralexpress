@@ -2,7 +2,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   #enable javascript_pack_tag to load assets from webpack-dev-server:
-  config.x.webpacker[:dev_server_host] = "http://127.0.0.1:9090"
+  config.x.webpacker[:dev_server_host] = "http://127.0.0.1:8080"
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
