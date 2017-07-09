@@ -19,7 +19,8 @@ const router = new VueRouter ({
   {
     name: 'edit',
     path:'/projects/:id/edit',
-    component: ProjectForm
+    component: ProjectForm,
+    meta: {title: 'Edit Project'}
   },
   {
     name: 'new',

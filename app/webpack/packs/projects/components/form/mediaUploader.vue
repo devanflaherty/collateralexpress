@@ -19,7 +19,8 @@
           :max-number-of-files="6"
           parallel-uploads="10"
           param-name="file"
-          v-on:vdropzone-success="uploadSuccess()"
+          v-on:vdropzone-success="uploadSuccess"
+          v-on:vdropzone-file-added="readyMedia"
           useFontAwesome>
             <!-- Optional parameters if any! -->
             <input type="hidden" name="utf8" value="✓">
@@ -79,6 +80,9 @@
 
         // $('#uploader').foundation('close');
         this.$refs.dropzoneUploader.removeAllFiles()
+      },
+      readyMedia() {
+        this.dzUpload = true
       },
       removeMedia(id) {
         var vm = this

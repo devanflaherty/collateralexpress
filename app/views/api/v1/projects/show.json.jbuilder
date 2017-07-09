@@ -1,5 +1,5 @@
 json.project do
-  json.(@project, :id, :title, :status, :slug, :business_unit, :tactic, :files, :target, :existing, :description)
+  json.(@project, :id, :title, :status, :slug, :business_unit, :deliverables, :tactic, :files, :target, :existing, :translation, :description)
   if @project.due_date
     json.due_date(@project.due_date.strftime('%b %e, %Y'))
   else

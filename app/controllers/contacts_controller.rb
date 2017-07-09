@@ -29,10 +29,8 @@ class ContactsController < ApplicationController
         @project.save
         #session[:current_contact_id] = @contact.id
 
-        format.html { redirect_to(contacts_path) }
         format.json { render json: { contact: @contact, flash: flash} }
       else
-        format.html { render 'new'}
         format.json { render :json => { :errors => @contact.errors.messages }, :status => 422}
       end
     end
@@ -53,11 +51,9 @@ class ContactsController < ApplicationController
         @project.save
 
         flash[:notice] = "Contact '#{@contact.full_name}' updated succesfully."
-        format.html { redirect_to(contacts_path(@contact)) }
         format.json { render json: { contact: @contact, flash: flash} }
       else
         flash[:error] = "Contact '#{@contact.full_name}' failed to update."
-        format.html { render 'edit'}
         format.json { render :json => { :errors => @contact.errors.messages }, :status => 422}
       end
     end

@@ -29,9 +29,11 @@ const FormMethods = {
           Axios.post('/projects/', axiosConfig)
           .then(function (response) {
             // IF SUCCESFUll
-            bus.$emit('uploadMedia', response.data.project.id)
+            if(vm.dzUpload) {
+              bus.$emit('uploadMedia', response.data.project.id)
+            }
             bus.$emit('messageEmit', vm.project.title + " has been created!")
-            bus.$emit('showReveal','new', vm.project.title, 'congratulations, you just created your project.', vm.project.id);
+            bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', vm.project.id);
             vm.postTime = new Date()
 
             for(var f in response.data.flash) {
@@ -52,7 +54,9 @@ const FormMethods = {
           // ** If the project does exist let's update it
           Axios.patch('/projects/' + this.project.id, axiosConfig)
           .then(function (response) {
-            bus.$emit('uploadMedia', response.data.project.id)
+            if(vm.dzUpload) {
+              bus.$emit('uploadMedia', response.data.project.id)
+            }
             bus.$emit('messageEmit', vm.project.title + " has been updated!")
             // And then we will launch the Foundation Reveal
             bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', vm.project.id);

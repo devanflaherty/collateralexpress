@@ -1,14 +1,17 @@
 form {
   [type='text'], [type='password'], [type='date'], [type='datetime'], [type='datetime-local'], [type='month'], [type='week'], [type='email'], [type='number'], [type='search'], [type='tel'], [type='time'], [type='url'], [type='color'], textarea {
     border: none;
+    border-bottom: 1px solid $medium-gray;
     outline: none;
-    background: #F2F2F2;
-    padding: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.18);
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    background: none;
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+    box-shadow: none;
     &:focus {
+      background: none;
+      box-shadow: none;
       border: none;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.14);
+      border-bottom: 3px solid $primary-color;
       transition: all 0.5s ease;
     }
   }

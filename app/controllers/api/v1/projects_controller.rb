@@ -2,7 +2,12 @@ class Api::V1::ProjectsController < ApplicationController
   before_action :define_project_lexicon, only: [:new, :edit]
 
   def index
-    @projects = Project.all
+    if session[:current_contact_id]
+      @contact = Contact.find_by_id(session[:current_contact_id])
+      @projects = @contact.projects
+    else
+      @projects = Project.all
+    end
   end
 
   def show

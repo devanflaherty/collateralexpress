@@ -15,6 +15,8 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
     respond_to do |format|
       if @project.save
+        ProjectMailer.new_project(@project).deliver
+
         flash[:notice] = "Project '#{@project.title}' created succesfully."
 
         session[:current_contact_id] = @project.contact_id
@@ -28,13 +30,13 @@ class ProjectsController < ApplicationController
 
   def update
     @project = Project.friendly.find(params[:id])
-
-    if params[:removeMedia]
-      @project.remove_medias!
-    end
-
+    status = @project.status
     respond_to do |format|
       if @project.update_attributes(project_params)
+        if @project.status != status
+          puts "changed"
+          ProjectMailer.status_update(@project).deliver
+        end
         session[:current_contact_id] = @project.contact_id
 
         flash[:notice] = "Project '#{@project.title}' updated succesfully."

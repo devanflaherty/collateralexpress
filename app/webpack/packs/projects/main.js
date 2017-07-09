@@ -30,6 +30,9 @@ Vue.use(VueProgressBar, {
 import Notifications from 'vue-notification'
 Vue.use(Notifications)
 
+import LoadScreen from './components/loadScreen.vue'
+Vue.component('LoadScreen', LoadScreen)
+
 // Components
 import ProjectApp from './index.vue'
 

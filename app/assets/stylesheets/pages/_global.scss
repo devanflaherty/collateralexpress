@@ -12,6 +12,9 @@ hr {
   max-width: 100%;
   margin-bottom: $padding;
   border-color: $light-gray;
+  &.no-margin {
+    margin: 0;
+  }
 }
 
 blockquote {

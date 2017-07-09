@@ -1,15 +1,5 @@
 <template>
   <div id="projectApp">
-    <div class="row">
-      <div class="columns">
-        <h2>{{page_title}}</h2>
-        <hr>
-        <nav>
-          <router-link :to="{name: 'list'}">All Projects</router-link>
-          <router-link :to="{name: 'new'}">New</router-link>
-        </nav>
-      </div>
-    </div>
 
     <transition name="fade" appear>
       <router-view
@@ -110,16 +100,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#formContainer {
-  //height: 100vh;
-  #infoPanel {
-    background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);
-  }
-  #formPanel {
-    //height: 100vh;
-    overflow-y: scroll;
-  }
-}
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s
 }

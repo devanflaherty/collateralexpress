@@ -1,13 +1,111 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>collateral Express Notification</title>
+    <link href='https://fonts.googleapis.com/css?family=OpenSans' rel='stylesheet' type='text/css'>
+
+    <!--[if mso]><style> * { font-family: sans-serif !important; } </style><![endif]-->
+
     <style>
-      /* Email styles need to be inline */
+      body {
+        width: 100% !important;
+        margin: 0; padding: 0;
+        -webkit-text-size-adjust: none;
+      }
+
+      .ReadMsgBody { width: 100%; }
+
+      .ExternalClass { width: 100%; }
+
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+      }
+
+      #backgroundTable {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0;
+        padding: 0;
+        color: #4c4c4c;
+        background-color: #ffffff;
+        font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; font-size: 15px; line-height: 150%;
+      }
+
+      @media (max-width: 540px) {
+        #templateContainer { width: 100% !important; }
+        #templateContainer .templateContainerPadding { padding: 0 5% !important; }
+      }
     </style>
   </head>
 
-  <body>
-    <%= yield %>
+  <body style="width: 100% !important; -webkit-text-size-adjust: none; margin: 0; padding: 0;">
+    <center>
+
+      <table id="backgroundTable" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 100% !important; height: 100% !important; color: #4c4c4c; font-size: 15px; line-height: 150%; background: #ffffff; margin: 0; padding: 0; border: 0;">
+
+        <tr style="vertical-align: top; padding: 0;">
+          <td align="center" valign="top" style="vertical-align: top; padding: 0;">
+
+            <table id="templateContainer" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 600px; color: #4c4c4c; font-size: 15px; line-height: 150%; background: #ffffff; margin: 40px 0; padding: 0; border: 0;">
+
+              <tr style="vertical-align: top; padding: 0;">
+                <td class="templateContainerPadding" align="center" valign="top" style="vertical-align: top; padding: 0 40px;">
+                  <table id="templateContent" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 100%; background: #ffffff; margin: 0; padding: 0; border: 0;">
+                    <tr style="vertical-align: top; padding: 0;">
+                      <td style="vertical-align: top; text-align: left; padding: 0;" align="left" valign="top">
+                        <h1 id="logo" style="color: #F94B30; display: block; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; font-size: 32px; font-weight: 600; text-align: left; margin: 0 0 40px;" align="left">
+                          collateral Express
+                        </h1>
+
+                        <%= yield %>
+
+                        <p style="margin: 20px 0 50px ;">
+                          The CoEx Team<br />
+                          <a href="https://collateralexpress.com" style="color: #F94B30;">https://collateralExpress.com</a>
+                        </p>
+                      </td>
+                    </tr>
+
+                  </table>
+
+                </td>
+              </tr>
+
+              <tr style="vertical-align: top; padding: 0;">
+                <td class="templateContainerPadding" align="center" valign="top" style="vertical-align: top; padding: 0;">
+
+                  <table id="footerContent" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 100%; color: #999999; font-size: 12px; background: #f7f7f7; margin: 0; padding: 0; border-radius: 4px;">
+                    <tr style="vertical-align: top; padding: 0;">
+                      <td valign="top" style="vertical-align: top; text-align: left; padding: 20px 40px;" align="left">
+                        <p style="margin: 20px 0;">
+                          Just some footer content to be cool and sound cool and all that.<a href="#" style="color: #666666;">Visit Site</a>
+                        </p>
+
+                        <p style="margin: 20px 0;">
+                          &copy; 2017. Collateral Express, All Rights Reserved.
+                        </p>
+                      </td>
+                    </tr>
+
+                  </table>
+
+                </td>
+              </tr>
+
+            </table>
+
+          </td>
+        </tr>
+
+      </table>
+
+    </center>
   </body>
+
 </html>

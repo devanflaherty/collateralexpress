@@ -1,6 +1,7 @@
 <template>
   <div id="projectList">
-    <table>
+    <LoadScreen v-if="loading"></LoadScreen>
+    <table v-if="!loading">
       <thead>
         <tr>
           <td>Title</td>
@@ -34,14 +35,18 @@
     name: 'ProjectList',
     data() {
       return {
+        loading: false,
         projects: []
       }
     },
+    props: ['contact-session'],
     methods: {
       getProjects() {
         var vm = this
+        this.loading = true
         Axios.get('/api/v1/projects.json')
           .then( response => {
+            this.loading = false
             vm.projects = response.data.projects;
           }).catch(error => {
             console.log(error)
@@ -72,7 +77,14 @@
     },
     created(){
       this.getProjects()
-    }
+    },
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+          if(!vm.contactSession) {
+            vm.$router.push({ name: 'new'})
+          }
+        })
+    },
   }
 </script>
 
