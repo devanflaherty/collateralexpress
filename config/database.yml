@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: collateralExpress_production
-  username: collateralExpress
-  password: <%= ENV['COLLATERALEXPRESS_DATABASE_PASSWORD'] %>
+   url: <%= ENV['DATABASE_URL'] %>
