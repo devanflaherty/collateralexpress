@@ -46,7 +46,5 @@ document.addEventListener('turbolinks:load', () => {
       render: h => h(ProjectApp),
       mixins: [TurbolinksAdapter],
     });
-  } else {
-    console.log('no form')
   }
 });

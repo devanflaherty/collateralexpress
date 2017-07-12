@@ -39,11 +39,13 @@
         </div>
       </div>
     </header>
-      <div id="app"></div>
-      <%= javascript_pack_tag 'projects/main.js', 'data-turbolinks-track': 'reload' %>
 
-      <%= yield %>
+    <div id="app"></div>
+
+    <%= yield %>
+
     <footer id="footer"></footer>
+    <%= javascript_pack_tag 'projects/main.js', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'app.js', 'data-turbolinks-track': 'reload' %>
     <!-- <%= javascript_pack_tag 'layout/header/main.js' %> -->
   </body>

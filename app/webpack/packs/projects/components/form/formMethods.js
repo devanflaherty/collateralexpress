@@ -90,9 +90,7 @@ const FormMethods = {
     },
     deleteProject() {
       var vm = this
-      Axios.delete('/projects/' + this.project.id, {
-        project : vm.project,
-      })
+      Axios.delete('/projects/' + this.project.id)
       .then(function (response) {
         $('#reveal').foundation('close');
 

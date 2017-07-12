@@ -16,14 +16,13 @@
           </div>
         </div>
 
-        <nav id="projectnav" class="flex" style="justify-content: space-between">
+        <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
           <div class="navigation-actions">
             <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
           </div>
           <a
             id="deleteProject"
-            @click="deletePrompt"
-            v-if="project.id">
+            @click="deletePrompt">
             <icon name="trash"></icon>
             Delete
           </a>
@@ -42,7 +41,7 @@
 
           <div class="row">
             <div class="column float-input">
-              <FloatLabel :attr="project.description" label="Project Description" propKey="description" textArea='true'></FloatLabel>
+              <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea'></FloatLabel>
             </div>
           </div>
 
@@ -298,6 +297,7 @@ export default {
           })
       } else {
         vm.loading = false
+        bus.$emit('emptyFloats')
         bus.$emit('projectEmit', this.EmptyProject)
         if(vm.contactSession) {
           vm.updateContact({id: vm.contactSession})
@@ -342,9 +342,6 @@ export default {
       this.updateProject(project)
     })
     bus.$on('projectPropSet', (key, val) => {
-      console.log(vm.project)
-      console.log(key)
-      console.log(val)
       this.$set(vm.project, key, val)
     })
 
@@ -396,18 +393,4 @@ export default {
 input {
   transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
-// .float-label {
-//   position: absolute;
-//   z-index: 5;
-//   transition: all 0.3s ease;
-//   transform: translateY(2rem);
-// }
-// .floated {
-//   transform: translate(-4px, 0) scale(.9);
-// }
-// .float-input input, .float-input textarea {
-//   position: relative;
-//   z-index: 10;
-//   margin-top: 1.5rem;
-// }
 </style>
