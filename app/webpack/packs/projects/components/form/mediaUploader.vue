@@ -17,7 +17,6 @@
           :showRemoveLink="true"
           :upload-multiple="true"
           :max-number-of-files="6"
-          parallel-uploads="10"
           param-name="file"
           v-on:vdropzone-success="uploadSuccess"
           v-on:vdropzone-file-added="readyMedia"

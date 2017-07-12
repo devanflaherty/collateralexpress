@@ -1,7 +1,14 @@
 <template>
   <div>
-    {{postTime}}
-    <h3>{{contact.email}} / {{contact.id}}</h3>
+    <div v-if="contactId">
+      <p>
+        We have found a contact associated to the email address, "{{contact.email}}".
+        To create a new contact just change the email address and fill in your contact credentials.
+      </p>
+      <p>
+        To modify this contact's info click the button below.
+      </p>
+    </div>
     <input
       v-model.lazy="contact.email"
       v-validate="'required|email'"
@@ -9,10 +16,20 @@
       type="text">
     <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
 
-    <input v-model="contact.first_name" type="text">
-    <input v-model="contact.last_name" type="text">
-    <div class="callout" v-if="message">
-      <h4>{{message}}</h4>
+    <div v-if="edit_contact || !contactId">
+      <input v-model="contact.first_name" type="text">
+      <input v-model="contact.last_name" type="text">
+      <div class="callout" v-if="message">
+        <h4>{{message}}</h4>
+      </div>
+    </div>
+
+    <div v-else>
+      <h5>{{contact.first_name}} {{contact.last_name}}</h5>
+      <p>
+        {{contact.phone}}<br>
+        {{contact.branch}}<br>
+      </p>
     </div>
   </div>
 </template>
@@ -32,6 +49,7 @@ export default {
   data() {
     return {
       message: "",
+      edit_contact: true,
       contact: {
         id: '',
         email: null,
@@ -67,6 +85,9 @@ export default {
     }
   },
   methods: {
+    makeContactEditable(bool) {
+      this.edit_contact = bool
+    },
     onValidate() {
       this.$validator.validateAll();
       if (this.veeErrors.any()) {
@@ -102,6 +123,15 @@ export default {
           })
       }
     },
+    resetContact() {
+      console.log('reset')
+      this.contact = {
+        id: '',
+        email: '',
+        first_name: '',
+        last_name: ''
+      }
+    },
     mountContact(id) {
       var vm = this
 
@@ -109,6 +139,7 @@ export default {
         Axios.get('/api/v1/contacts/' + this.contactId  + '.json')
           .then( response => {
             vm.contact = response.data
+            vm.makeContactEditable(false)
           })
         }
     },
@@ -117,17 +148,27 @@ export default {
       var found = false
       if (this.contact.email.indexOf('@') === -1) {
         this.message = 'Not a valid email'
+        this.resetContact()
       } else {
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
         // Will find contact based on email entered in watched input
         // Once it has been found it will emit an update to the contact_id
+
+        var foundContact = {}
         this.contacts.find(c => {
           if (c.email == email) {
             this.contact.id = c.id
             this.$emit("contactEmit", this.contact)
+            this.makeContactEditable(false)
+            foundContact = this.contact
           }
         })
+        console.log(foundContact)
+
+        if(foundContact.id == null) {
+          this.resetContact()
+        }
       }
     }
   },
@@ -150,6 +191,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>
