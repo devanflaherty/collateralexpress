@@ -1,10 +1,12 @@
+$form-gray: lighten($medium-gray, 20%);
 form {
   [type='text'], [type='password'], [type='date'], [type='datetime'], [type='datetime-local'], [type='month'], [type='week'], [type='email'], [type='number'], [type='search'], [type='tel'], [type='time'], [type='url'], [type='color'], textarea {
     border: none;
-    border-bottom: 1px solid $medium-gray;
+    border-bottom: 1px solid $form-gray;
     outline: none;
     background: none;
-    padding: 1rem 0;
+    padding-left: 0;
+    padding-right: 0;
     transition: all 0.3s ease;
     box-shadow: none;
     &:focus {
@@ -15,9 +17,35 @@ form {
       transition: all 0.5s ease;
     }
   }
-  .input-group-label {
-    border: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.18);
+  .float-input {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    input {
+      margin: 0;
+    }
+    label {
+      font-family: $sans-bold;
+      color: $form-gray;
+      &.floated.focused {
+        color: $primary-color!important;
+      }
+    }
+  }
+  .check-input {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    label {
+      font-size: 1.5rem;
+    }
+    svg {
+      font-size: 4rem;
+    }
+  }
+  .hint {
+    font-style: italic;
+    color: $form-gray;
+    font-size: .75rem;
+    margin-top: .25rem;
   }
   .callout {
     border: none;

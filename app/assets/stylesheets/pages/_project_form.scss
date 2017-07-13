@@ -1,5 +1,105 @@
 #projectForm {
   #formPanel {
-    padding: 4rem
+    header {
+      padding: 1rem 1rem 0;
+      @include breakpoint(medium) {
+        padding: 2rem 4rem 0;
+      }
+    }
+    .fieldset{
+      border: none!important;
+      padding: 1rem;
+      margin: 0;
+      @include breakpoint(medium) {
+        padding: 2rem 4rem;
+      }
+    }
+
+    #fileUploader {
+      background: white;
+
+      #fileList {
+        list-style-type: none;
+        li {
+          .card {
+            border-radius: 6px;
+          }
+          .thumb-container {
+            @include aspect-ratio(1,1);
+            background-size: cover;
+            background-position: center;
+
+            button {
+              cursor: pointer;
+              background: rgba(0,0,0,0);
+              position: absolute;
+              width: 100%;
+              margin: auto;
+              top: 0; bottom: 0;
+              left: 0; right: 0;
+              transition: all 0.5s ease;
+              svg {
+                opacity: 0;
+                transform: scale(.5);
+                transition: transform 0.5s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+              }
+              span {
+                display: block;
+                position: absolute;
+                bottom: 1rem;
+                width: 100%;
+                opacity: 0;
+                color: $white;
+                font-size: .8rem;
+                font-family: $sans-bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: all 0.5s ease;
+              }
+              &:hover {
+                background: rgba(0,0,0,0.66);
+                svg {
+                  opacity: 1;
+                  transform: scale(2);
+                  fill: $primary-color;
+                }
+                span {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    #contactForm {
+
+      .contact-info {
+        margin-top: 2rem;
+        font-size: .9rem;
+        color: $medium-gray;
+      }
+      .callout {
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      }
+      #contactCard {
+        ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          label {
+            color: $form-gray;
+            font-family: $sans-bold;
+            margin-bottom: 0;
+            line-height: 1rem;
+          }
+          span {
+            font-size: 1.25rem;
+          }
+        }
+      }
+    }
   }
 }

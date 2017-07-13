@@ -5,28 +5,30 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <div v-else id="formPanel" class="small-12 medium-9 columns">
 
-        <div class="row">
-          <div class="columns">
-            <nav v-if="contactSession">
-              <router-link class="button hollow" :to="{name: 'list'}">All Projects</router-link>
-              <router-link class="button hollow" :to="{name: 'new'}">New</router-link>
-            </nav>
-            <h3>{{$route.meta.title}}</h3>
-            <hr class="no-margin">
+        <header>
+          <div class="row">
+            <div class="columns">
+              <nav v-if="contactSession">
+                <router-link class="button hollow" :to="{name: 'list'}">All Projects</router-link>
+                <router-link class="button hollow" :to="{name: 'new'}">New</router-link>
+              </nav>
+              <h3>{{$route.meta.title}}</h3>
+              <hr class="no-margin">
+            </div>
           </div>
-        </div>
 
-        <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
-          <div class="navigation-actions">
-            <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-          </div>
-          <a
-            id="deleteProject"
-            @click="deletePrompt">
-            <icon name="trash"></icon>
-            Delete
-          </a>
-        </nav>
+          <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
+            <div class="navigation-actions">
+              <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
+            </div>
+            <a
+              id="deleteProject"
+              @click="deletePrompt">
+              <icon name="trash"></icon>
+              Delete
+            </a>
+          </nav>
+        </header>
 
         <form v-on:submit.prevent="onSubmit" id="form">
           <vue-progress-bar id="progressBar"></vue-progress-bar>
@@ -34,124 +36,127 @@
           <!-- only show if admin logged in -->
           <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
           <div class="row">
-            <div class="columns float-input">
-              <FloatLabel :attr="project.title" label="Project Title" propKey="title"></FloatLabel>
-            </div>
-          </div>
+            <div class="columns">
+              <div class="fieldset">
+                <div class="float-input">
+                  <FloatLabel :attr="project.title" label="Project Title" propKey="title"></FloatLabel>
+                </div>
 
-          <div class="row">
-            <div class="column float-input">
-              <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea'></FloatLabel>
+                <div class="float-input">
+                  <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea'></FloatLabel>
+                </div>
+              </div>
             </div>
           </div>
 
           <div class="row">
             <div class="column">
-              <h3>Tactics</h3>
-              <div class="row">
-                <div class="small-4 column" v-for="tactic in available_tactics" v-bind:key="tactic" >
-                  <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
-                  <label :for="tactic">
-                    {{tactic}}
+
+              <div class="fieldset">
+                <h2>Project Details</h2>
+                <hr class="no-margin">
+                <div class="float-input">
+                  <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date"></FloatLabel>
+                </div>
+
+                <h5 style="margin-top: 1rem">Tactics</h5>
+                <div class="row small-up-2 medium-up-3">
+                  <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
+                    <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
+                    <label :for="tactic">
+                      {{tactic}}
+                    </label>
+                  </div>
+                </div>
+                <span v-for="tactic in project.tactic">{{tactic}}</span>
+                <!-- other field-->
+                <div class="row" v-if="project.tactic.includes('Other')">
+                  <div class="columns small-6">
+                    <div class="float-input">
+                      <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics"></FloatLabel>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="check-input">
+                  <h5>Does this project already exist?</h5>
+                  <label for="projectExists">
+                    <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
+                    <icon v-if="project.existing" name="check-circle-o"></icon>
+                    <icon v-else name="circle-o"></icon>
+                    <span>{{ project.existing ? "Yes, this project exists." : "No, this is a new project." }}</span>
                   </label>
                 </div>
-              </div>
 
-              <div class="row" v-if="project.tactic.includes('Other')">
-                <div class="columns small-6">
-                  <h4>Other</h4>
-                  <input type="text" v-model.lazy="tactic_other" value="">
+                <div class="check-input">
+                  <h5>Does this project need translation?</h5>
+                  <label for="projectTranslation">
+                    <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
+                    <icon v-if="project.translation" name="check-circle-o"></icon>
+                    <icon v-else name="circle-o"></icon>
+                    <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
+                  </label>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables"></FloatLabel>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel :attr="project.asset_ref" label="Asset Reference" propKey="asset_ref"></FloatLabel>
+                  <p class="hint">http://tmap.com/link/to/asset</p>
                 </div>
               </div>
-              <!-- <br>
-              <span>Selected Tactics: {{ project.tactic }}</span> -->
+
             </div>
           </div>
 
           <div class="row">
             <div class="small-12 column">
-              <h3>Who is this for?</h3>
-            </div>
+              <div class="fieldset">
+                <h3>Who is this for?</h3>
 
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit"></FloatLabel>
-            </div>
+                <div class="float-input">
+                  <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit"></FloatLabel>
+                </div>
 
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.target" label="Target Audience" propKey="target"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label for="projectExists">
-                <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
-                <icon v-if="project.existing" name="check-circle-o"></icon>
-                <icon v-else name="circle-o"></icon>
-                <span>{{ project.existing ? "Existing Project" : "New Project" }}</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="small-12 column">
-              <h3>Project Details</h3>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label for="projectTranslation">
-                <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
-                <icon v-if="project.translation" name="check-circle-o"></icon>
-                <icon v-else name="circle-o"></icon>
-                <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
-              </label>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label>Asset Reference: {{project.asset_ref}}</label>
-              <div class="input-group">
-                <span class="input-group-label">http://</span>
-                <input class="input-group-field" v-model="project.asset_ref" name="project[asset_refs]" type="text">
+                <div class="float-input">
+                  <FloatLabel :attr="project.target" label="Target Audience" propKey="target"></FloatLabel>
+                </div>
               </div>
+
             </div>
           </div>
 
           <MediaUploader :project-id="project.id" :mediaFiles="project.medias" :token="token"></MediaUploader>
 
-          <hr>
-          <div class="row">
+          <div class="row" id="contactForm">
             <div class="column">
-              <div class="callout">
-                <h3>Contact</h3>
+              <div class="fieldset">
                 <contact
                   :contact-id="project.contact_id"
                   :project-id="project.id"
                   :post-time="postTime"
                   @contactEmit="updateContact"
                 ></contact>
-                <input type="hidden" v-model="project.contact_id" name="project[contact_id]">
               </div>
             </div>
           </div>
 
-          <div class="row">
+          <!-- <div class="row">
             <div class="column">
               <div class="callout">
-                <h3>Assigned To</h3>
-                <!-- TODO: editable if admin -->
+                <h3>Assigned To</h3> -->
+
                 <!-- <UserFields :user="user"></UserFields> -->
-                <input type="hidden" v-model="project.user_id" name="project[user_id]">
+                <!-- <input type="hidden" v-model="project.user_id" name="project[user_id]">
               </div>
             </div>
+          </div> -->
+          <div class="fieldset">
+            <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
+            <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button expanded">
           </div>
-          <span v-show="veeErrors.any()">Disable</span>
-          <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button expanded">
 
         </form>
       </div><!-- close column-->
@@ -169,7 +174,6 @@ import bus from '../bus'
 
 // App Components
 import FloatLabel from "./components/form/floatLabel.vue"
-import Float from "./components/form/float.vue"
 import FormMethods from "./components/form/formMethods.js"
 import ProgressMixin from "./components/form/progressMixin.js"
 import Status from "./components/form/status.vue"

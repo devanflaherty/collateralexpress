@@ -72,7 +72,7 @@ class ContactsController < ApplicationController
   private
 
     def contact_params
-      params.require(:contact).permit(:first_name, :last_name, :email)
+      params.require(:contact).permit(:first_name, :last_name, :email, :phone, :branch, :position, :avatar)
     end
 
     def find_project

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <label class="float-label" :class="{floated: float}">{{label}}</label>
-    <textarea v-if="inputType == 'textarea'" :id="propKey" v-model="model" @focus="floatLabel" @blur="floatLabel"></textarea>
-    <input v-else :id="propKey" v-model="model" @focus="floatLabel(true)" @blur="floatLabel" type="text">
+    <label class="float-label" :class="{floated: float, focused: focus}">{{label}}</label>
+    <textarea rows="4" v-if="inputType == 'textarea'" :id="propKey" v-model.lazy="model" @focus="floatLabel(true)" @blur="floatLabel(false)"></textarea>
+    <input v-else :id="propKey" v-model.lazy="model" @focus="floatLabel(true); focusLabel(true)" @blur="floatLabel(false); focusLabel(false)" type="text">
   </div>
 </template>
 
@@ -11,18 +11,28 @@ import bus from '../../../bus'
 
 export default {
   name: 'floatLabel',
-  props: ['attr', 'label', 'propKey', 'inputType'],
+  props: ['attr', 'label', 'propKey', 'obj', 'inputType'],
   data() {
     return {
       float: false,
+      focus: false,
       model: ''
     }
   },
   watch: {
+    attr(a) {
+      this.model = a
+    },
     model(m) {
       if(m && m.length > 0) {
         this.floatLabel()
-        bus.$emit('projectPropSet', this.propKey, this.model)
+        if(this.label == "Other") {
+          this.$emit('updateOther', this.model)
+        } else if(this.obj == "contact") {
+          bus.$emit('contactPropSet', this.propKey, this.model)
+        } else {
+          bus.$emit('projectPropSet', this.propKey, this.model)
+        }
       }
     }
   },
@@ -32,6 +42,13 @@ export default {
         this.float = true
       } else {
         this.float = false
+      }
+    },
+    focusLabel(f) {
+      if(f) {
+        this.focus = true
+      } else {
+        this.focus = false
       }
     }
   },
@@ -48,7 +65,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 .float-label {
   position: absolute;
   z-index: 5;
@@ -56,7 +72,7 @@ export default {
   transform: translateY(.5rem);
 }
 .floated {
-  transform: translate(-4px, -.75rem) scale(.9);
+  transform: translate(-4px, -1rem) scale(.9);
 }
 .float-input input, .float-input textarea {
   position: relative;

@@ -1,42 +1,106 @@
 <template>
-  <div>
-    <div v-if="contactId">
-      <p>
-        We have found a contact associated to the email address, "{{contact.email}}".
-        To create a new contact just change the email address and fill in your contact credentials.
-      </p>
-      <p>
-        To modify this contact's info click the button below.
-      </p>
-    </div>
-    <input
-      v-model.lazy="contact.email"
-      v-validate="'required|email'"
-      name="email"
-      type="text">
-    <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
+  <div class="row">
+    <div class="columns">
+      <h3>Contact</h3>
 
-    <div v-if="edit_contact || !contactId">
-      <input v-model="contact.first_name" type="text">
-      <input v-model="contact.last_name" type="text">
-      <div class="callout" v-if="message">
-        <h4>{{message}}</h4>
+      <div v-if="edit_contact || !contactId">
+        <div class="float-input">
+          <FloatLabel
+            :attr="contact.email"
+            obj="contact"
+            label="Contact Email"
+            propKey="email"></FloatLabel>
+          <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
+        </div>
+
+        <div class="row">
+          <div class="columns float-input">
+            <FloatLabel
+              :attr="contact.first_name"
+              obj="contact"
+              label="First Name"
+              propKey="first_name"></FloatLabel>
+          </div>
+          <div class="columns float-input">
+            <FloatLabel
+              :attr="contact.last_name"
+              obj="contact"
+              label="Last Name"
+              propKey="last_name"></FloatLabel>
+          </div>
+        </div>
+
+        <div class="columns float-input">
+          <FloatLabel
+            :attr="contact.phone"
+            obj="contact"
+            label="Phone Number"
+            propKey="phone"></FloatLabel>
+        </div>
+
+        <div class="row">
+          <div class="columns float-input">
+            <FloatLabel
+              :attr="contact.position"
+              obj="contact"
+              label="T-Mobile Position"
+              propKey="position"></FloatLabel>
+          </div>
+          <div class="columns float-input">
+            <FloatLabel
+              :attr="contact.branch"
+              obj="contact"
+              label="Branch"
+              propKey="branch"></FloatLabel>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="contactId" class="contact-info">
+        <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
+
+        <button class="button" @click.prevent="makeContactEditable(!edit_contact)">
+          {{edit_contact ? "Finish Editing" : "Edit Contact"}}
+        </button>
+        <button class="button" @click.prevent="resetContact(true)">
+          New Contact
+        </button>
+      </div>
+
+      <span class="errors" v-if="message">{{message}}</span>
+
+    </div>
+
+    <div id="contactCard" class="columns" v-if="!edit_contact">
+      <div class="callout">
+        <h4 v-if="contact.full_name">{{contact.full_name}}</h4>
+        <ul>
+          <li v-if="contact.email">
+            <label>Email</label>
+            <span>{{contact.email}}</span>
+          </li>
+          <li v-if="contact.phone">
+            <label>Phone</label>
+            <span>{{contact.phone}}</span>
+          </li>
+          <li v-if="contact.position">
+            <label>Position</label>
+            <span>{{contact.position}}</span>
+          </li>
+          <li v-if="contact.branch">
+            <label>Branch</label>
+            <span>{{contact.branch}}</span>
+          </li>
+        </ul>
       </div>
     </div>
 
-    <div v-else>
-      <h5>{{contact.first_name}} {{contact.last_name}}</h5>
-      <p>
-        {{contact.phone}}<br>
-        {{contact.branch}}<br>
-      </p>
-    </div>
   </div>
 </template>
 
 <script>
-import { find, propEq } from 'ramda'
 import bus from '../../../bus'
+import FloatLabel from './floatLabel.vue'
 import Axios from "axios"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
@@ -45,7 +109,10 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'contact',
-  props: ['contactId','projectId', 'postTime'],
+  components: {
+    FloatLabel
+  },
+  props: ['contactId', 'projectId', 'postTime'],
   data() {
     return {
       message: "",
@@ -54,15 +121,20 @@ export default {
         id: '',
         email: null,
         first_name: '',
-        last_name: ''
+        last_name: '',
+        phone: '',
+        position: '',
+        branch: ''
       },
       contacts: [],
     }
   },
   watch: {
     'contact.email': function(newEmail) {
-      this.$emit("contactEmit", {id: null})
-      this.findContact(newEmail)
+      //this.$emit("contactEmit", {id: null})
+      if(!this.contactId) {
+        this.findContact(newEmail)
+      }
     },
     contactId(id) {
       this.mountContact(id)
@@ -85,6 +157,7 @@ export default {
     }
   },
   methods: {
+    //form methods
     makeContactEditable(bool) {
       this.edit_contact = bool
     },
@@ -94,6 +167,7 @@ export default {
         bus.$emit('errors-changed', this.veeErrors.errors)
       }
     },
+    //contact methods
     manageContact() {
       var vm = this
       var axiosConfig = {
@@ -104,6 +178,7 @@ export default {
       }
 
       if(this.contactId == null) {
+        // If contact doesn't exist
         Axios.post('/contacts/', axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
@@ -113,23 +188,15 @@ export default {
           })
         })
       } else {
-          Axios.patch('/contacts/' + this.contact.id, axiosConfig)
-          .then(function (response) {
-            // IF SUCCESFUll
-            vm.$emit("contactEmit", response.data.contact)
-            vm.$notify({
-              title: response.data.contact.first_name + " updated"
-            })
+        //If contact exists
+        Axios.patch('/contacts/' + this.contact.id, axiosConfig)
+        .then(function (response) {
+          // IF SUCCESFUll
+          vm.$emit("contactEmit", response.data.contact)
+          vm.$notify({
+            title: response.data.contact.first_name + " updated"
           })
-      }
-    },
-    resetContact() {
-      console.log('reset')
-      this.contact = {
-        id: '',
-        email: '',
-        first_name: '',
-        last_name: ''
+        })
       }
     },
     mountContact(id) {
@@ -146,9 +213,8 @@ export default {
     findContact(email) {
       var vm = this;
       var found = false
-      if (this.contact.email.indexOf('@') === -1) {
-        this.message = 'Not a valid email'
-        this.resetContact()
+      if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
+        this.message = 'Please enter a valid email address'
       } else {
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
@@ -166,10 +232,25 @@ export default {
         })
         console.log(foundContact)
 
-        if(foundContact.id == null) {
-          this.resetContact()
-        }
+        this.$nextTick(() => {
+          if(foundContact.id == null) {
+            this.resetContact()
+          }
+        })
       }
+    },
+    resetContact(totalReset) {
+      if(totalReset) {
+        this.contact.email = null
+      }
+      this.contact.id = ''
+      this.contact.first_name = ''
+      this.contact.last_name = ''
+      this.contact.phone = ''
+      this.contact.position = ''
+      this.contact.branch = ''
+
+      this.makeContactEditable(true)
     }
   },
   created() {
@@ -179,15 +260,22 @@ export default {
       .then( response => {
         vm.contacts = response.data.contact;
       })
-    if(this.contactId != null){
-      this.mountContact()
-    }
+
+    this.mountContact()
   },
   mounted() {
+    bus.$on('contactPropSet', (key, val) => {
+      this.$set(this.contact, key, val)
+    })
+
     //Listen on the bus for the parent component running validation
     this.$validator.validateAll();
     bus.$on('validate', this.onValidate)
-  }
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.mountContact()
+    next()
+  },
 }
 </script>
 

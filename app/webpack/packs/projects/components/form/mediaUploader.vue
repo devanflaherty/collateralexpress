@@ -1,12 +1,22 @@
 <template>
-  <div class="row">
+  <div class="row" id="fileUploader">
     <div class="small-12 column">
-      <h3>Files</h3>
-      <transition-group name="mediaList" tag="ul" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
-        <li class="column" v-for="media in mediaFiles" v-bind:key="media">
-          <img :src="media.file.thumb.url" @click="removeMedia(media.id)">
-        </li>
-      </transition-group>
+      <div class="fieldset">
+        <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
+        <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
+          <li class="column" v-for="media in mediaFiles" v-bind:key="media">
+            <div class="card">
+
+              <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.thumb.url + ')' }">
+                <button @click.prevent="removeMedia(media.id)">
+                  <icon name="close"></icon><br>
+                  <span>Remove File</span>
+                </button>
+              </div>
+
+            </div>
+          </li>
+        </transition-group>
 
         <h3>Add Files</h3>
         <Dropzone
@@ -28,6 +38,7 @@
             <!--<input type="hidden" name="project[title]" :value="project.title"> -->
         </Dropzone>
         <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
+      </div>
 
     </div>
   </div>
@@ -49,7 +60,8 @@
     },
     data() {
       return {
-
+        styles: {
+        }
       }
     },
     computed: {
