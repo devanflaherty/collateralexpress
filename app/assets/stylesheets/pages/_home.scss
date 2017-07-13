@@ -31,6 +31,16 @@
 }
 
 #homeSteps {
+  #stepColumns {
+    > .columns {
+      @include breakpoint(small only) {
+        margin-bottom: 2rem;
+        &:last-of-type {
+          margin-bottom: 0
+        }
+      }
+    }
+  }
   .row {
     .columns {
       .card {

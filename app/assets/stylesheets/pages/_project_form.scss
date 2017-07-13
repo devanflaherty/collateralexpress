@@ -1,14 +1,14 @@
 #projectForm {
   #formPanel {
     header {
-      padding: 1rem 1rem 0;
+      padding: 1.5rem 1rem 0;
       @include breakpoint(medium) {
         padding: 2rem 4rem 0;
       }
     }
     .fieldset{
       border: none!important;
-      padding: 1rem;
+      padding: 1.5rem 1rem;
       margin: 0;
       @include breakpoint(medium) {
         padding: 2rem 4rem;
