@@ -1,0 +1,83 @@
+@import "swiper/dist/css/swiper.css";
+.swiper-container {
+  background: $black;
+  width: 100vw;
+  height: 500px;
+  &:hover {
+    .swiper-button-prev, .swiper-button-next {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .swiper-slide {
+    @include flex;
+    @include flex-align(center, middle);
+  }
+  .swiper-button-prev, .swiper-button-next {
+    width: 4rem; height: 4rem;
+    padding: 1rem;
+    opacity: 0;
+    border-radius: 300px;
+    background-color: rgba(255,255,255,0.15);
+    transform: scale(.5);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(.75,0,.50, 3), background-color 0.5s ease;
+    &:hover {
+      background-color: rgba(255,255,255,0.25);
+    }
+    &:active {
+      background-color: rgba(255,255,255,0.33);
+    }
+  }
+  .swiper-pagination {
+    .swiper-pagination-bullet {
+      width: 3rem;
+      border-radius: 0px;
+      height: 2px;
+      opacity: 1;
+      background-color: rgba(255,255,255,0.25)!important;
+    }
+    .swiper-pagination-bullet-active {
+      height: 2px;
+      opacity: 1;
+      background-color: $primary-color!important;
+    }
+  }
+
+  p.step-desc {
+    color: $light-gray;
+    opacity: 0;
+    transform: translateY(2rem);
+    transition: transform .5s ease, opacity 1s ease;
+    &.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+#canDo {
+  .card-container {
+    @include aspect-ratio(1,1);
+    .card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      padding: 3rem;
+      justify-content: space-between;
+
+      h4 {
+        margin-bottom: 0;
+      }
+
+      .button {
+        margin-bottom: 0;
+        &:first-of-type {
+          margin-right: .25rem;
+        }
+      }
+    }
+  }
+}

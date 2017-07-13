@@ -1,4 +1,4 @@
-body > header {
+body > header#header {
   height: 6rem;
   @include flex;
   @include flex-align(center, middle);
@@ -21,5 +21,37 @@ body > header {
     #navToggle {
       float: right;
     }
+  }
+  &.overlaid {
+    position: absolute;
+    top:0;
+    width: 100%;
+    z-index: 100;
+    #navBar {
+      #links {
+        a {
+          color: $white;
+        }
+      }
+      #navToggle {
+
+      }
+    }
+  }
+}
+
+#heroHeader {
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+  > .row {
+    position: relative;
   }
 }
