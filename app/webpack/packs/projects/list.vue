@@ -1,5 +1,6 @@
 <template>
   <div id="projectList">
+    <button @click="clearCookie">Clear</button>
     <LoadScreen v-if="loading"></LoadScreen>
     <table v-if="!loading">
       <thead>
@@ -39,8 +40,16 @@
         projects: []
       }
     },
-    props: ['contact-session'],
+    props: ['contact-session', 'auth'],
     methods: {
+      clearCookie() {
+        Axios.post('/contacts/clear')
+          .then( response => {
+            console.log("cleared")
+          }).catch(error => {
+            console.log(error)
+          })
+      },
       getProjects() {
         var vm = this
         this.loading = true
@@ -77,14 +86,7 @@
     },
     created(){
       this.getProjects()
-    },
-    beforeRouteEnter (to, from, next) {
-        next(vm => {
-          if(!vm.contactSession) {
-            vm.$router.push({ name: 'new'})
-          }
-        })
-    },
+    }
   }
 </script>
 

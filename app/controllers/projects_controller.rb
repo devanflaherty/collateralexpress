@@ -1,5 +1,6 @@
 class ProjectsController < ApplicationController
   layout 'vue'
+  before_action :authenticate_user!, except: [:index, :show, :new]
   before_action :find_contact
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 

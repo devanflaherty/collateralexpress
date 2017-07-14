@@ -1,5 +1,5 @@
 json.project do
-  json.(@project, :id, :title, :status, :slug, :business_unit, :deliverables, :tactic, :files, :target, :existing, :translation, :description)
+  json.(@project, :id, :title, :status, :slug, :business_unit, :deliverables, :tactic, :target, :existing, :translation, :description)
   if @project.due_date
     json.due_date(@project.due_date.strftime('%b %e, %Y'))
   else
@@ -10,4 +10,10 @@ json.project do
 end
 if @project.contact
   json.contact(@project.contact, :id, :full_name, :email, :phone, :branch, :position, :avatar)
+end
+if @user
+  json.authenticated(@user, :id)
+  if @project.user
+    json.contact(@project.user, :id, :full_name, :email, :phone, :branch, :position, :avatar)
+  end
 end

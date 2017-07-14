@@ -1,9 +1,9 @@
 <template>
   <div id="projectForm">
     <hr class="no-margin">
-    <div id="formContainer" class="row expand">
-      <LoadScreen v-if="loading"></LoadScreen>
-      <div v-else id="formPanel" class="small-12 medium-9 columns">
+    <LoadScreen v-if="loading"></LoadScreen>
+    <div v-else id="formContainer" class="row expand">
+      <div id="formPanel" class="small-12 medium-9 columns">
 
         <header>
           <div class="row">
@@ -187,7 +187,7 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'NewForm',
-  props: ['message', 'reveal-type', 'flash', 'contact-session'],
+  props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
   mixins: [FormMethods, ProgressMixin],
   components: {
     FloatLabel,
@@ -223,7 +223,7 @@ export default {
       tactic_other: '',
       available_tactics: [],
       dzUpload: false,
-      postTime: '',
+      postTime: ''
     }
   },
   computed: {
@@ -283,31 +283,38 @@ export default {
     },
     getProject() {
       var vm = this
-      if (this.$route.params.id) {
-        Axios.get('/api/v1/projects/' + this.$route.params.id  + '.json')
+      if (vm.$route.params.id) {
+        // Project exists
+        Axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json')
           .then( response => {
-            vm.loading = false
-            vm.updateProject(response.data.project)
+            if(!vm.auth && vm.contactSession != response.data.contact.id) {
+              vm.$router.push({ name: 'list' })
+              bus.$emit('showReveal', 'update', "Not Authorized", "Sorry, you don't have access to that project.")
+            } else {
+              vm.loading = false
+              vm.updateProject(response.data.project)
 
-            if(vm.contactSession && vm.project.contact_id == null) {
-              vm.updateContact({id: vm.contactSession})
+              if(vm.project.contact_id == null) {
+                vm.updateContact({id: vm.contactSession})
+              }
+
+              document.title = "Edit " + vm.project.title + " | Collateral Express"
             }
-
-            document.title = "Edit " + vm.project.title + " | Collateral Express"
           }).catch(error => {
             // project does not exist
             // Create a new project or browse the project list
             console.log(error)
           })
       } else {
+        //new project
         vm.loading = false
         bus.$emit('emptyFloats')
-        bus.$emit('projectEmit', this.EmptyProject)
+        bus.$emit('projectEmit', vm.EmptyProject)
         if(vm.contactSession) {
           vm.updateContact({id: vm.contactSession})
         }
       }
-      this.getTactics()
+      vm.getTactics()
     },
     updateProject(project) {
       this.project = project
@@ -315,7 +322,6 @@ export default {
     updateContact(contact) {
       this.project.contact_id = contact.id
     },
-
     setTactics(tactic) {
       var vm = this
       var tArray = this.project.tactic.filter(function(tactic) {
@@ -334,11 +340,11 @@ export default {
         }).catch(error => {
           console.log(error)
         })
-    },
+    }
   },
-  created() {
-    this.fetchData()
-  },
+  // created() {
+  //   this.fetchData()
+  // },
   mounted() {
     var vm = this
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
@@ -363,6 +369,11 @@ export default {
 
       this.veeErrors.errors = filtered
     });
+  },
+  beforeRouteEnter (to,from,next) {
+    next(vm => {
+      vm.fetchData()
+    })
   },
   beforeRouteUpdate (to, from, next) {
     this.fetchData()

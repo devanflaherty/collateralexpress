@@ -1,11 +1,29 @@
 import Vue from 'vue'
+import Axios from 'axios'
+import bus from '../bus'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 // Import Components
+
 import ProjectIndex from '../projects/list.vue'
 import ProjectForm from '../projects/form.vue'
 import ProjectShow from '../projects/show.vue'
+
+const authRequest = function(to, from, next) {
+  Axios.get('/authenticate.json')
+  .then(function (response) {
+    if (response.data.user.id) {
+      next()
+    } else if (response.data.contact.id) {
+      next()
+    } else {
+      window.location.href = "/account/login"
+    }
+  }).catch(function (error) {
+    window.location.href = "/account/login"
+  })
+}
 
 const router = new VueRouter ({
   mode: 'history',
@@ -20,17 +38,24 @@ const router = new VueRouter ({
     name: 'edit',
     path:'/projects/:id/edit',
     component: ProjectForm,
-    meta: {title: 'Edit Project'}
+    meta: {title: 'Edit Project'},
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   },
   {
     name: 'new',
     path:'/projects/new',
     component: ProjectForm,
     meta: {title: 'New Project'}
-  }, {
+  },
+  {
     name: 'show',
     path:'/project/:id',
-    component: ProjectShow
+    component: ProjectShow,
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   }]
 })
 
@@ -42,6 +67,7 @@ router.beforeEach((to, from, next) => {
     console.log(to.meta.title)
     document.title = vueTitle + " | Collateral Express"
   }
+
   next()
 })
 

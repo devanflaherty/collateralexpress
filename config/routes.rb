@@ -1,8 +1,20 @@
 Rails.application.routes.draw do
+  devise_for :users,
+    path: 'account',
+    path_names: {
+      sign_in: 'login',
+      sign_out: 'logout',
+      password: 'password',
+      confirmation: 'confirm',
+      sign_up: 'signup'
+    }
+
   root 'home#index'
 
   resources :projects, :except => [:new, :edit, :show]
   resources :contacts
+  post 'contacts/clear', to: 'contacts#clear', method: :post
+  get 'authenticate', to: 'authenticates#index'
 
   resources :media, only: [:create, :delete, :destroy]
 

@@ -22,9 +22,6 @@
   </head>
 
   <body>
-    <% if @current_contact %>
-      <div id="cid" data-cid="<%= @current_contact %>"></div>
-    <% end %>
     <header id="header" <%= @header ? "class=overlaid" : "" %>>
       <div class="row">
         <div class="columns">
@@ -44,7 +41,5 @@
     <footer id="footer"></footer>
     <%= javascript_pack_tag 'app.js', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'projects/main.js', 'data-turbolinks-track': 'reload' %>
-
-    <!-- <%= javascript_pack_tag 'layout/header/main.js' %> -->
   </body>
 </html>

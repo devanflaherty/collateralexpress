@@ -52,7 +52,6 @@
   business_unit: 'CPR',
   existing: false,
   deliverables: 3,
-  files: [],
   translation: false,
   reference: "http://saltagency.co",
   status: "Pending",

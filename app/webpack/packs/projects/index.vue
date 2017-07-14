@@ -1,8 +1,8 @@
 <template>
   <div id="projectApp">
-
     <transition name="fade" appear>
       <router-view
+        :auth="auth"
         :reveal-type="reveal.type"
         :contactSession="contactSession"
         @visibleEmit="updateVisibility"
@@ -25,10 +25,6 @@
 import bus from "../bus"
 import Reveal from "./components/reveal.vue"
 
-// Import Plugins
-let contactEl = document.getElementById('cid')
-let cid = contactEl ? contactEl.dataset.cid : ''
-
 export default {
   name: 'Project_Form',
   components: {
@@ -44,11 +40,13 @@ export default {
         type: null,
         title: null,
         msg: null
-      }
+      },
+      auth: null
     }
   },
   computed: {
     contactSession() {
+      var cid = this.getCookie('current_contact_id')
       if (cid) {
         return parseInt(cid)
       } else {
@@ -61,10 +59,7 @@ export default {
       this.$notify({
         title: this.flash
       })
-    },
-    // reveal_type: function(type){
-    //   this.reveal_type = type
-    // }
+    }
   },
   methods: {
     updateVisibility(visibility) {
@@ -79,6 +74,16 @@ export default {
     showReveal(type) {
       $('#reveal').foundation('open');
     },
+    getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
@@ -95,6 +100,9 @@ export default {
       this.reveal.project_id = pid
       this.showReveal()
     });
+    bus.$on('authEmit', (id) => {
+      this.auth = id
+    })
   },
 }
 </script>

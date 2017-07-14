@@ -12,11 +12,12 @@ document.addEventListener("turbolinks:load", function() {
   AOS.init();
   var rellax = new Rellax('.rellax');
 
-  var navHeader = document.getElementById("toggle")
+  const navHeader = document.getElementById("toggle")
+  const props = JSON.parse(navHeader.getAttribute('data'))
   if (navHeader != null) {
     const header = new Vue({
       el: '#toggle',
-      render: h => h(Header),
+      render: h => h(Header, {props}),
       mixins: [TurbolinksAdapter],
     })
   }
