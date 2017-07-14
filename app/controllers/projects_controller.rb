@@ -15,7 +15,7 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
     respond_to do |format|
       if @project.save
-        ProjectMailer.new_project(@project).deliver
+        ProjectMailer.new_project(@project).deliver_later
 
         flash[:notice] = "Project '#{@project.title}' created succesfully."
 
@@ -35,7 +35,7 @@ class ProjectsController < ApplicationController
       if @project.update_attributes(project_params)
         if @project.status != status
           puts "changed"
-          ProjectMailer.status_update(@project).deliver
+          ProjectMailer.status_update(@project).deliver_later
         end
         session[:current_contact_id] = @project.contact_id
 
