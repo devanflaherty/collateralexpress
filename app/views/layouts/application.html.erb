@@ -2,8 +2,11 @@
 <html>
   <head>
     <title>
-      <%= @page_title ? @page_title + " | " : "" %>Collateral Express</title>
+      <%= @page_title ? @page_title + " | " : "" %>Collateral Express
+    </title>
     <%= csrf_meta_tags %>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
