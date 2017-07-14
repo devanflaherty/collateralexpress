@@ -30,12 +30,12 @@
           <a href="/" id="logo"><img src="/assets/logo.png"></a>
         </div>
         <div class="small-9 columns" id="navBar">
-          <nav id="links">
+          <nav id="links" class="show-for-medium">
             <% @links.each do |link| %>
               <a href="<%= link[:url] %>"><%= link[:name] %></a>
             <% end %>
-            <button id="toggle" class="hide-for-medium"></button>
           </nav>
+          <div id="toggle"></div>
         </div>
       </div>
     </header>

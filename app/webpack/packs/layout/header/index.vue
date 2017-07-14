@@ -1,24 +1,16 @@
 <template>
-  <header>
-    <div class="row">
-      <div class="columns">
-        <a href="/" id="logo"><img src="/assets/logo.png"></a>
-      </div>
-      <div class="small-9 columns" id="navBar">
-        <links :links="links" class="show-for-medium"></links>
-        <toggle class="hide-for-medium"></toggle>
-      </div>
-    </div>
-
-    <!-- <mobileNav :links="links" class="hide-for-medium"></mobileNav> -->
-  </header>
+  <div>
+    <toggle class="hide-for-medium"></toggle>
+    <nav class="mobileMenu" style="display:none;">
+      <Links :links="links"></Links>
+    </nav>
+  </div>
 </template>
 
 <script>
 import Axios from "axios"
 import Toggle from './components/navToggle.vue'
 import Links from './components/links.vue'
-
 
 export default {
   name: 'header',

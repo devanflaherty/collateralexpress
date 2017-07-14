@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="columns">
+    <div class="columns small-12 medium-6">
       <h3>Contact</h3>
 
       <div v-if="edit_contact || !contactId">
@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <div v-if="contactId" class="contact-info">
+      <div v-if="contactId" class="contact-info small-12 medium-6">
         <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
         <button class="button" @click.prevent="makeContactEditable(!edit_contact)">
