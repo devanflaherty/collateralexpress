@@ -6,7 +6,7 @@ class MediaController < ApplicationController
 
     if @media.save!
       respond_to do |format|
-        format.json{ render :json => @media }
+        format.json{ render json: @media }
       end
     end
   end
@@ -14,11 +14,11 @@ class MediaController < ApplicationController
   def destroy
     @media = Media.find(params[:id])
     @media.destroy
-    FileUtils.remove_dir("#{Rails.root}/public/uploads/media/file/#{params[:id]}", :force => true)
+    FileUtils.remove_dir("#{Rails.root}/public/uploads/media/file/#{params[:id]}", force: true)
     flash[:notice] = "File deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
-      format.json { render :json => {flash: flash} }
+      format.json { render json: {flash: flash} }
     end
   end
 

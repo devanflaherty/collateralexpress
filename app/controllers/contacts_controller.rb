@@ -31,7 +31,7 @@ class ContactsController < ApplicationController
 
         format.json { render json: { contact: @contact, flash: flash} }
       else
-        format.json { render :json => { :errors => @contact.errors.messages }, :status => 422}
+        format.json { render json: { errors: @contact.errors.messages }, status: 422}
       end
     end
   end
@@ -54,7 +54,7 @@ class ContactsController < ApplicationController
         format.json { render json: { contact: @contact, flash: flash} }
       else
         flash[:error] = "Contact '#{@contact.full_name}' failed to update."
-        format.json { render :json => { :errors => @contact.errors.messages }, :status => 422}
+        format.json { render json: { errors: @contact.errors.messages }, status: 422}
       end
     end
   end
@@ -65,7 +65,7 @@ class ContactsController < ApplicationController
     flash[:notice] = "Contact '#{@contact.full_name}' deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
-      format.json { render :json => {flash: flash, :redirect => "/contacts"} }
+      format.json { render json: {flash: flash} }
     end
   end
 

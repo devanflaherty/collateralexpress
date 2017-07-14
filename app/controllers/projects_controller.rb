@@ -23,7 +23,7 @@ class ProjectsController < ApplicationController
 
         format.json { render json: { project: @project, flash: flash} }
       else
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
     end
   end
@@ -46,7 +46,7 @@ class ProjectsController < ApplicationController
       else
         flash[:error] = "Project '#{@project.title}' failed to update."
         format.html { render 'edit'}
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
     end
   end
@@ -60,7 +60,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
-      format.json { render :json => {project: @project, flash: flash, :redirect => "/projects"} }
+      format.json { render json: {project: @project, flash: flash} }
     end
   end
 
