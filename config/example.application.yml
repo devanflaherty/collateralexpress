@@ -1,0 +1,8 @@
+# This is an example file of how to set the necessary environment varialbes for
+# this project to run. To get your variables configured, simple copy this file
+# and rename to application.yml - Never commit config/application.yml to Git
+
+production:
+
+  GMAIL_USERNAME: "" # name@email.com
+  GMAIL_PASSWORD: ""
