@@ -1,0 +1,13 @@
+# This is an example file of how to set the necessary environment varialbes for
+# this project to run. To get your variables configured, simple copy this file
+# and rename to application.yml - Never commit config/application.yml to Git
+
+production:
+
+  GMAIL_USERNAME: "coexdemo@gmail.com" # name@email.com
+  GMAIL_PASSWORD: "Fal1.coex"
+
+  AWS_ACCESS_KEY: "AKIAIHDT2DB7WQRCX3LA"
+  AWS_SECRET_KEY: "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"
+  AWS_BUCKET_REGION: "us-west-2" # us-west-2
+  AWS_BUCKET_NAME: "collateralexpress" # collateralexpress
