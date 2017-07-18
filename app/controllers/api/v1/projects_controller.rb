@@ -3,30 +3,19 @@ class Api::V1::ProjectsController < ApplicationController
 
   def index
     if user_signed_in?
-      query = request.query_parameters
-      if query.keys.count > 0
-        if query[:q] == "flagged"
-          @projects = Project.flagged.all
-        elsif query[:q] == "complete"
-          @projects = Project.complete.all
-        elsif query[:q] == "archived"
-          @projects = Project.archived.all
-        elsif query[:q] == "duefirst"
-          @projects = Project.due_first.all
-        end
-      else
-        puts "---------------------"
+      query_projects
+      if query_projects == false
         @projects = Project.all
       end
-
       @user = current_user
       @userProjects = @user.projects
     elsif cookies[:current_contact_id]
-      puts "---------)))------------"
       @contact = Contact.find_by_id(cookies[:current_contact_id])
-      @projects = @contact.projects
+      query_projects
+      if query_projects == false
+        @projects = @contact.projects
+      end
     else
-      puts "---------****------------"
       @projects = Project.all
     end
   end
@@ -50,6 +39,23 @@ class Api::V1::ProjectsController < ApplicationController
   end
 
   private
+
+    def query_projects
+      query = request.query_parameters
+      if query.keys.count > 0
+        if query[:q] == "flagged"
+          @projects = Project.flagged.all
+        elsif query[:q] == "complete"
+          @projects = Project.complete.all
+        elsif query[:q] == "archived"
+          @projects = Project.archived.all
+        elsif query[:q] == "duefirst"
+          @projects = Project.due_first.all
+        end
+      else
+        return false
+      end
+    end
 
     def define_project_lexicon
       @states = [

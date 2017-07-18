@@ -13,8 +13,11 @@ document.addEventListener("turbolinks:load", function() {
   var rellax = new Rellax('.rellax');
 
   const navHeader = document.getElementById("toggle")
-  const props = JSON.parse(navHeader.getAttribute('data'))
-  if (navHeader != null) {
+  const props = ""
+  if (navHeader) {
+    const props = JSON.parse(navHeader.getAttribute('data'))
+  }
+  if (navHeader != null && props != null) {
     const header = new Vue({
       el: '#toggle',
       render: h => h(Header, {props}),

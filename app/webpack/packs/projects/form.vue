@@ -8,42 +8,25 @@
         <header>
           <div class="row">
             <div class="columns">
-              <nav v-if="contactSession">
-                <router-link class="button hollow" :to="{name: 'list'}">All Projects</router-link>
-                <router-link class="button hollow" :to="{name: 'new'}">New</router-link>
-              </nav>
               <h3>{{$route.meta.title}}</h3>
               <hr class="no-margin">
             </div>
           </div>
-
-          <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
-            <div class="navigation-actions">
-              <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-            </div>
-            <a
-              id="deleteProject"
-              @click="deletePrompt">
-              <icon name="trash"></icon>
-              Delete
-            </a>
-          </nav>
         </header>
 
         <form v-on:submit.prevent="onSubmit" id="form">
           <vue-progress-bar id="progressBar"></vue-progress-bar>
 
-          <!-- only show if admin logged in -->
           <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
           <div class="row">
             <div class="columns">
               <div class="fieldset">
                 <div class="float-input">
-                  <FloatLabel :attr="project.title" label="Project Title" propKey="title"></FloatLabel>
+                  <FloatLabel :attr="project.title" label="Project Title" propKey="title" validation="required"></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea'></FloatLabel>
+                  <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea' validation="required"></FloatLabel>
                 </div>
               </div>
             </div>
@@ -56,7 +39,7 @@
                 <h2>Project Details</h2>
                 <hr class="no-margin">
                 <div class="float-input">
-                  <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date"></FloatLabel>
+                  <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date" validation=""></FloatLabel>
                 </div>
 
                 <h5 style="margin-top: 1rem">Tactics</h5>
@@ -73,7 +56,7 @@
                 <div class="row" v-if="project.tactic.includes('Other')">
                   <div class="columns small-6">
                     <div class="float-input">
-                      <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics"></FloatLabel>
+                      <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics" validation=""></FloatLabel>
                     </div>
                   </div>
                 </div>
@@ -99,11 +82,11 @@
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables"></FloatLabel>
+                  <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables" validation=""></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.asset_ref" label="Asset Reference" propKey="asset_ref"></FloatLabel>
+                  <FloatLabel :attr="project.reference" label="Asset Reference" propKey="reference" validation=""></FloatLabel>
                   <p class="hint">http://tmap.com/link/to/asset</p>
                 </div>
               </div>
@@ -117,11 +100,11 @@
                 <h3>Who is this for?</h3>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit"></FloatLabel>
+                  <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit" validation="required"></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.target" label="Target Audience" propKey="target"></FloatLabel>
+                  <FloatLabel :attr="project.target" label="Target Audience" propKey="target" validation=""></FloatLabel>
                 </div>
               </div>
 
@@ -134,9 +117,9 @@
             <div class="column">
               <div class="fieldset">
                 <contact
-                  :contact-id="project.contact_id"
+                  :contact-query="contactQuery"
                   :project-id="project.id"
-                  :post-time="postTime"
+                  :contact-session="contactSession"
                   @contactEmit="updateContact"
                 ></contact>
               </div>
@@ -161,7 +144,24 @@
         </form>
       </div><!-- close column-->
 
-      <div id="infoPanel" class="columns"></div>
+      <div id="infoPanel" class="columns">
+        <h5 v-if="project.title">{{project.title}}</h5>
+        <nav v-if="contactSession || auth">
+          <router-link class="button hollow secondary" :to="{name: 'list'}">All Projects</router-link>
+          <router-link v-if="project.id" class="button hollow secondary" :to="{name: 'new'}">New</router-link>
+        </nav>
+        <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
+          <div class="navigation-actions">
+            <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
+          </div>
+          <a
+            id="deleteProject"
+            @click="deletePrompt">
+            <icon name="trash"></icon>
+            Delete
+          </a>
+        </nav>
+      </div>
 
     </div><!--close form container-->
     <hr class="no-margin">
@@ -173,7 +173,8 @@ import Axios from "axios"
 import bus from '../bus'
 
 // App Components
-import FloatLabel from "./components/form/floatLabel.vue"
+import { onValidation } from "../shared/validation"
+import FloatLabel from "../shared/floatLabel.vue"
 import FormMethods from "./components/form/formMethods.js"
 import ProgressMixin from "./components/form/progressMixin.js"
 import Status from "./components/form/status.vue"
@@ -188,7 +189,7 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 export default {
   name: 'NewForm',
   props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
-  mixins: [FormMethods, ProgressMixin],
+  mixins: [FormMethods, ProgressMixin, onValidation],
   components: {
     FloatLabel,
     MediaUploader,
@@ -209,6 +210,7 @@ export default {
         contact_id: null,
         status: "",
         description: null,
+        reference: null,
         medias: [],
         tactic: [],
         due_date: null,
@@ -220,10 +222,10 @@ export default {
         flag: false,
         archive: false
       },
+      contactQuery: null,
       tactic_other: '',
       available_tactics: [],
       dzUpload: false,
-      postTime: ''
     }
   },
   computed: {
@@ -250,6 +252,7 @@ export default {
         contact_id: null,
         status: "",
         description: null,
+        reference: null,
         medias: [],
         tactic: [],
         due_date: null,
@@ -260,13 +263,6 @@ export default {
         flag: false,
         archive: false
       };
-      // If we find that there is a current ContactSession
-      // Then we will change the empty project state to include
-      // the contactSession id for contact_id
-      if(this.contactSession != "") {
-        console.log("empty")
-        empty.contact_id = this.contactSession
-      }
       return empty
     },
   },
@@ -287,16 +283,13 @@ export default {
         // Project exists
         Axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json')
           .then( response => {
-            if(!vm.auth && vm.contactSession != response.data.contact.id) {
+            if(vm.auth == null && vm.contactSession != response.data.contact.id) {
               vm.$router.push({ name: 'list' })
               bus.$emit('showReveal', 'update', "Not Authorized", "Sorry, you don't have access to that project.")
             } else {
               vm.loading = false
-              vm.updateProject(response.data.project)
-
-              if(vm.project.contact_id == null) {
-                vm.updateContact({id: vm.contactSession})
-              }
+              vm.project = response.data.project
+              vm.contactQuery = response.data.project.contact_id
 
               document.title = "Edit " + vm.project.title + " | Collateral Express"
             }
@@ -310,9 +303,6 @@ export default {
         vm.loading = false
         bus.$emit('emptyFloats')
         bus.$emit('projectEmit', vm.EmptyProject)
-        if(vm.contactSession) {
-          vm.updateContact({id: vm.contactSession})
-        }
       }
       vm.getTactics()
     },
@@ -321,6 +311,7 @@ export default {
     },
     updateContact(contact) {
       this.project.contact_id = contact.id
+      this.contactQuery = contact.id
     },
     setTactics(tactic) {
       var vm = this
@@ -342,33 +333,23 @@ export default {
         })
     }
   },
-  // created() {
-  //   this.fetchData()
-  // },
   mounted() {
     var vm = this
+    this.contactQuery = this.contactSession
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('projectEmit', (project) => {
       this.updateProject(project)
     })
+
     bus.$on('projectPropSet', (key, val) => {
       this.$set(vm.project, key, val)
+      this.$validator.validateAll();
     })
 
     bus.$on('mediaEmit', (media) => {
       console.log('media emit')
       this.project.medias = media
     })
-
-    bus.$on('errors-changed', (errors) => {
-      this.veeErrors.clear();
-      this.$validator.validateAll();
-
-      var errs = [...this.veeErrors.errors, ...errors.errors]
-      var filtered = errs.filter((err, index, self) => self.findIndex((e) => {return e.field === err.field && e.msg === err.msg; }) === index)
-
-      this.veeErrors.errors = filtered
-    });
   },
   beforeRouteEnter (to,from,next) {
     next(vm => {
@@ -381,7 +362,8 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current view
-    $('#reveal').foundation('close');
+    //$('#reveal').foundation('close');
+
     bus.$emit('progressEmit', 0)
     next()
   }

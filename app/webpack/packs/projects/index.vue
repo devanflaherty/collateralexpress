@@ -5,9 +5,7 @@
         :auth="auth"
         :reveal-type="reveal.type"
         :contactSession="contactSession"
-        @visibleEmit="updateVisibility"
-        :flash="flash"
-        v-show="visible">
+        :flash="flash">
       </router-view>
     </transition>
 
@@ -22,6 +20,7 @@
 </template>
 
 <script>
+import axios from "axios"
 import bus from "../bus"
 import Reveal from "./components/reveal.vue"
 
@@ -35,7 +34,6 @@ export default {
       page_title: "Projects",
       message: "Update Form",
       flash: "",
-      visible: true,
       reveal: {
         type: null,
         title: null,
@@ -52,7 +50,7 @@ export default {
       } else {
         return null
       }
-    }
+    },
   },
   watch: {
     flash: function(flash) {
@@ -62,9 +60,6 @@ export default {
     }
   },
   methods: {
-    updateVisibility(visibility) {
-      this.visible = visibility
-    },
     updateMessage(message) {
       this.message = message
     },
@@ -104,6 +99,20 @@ export default {
       this.auth = id
     })
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      axios.get('/authenticate.json')
+      .then(function (response) {
+        if (response.data.user.id) {
+          vm.auth = response.data.user.id
+        } else {
+          vm.auth = null
+        }
+      }).catch(function (error) {
+        vm.auth = null
+      })
+    })
+  }
 }
 </script>
 

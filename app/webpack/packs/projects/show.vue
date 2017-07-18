@@ -4,7 +4,7 @@
     <div class="row" v-if="!loading">
       <!-- Project Info -->
       <div class="columns medium-7">
-        <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+        <router-link v-if="project.id" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
 
         <hr>
 
@@ -136,7 +136,9 @@
     data() {
       return {
         loading: false,
-        project: {},
+        project: {
+          id: null
+        },
         contact: {},
         dzUpload: false,
         error: null

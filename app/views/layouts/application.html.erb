@@ -22,24 +22,13 @@
   </head>
 
   <body>
-    <header id="header" <%= @header ? "class=overlaid" : "" %>>
-      <div class="row">
-        <div class="columns">
-          <a href="/" id="logo"><img src="/assets/logo.png"></a>
-        </div>
-        <div class="small-9 columns" id="navBar">
-          <nav id="links" class="show-for-medium">
-            <% @links.each do |link| %>
-              <a href="<%= link[:url] %>"><%= link[:name] %></a>
-            <% end %>
-          </nav>
-          <div id="toggle"></div>
-        </div>
-      </div>
-    </header>
-      <%= yield %>
+    <%= render 'shared/header_nav' %>
+
+    <%= yield %>
+
     <footer id="footer"></footer>
-    <%= javascript_pack_tag 'app.js', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'projects/main.js', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'app.js'%>
+    <%= javascript_pack_tag 'projects/main.js'%>
+    <%= javascript_pack_tag 'contacts/main.js'%>
   </body>
 </html>

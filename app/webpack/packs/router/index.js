@@ -14,6 +14,7 @@ const authRequest = function(to, from, next) {
   Axios.get('/authenticate.json')
   .then(function (response) {
     if (response.data.user.id) {
+      bus.$emit('authEmit', response.data.user.id)
       next()
     } else if (response.data.contact.id) {
       next()
@@ -32,7 +33,10 @@ const router = new VueRouter ({
     name: 'list',
     path:'/projects/',
     component: ProjectIndex,
-    meta: {title: 'Projects'}
+    meta: {title: 'Projects'},
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   },
   {
     name: 'edit',
@@ -69,6 +73,10 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
+})
+
+router.afterEach((to, from) => {
+  //$('#reveal').foundation();
 })
 
 export default router

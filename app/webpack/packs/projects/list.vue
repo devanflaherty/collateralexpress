@@ -1,32 +1,58 @@
 <template>
-  <div id="projectList">
-    <button @click="clearCookie">Clear</button>
-    <LoadScreen v-if="loading"></LoadScreen>
-    <table v-if="!loading">
-      <thead>
-        <tr>
-          <td>Title</td>
-          <td>Description</td>
-          <td>Status</td>
-          <td>Contact</td>
-          <td>Actions</td>
-        </tr>
-      </thead>
-      <transition-group name="list" tag="tbody">
-        <tr v-for="project in projects" v-bind:key="project">
-          <td>{{project.title}}</td>
-          <td>{{project.description}}</td>
-          <td>{{project.status}}</td>
-          <td>{{project.contact ? project.contact.name : ""}}</td>
-          <td>
-            <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-            <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
-            <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
-          </td>
-        </tr>
-      </transition-group>
-    </table>
-  </div>
+  <section id="projectList">
+    <div class="row">
+      <div class="columns">
+        <h2>Project Requests</h2>
+
+        <nav>
+          <a href="#all" @click.prevent="getProjects()">All</a>
+          <a href="#open" @click.prevent="getProjects('open')">Open</a>
+          <a href="#flagged" @click.prevent="getProjects('flagged')">flagged</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="column">
+        <table>
+          <thead>
+            <tr>
+              <td>Title</td>
+              <td>Description</td>
+              <td>Status</td>
+              <td>Contact</td>
+              <td>Actions</td>
+            </tr>
+          </thead>
+          <tbody v-if="loading || projects.length < 1">
+            <tr v-if="loading">
+              <td width="100%"><LoadScreen v-if="loading"></LoadScreen></td>
+            </tr>
+            <tr v-else>
+              <td width="100%">
+                <h3>{{message}}</h3>
+                <p>Please try a different filter.</p>
+              </td>
+            </tr>
+          </tbody>
+          <transition-group v-else name="list" tag="tbody">
+            <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
+              <td>{{project.title}}</td>
+              <td>{{project.description}}</td>
+              <td>{{project.status}}</td>
+              <td>{{project.contact ? project.contact.name : ""}}</td>
+              <td>
+                <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
+                <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+                <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
+              </td>
+            </tr>
+          </transition-group>
+        </table>
+
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -37,26 +63,29 @@
     data() {
       return {
         loading: false,
+        message: '',
+        scope: '',
         projects: []
       }
     },
     props: ['contact-session', 'auth'],
     methods: {
-      clearCookie() {
-        Axios.post('/contacts/clear')
-          .then( response => {
-            console.log("cleared")
-          }).catch(error => {
-            console.log(error)
-          })
-      },
-      getProjects() {
+      getProjects(query) {
         var vm = this
         this.loading = true
-        Axios.get('/api/v1/projects.json')
+        this.scope = query
+        var fetchUrl = '/api/v1/projects.json'
+        if(query){
+          fetchUrl = '/api/v1/projects.json?q=' + query
+        }
+        Axios.get(fetchUrl)
           .then( response => {
-            this.loading = false
-            vm.projects = response.data.projects;
+            vm.loading = false
+            vm.projects = response.data.projects
+            vm.message = "Succesfully found all projects."
+            if(response.data.projects.length < 1) {
+              vm.message = "You have no '" + vm.scope + "' projects."
+            }
           }).catch(error => {
             console.log(error)
           })

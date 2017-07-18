@@ -1,5 +1,7 @@
 class PagesController < ApplicationController
-
+  def index
+  end
+  
   def howItWorks
   end
 
@@ -8,5 +10,5 @@ class PagesController < ApplicationController
 
   def gallery
   end
-  
+
 end

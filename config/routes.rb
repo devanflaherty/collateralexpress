@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root 'pages#index'
+
   devise_for :users,
     path: 'account',
     path_names: {
@@ -8,8 +10,6 @@ Rails.application.routes.draw do
       confirmation: 'confirm',
       sign_up: 'signup'
     }
-
-  root 'home#index'
 
   resources :projects, :except => [:new, :edit, :show]
   resources :contacts

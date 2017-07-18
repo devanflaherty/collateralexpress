@@ -3,13 +3,14 @@
     <div class="columns small-12 medium-6">
       <h3>Contact</h3>
 
-      <div v-if="edit_contact || !contactId">
+      <div v-if="edit_contact || !contactQuery">
         <div class="float-input">
           <FloatLabel
             :attr="contact.email"
             obj="contact"
             label="Contact Email"
-            propKey="email"></FloatLabel>
+            propKey="email"
+            validation=""></FloatLabel>
           <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
         </div>
 
@@ -19,23 +20,26 @@
               :attr="contact.first_name"
               obj="contact"
               label="First Name"
-              propKey="first_name"></FloatLabel>
+              propKey="first_name"
+              validation=""></FloatLabel>
           </div>
           <div class="columns float-input">
             <FloatLabel
               :attr="contact.last_name"
               obj="contact"
               label="Last Name"
-              propKey="last_name"></FloatLabel>
+              propKey="last_name"
+              validation=""></FloatLabel>
           </div>
         </div>
 
-        <div class="columns float-input">
+        <div class="float-input">
           <FloatLabel
             :attr="contact.phone"
             obj="contact"
             label="Phone Number"
-            propKey="phone"></FloatLabel>
+            propKey="phone"
+            validation=""></FloatLabel>
         </div>
 
         <div class="row">
@@ -44,19 +48,21 @@
               :attr="contact.position"
               obj="contact"
               label="T-Mobile Position"
-              propKey="position"></FloatLabel>
+              propKey="position"
+              validation=""></FloatLabel>
           </div>
           <div class="columns float-input">
             <FloatLabel
               :attr="contact.branch"
               obj="contact"
               label="Branch"
-              propKey="branch"></FloatLabel>
+              propKey="branch"
+              validation=""></FloatLabel>
           </div>
         </div>
       </div>
 
-      <div v-if="contactId" class="contact-info small-12 medium-6">
+      <div v-if="contactQuery" class="contact-info small-12 medium-6">
         <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
         <button class="button" @click.prevent="makeContactEditable(!edit_contact)">
@@ -100,7 +106,8 @@
 
 <script>
 import bus from '../../../bus'
-import FloatLabel from './floatLabel.vue'
+import {emitValidationErrors} from '../../../shared/validation.js'
+import FloatLabel from '../../../shared/floatLabel.vue'
 import Axios from "axios"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
@@ -109,14 +116,16 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'contact',
+  mixins: ['emitValidationErrors'],
   components: {
     FloatLabel
   },
-  props: ['contactId', 'projectId', 'postTime'],
+  props: ['contactQuery', 'projectId', 'contactSession'],
   data() {
     return {
       message: "",
       edit_contact: true,
+      // contactQuery:null,
       contact: {
         id: '',
         email: null,
@@ -131,29 +140,16 @@ export default {
   },
   watch: {
     'contact.email': function(newEmail) {
-      //this.$emit("contactEmit", {id: null})
-      if(!this.contactId) {
+      this.$emit('contactEmit', {id: null})
+      if(this.contactQuery == null) {
         this.findContact(newEmail)
       }
+        // console.log('sup')
+        this.mountContact()
     },
-    contactId(id) {
-      this.mountContact(id)
-      // When contactID changes via the emit from the function findContact()
-      // We will do a new json request
-      // This request will pull in all the data from the selected contact
-      // And will update our contact
-    },
-    postTime(time) {
-      this.manageContact()
-    },
-    'veeErrors.errors': {
-      handler(errors){
-
-        bus.$emit('errors-changed', this.veeErrors)
-        console.log('emited')
-
-      },
-      deep: true
+    contactQuery() {
+      console.log('contact query changed')
+      this.mountContact()
     }
   },
   methods: {
@@ -161,14 +157,8 @@ export default {
     makeContactEditable(bool) {
       this.edit_contact = bool
     },
-    onValidate() {
-      this.$validator.validateAll();
-      if (this.veeErrors.any()) {
-        bus.$emit('errors-changed', this.veeErrors.errors)
-      }
-    },
     //contact methods
-    manageContact() {
+    manageContact(id) {
       var vm = this
       var axiosConfig = {
         utf8 : "✓",
@@ -176,8 +166,7 @@ export default {
         contact : vm.contact,
         project : vm.projectId
       }
-
-      if(this.contactId == null) {
+      if(!id || id == null || id == undefined) {
         // If contact doesn't exist
         Axios.post('/contacts/', axiosConfig)
         .then(function (response) {
@@ -186,29 +175,34 @@ export default {
           vm.$notify({
             title: response.data.contact.first_name + " created"
           })
+          bus.$emit('submitProjectForm', response.data.contact.id)
         })
-      } else {
+      } else if (id) {
         //If contact exists
-        Axios.patch('/contacts/' + this.contact.id, axiosConfig)
+        alert(id)
+        Axios.patch('/contacts/' + id, axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
           vm.$emit("contactEmit", response.data.contact)
           vm.$notify({
             title: response.data.contact.first_name + " updated"
           })
+          bus.$emit('submitProjectForm', response.data.contact.id)
         })
       }
     },
-    mountContact(id) {
+    mountContact() {
       var vm = this
-
-      if(this.contactId != null) {
-        Axios.get('/api/v1/contacts/' + this.contactId  + '.json')
-          .then( response => {
-            vm.contact = response.data
-            vm.makeContactEditable(false)
-          })
-        }
+      if(this.contactQuery != null) {
+        Axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
+        .then( response => {
+          vm.contact = response.data
+          vm.makeContactEditable(false)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+      }
     },
     findContact(email) {
       var vm = this;
@@ -216,6 +210,8 @@ export default {
       if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
         this.message = 'Please enter a valid email address'
       } else {
+
+
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
         // Will find contact based on email entered in watched input
@@ -224,8 +220,10 @@ export default {
         var foundContact = {}
         this.contacts.find(c => {
           if (c.email == email) {
+            console.log('wooo')
             this.contact.id = c.id
-            this.$emit("contactEmit", this.contact)
+            //this.contactQuery = c.id
+            this.$emit("contactEmit", {id: c.id})
             this.makeContactEditable(false)
             foundContact = this.contact
           }
@@ -235,8 +233,12 @@ export default {
         this.$nextTick(() => {
           if(foundContact.id == null) {
             this.resetContact()
+            //this.contactQuery = null
+            this.$emit("contactEmit", {id: null})
           }
         })
+
+        this.mountContact()
       }
     },
     resetContact(totalReset) {
@@ -264,18 +266,29 @@ export default {
     this.mountContact()
   },
   mounted() {
+    // this.mountContact()
+
     bus.$on('contactPropSet', (key, val) => {
       this.$set(this.contact, key, val)
     })
 
-    //Listen on the bus for the parent component running validation
-    this.$validator.validateAll();
-    bus.$on('validate', this.onValidate)
+    bus.$on('postContact', (id) => {
+      this.manageContact(id)
+    })
+  },
+  beforeRouteEnter(to,from,next) {
+    next(vm => {
+      vm.mountContact()
+    })
   },
   beforeRouteUpdate (to, from, next) {
     this.mountContact()
     next()
   },
+  beforeDestroy() {
+    bus.$off('contactPropSet')
+    bus.$off('postContact')
+  }
 }
 </script>
 
