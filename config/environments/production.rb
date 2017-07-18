@@ -1,10 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-<<<<<<< HEAD
   #set for devise
-=======
->>>>>>> tyler-s3-mailer
   config.action_mailer.default_url_options = { host: 'collateralexpress.com' }
 
   # Code is not reloaded between requests.
