@@ -87,7 +87,6 @@ class ProjectsController < ApplicationController
         :status,
         :description,
         :due_date,
-        :files,
         :contact_id,
         :user_id,
         :archive,
