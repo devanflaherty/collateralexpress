@@ -1,13 +1,18 @@
 class MediaController < ApplicationController
 
   def create
-    @media = Media.new(file: params[:file])
-    @media.project = Project.find_by_id(params[:project_id])
+    @allMedia = Array.new
+    params[:file].each do |key, val|
+      puts "current_index: #{key} & #{val}"
+      @media = Media.create(file: val, project_id: params[:project_id])
 
-    if @media.save!
-      respond_to do |format|
-        format.json{ render :json => @media }
+      if @media
+        @allMedia << @media
       end
+    end
+
+    respond_to do |format|
+      format.json{ render :json => @allMedia }
     end
   end
 

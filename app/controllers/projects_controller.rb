@@ -15,7 +15,7 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
     respond_to do |format|
       if @project.save
-        ProjectMailer.new_project(@project).deliver
+        ProjectMailer.new_project(@project).deliver_later
 
         flash[:notice] = "Project '#{@project.title}' created succesfully."
 
@@ -23,7 +23,7 @@ class ProjectsController < ApplicationController
 
         format.json { render json: { project: @project, flash: flash} }
       else
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
     end
   end
@@ -35,7 +35,7 @@ class ProjectsController < ApplicationController
       if @project.update_attributes(project_params)
         if @project.status != status
           puts "changed"
-          ProjectMailer.status_update(@project).deliver
+          ProjectMailer.status_update(@project).deliver_later
         end
         session[:current_contact_id] = @project.contact_id
 
@@ -44,7 +44,12 @@ class ProjectsController < ApplicationController
         format.json { render json: { project: @project, flash: flash} }
       else
         flash[:error] = "Project '#{@project.title}' failed to update."
+<<<<<<< HEAD
         format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+=======
+        format.html { render 'edit'}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
+>>>>>>> tyler-s3-mailer
       end
     end
   end
@@ -58,7 +63,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
-      format.json { render :json => {project: @project, flash: flash, :redirect => "/projects"} }
+      format.json { render json: {project: @project, flash: flash} }
     end
   end
 
@@ -85,7 +90,6 @@ class ProjectsController < ApplicationController
         :status,
         :description,
         :due_date,
-        :files,
         :contact_id,
         :user_id,
         :archive,

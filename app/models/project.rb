@@ -27,17 +27,17 @@ class Project < ApplicationRecord
   #validate  :at_least_one_file
 
   # Scopes
-  scope :flagged, -> { where(:flag => true) }
-  scope :archived, -> { where(:archive => true) }
-  scope :exists, -> { where(:existing => true) }
+  scope :flagged, -> { where(flag: true) }
+  scope :archived, -> { where(archive: true) }
+  scope :exists, -> { where(existing: true) }
 
-  scope :pending, -> { where(:status => "Pending") }
-  scope :ready, -> { where(:status => "Open") }
-  scope :in_progress, -> { where(:status => "In Progress") }
-  scope :complete, -> { where(:status => "Complete") }
+  scope :pending, -> { where(status: "Pending") }
+  scope :ready, -> { where(status: "Open") }
+  scope :in_progress, -> { where(status: "In Progress") }
+  scope :complete, -> { where(status: "Complete") }
 
-  scope :sorted, -> { order(:created_at => "ASC") }
-  scope :due_first, -> { order(:due_date => "DESC") }
+  scope :sorted, -> { order(created_at: "ASC") }
+  scope :due_first, -> { order(due_date: "DESC") }
 
   scope :belongs_to_contact, -> (query) {where(["contact_id LIKE ?", "%#{query}%"])}
   scope :belongs_to_user, -> (query) {where(["user_id LIKE ?", "%#{query}%"])}

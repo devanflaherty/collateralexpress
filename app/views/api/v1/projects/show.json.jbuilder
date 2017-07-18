@@ -1,10 +1,19 @@
 json.project do
+<<<<<<< HEAD
   json.(@project, :id, :title, :status, :slug, :business_unit, :deliverables, :tactic, :target, :existing, :translation, :description, :reference, :due_date)
   # if @project.due_date
   #   json.due_date(@project.due_date.strftime('%b %e, %Y'))
   # else
   #   json.due_date(@project.due_date)
   # end
+=======
+  json.(@project, :id, :title, :status, :slug, :business_unit, :deliverables, :tactic, :target, :existing, :translation, :description)
+  if @project.due_date
+    json.due_date(@project.due_date.strftime('%b %e, %Y'))
+  else
+    json.due_date(@project.due_date)
+  end
+>>>>>>> tyler-s3-mailer
   json.created_at(@project.created_at.strftime('%b %e, %Y'))
   json.(@project, :archive, :flag, :asset, :legal_review, :contact_id, :user_id, :medias )
 end

@@ -1,6 +1,4 @@
 class ProjectMailer < ApplicationMailer
-  default from: 'info@collateralexpress.com'
-  layout 'mailer'
 
   def new_project(project)
     @project = project
