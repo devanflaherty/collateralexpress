@@ -38,7 +38,8 @@ import ProjectApp from './index.vue'
 
 document.addEventListener('turbolinks:load', () => {
 //document.addEventListener('DOMContentLoaded', () => {
-  var element = document.getElementById("app")
+  const element = document.getElementById("app")
+  // const props = JSON.parse(element.getAttribute('data'))
   if (element != null) {
     var projApp = new Vue({
       el: '#app',

@@ -20,6 +20,7 @@
 
         <h3>Add Files</h3>
         <Dropzone
+          enctype="multipart/form-data"
           ref="dropzoneUploader"
           id="dropzoneUploader"
           url="/media"

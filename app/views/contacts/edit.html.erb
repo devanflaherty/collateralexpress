@@ -1,0 +1,7 @@
+<% @page_title = "Edit Contact" %>
+<% props = {
+    contact: @contact,
+    full_name: @contact.full_name,
+  }.to_json
+%>
+<div id="contactApp" data="<%= props %>"></div>

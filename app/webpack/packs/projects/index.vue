@@ -1,13 +1,11 @@
 <template>
   <div id="projectApp">
-
     <transition name="fade" appear>
       <router-view
+        :auth="auth"
         :reveal-type="reveal.type"
         :contactSession="contactSession"
-        @visibleEmit="updateVisibility"
-        :flash="flash"
-        v-show="visible">
+        :flash="flash">
       </router-view>
     </transition>
 
@@ -22,12 +20,9 @@
 </template>
 
 <script>
+import axios from "axios"
 import bus from "../bus"
 import Reveal from "./components/reveal.vue"
-
-// Import Plugins
-let contactEl = document.getElementById('cid')
-let cid = contactEl ? contactEl.dataset.cid : ''
 
 export default {
   name: 'Project_Form',
@@ -39,37 +34,32 @@ export default {
       page_title: "Projects",
       message: "Update Form",
       flash: "",
-      visible: true,
       reveal: {
         type: null,
         title: null,
         msg: null
-      }
+      },
+      auth: null
     }
   },
   computed: {
     contactSession() {
+      var cid = this.getCookie('current_contact_id')
       if (cid) {
         return parseInt(cid)
       } else {
         return null
       }
-    }
+    },
   },
   watch: {
     flash: function(flash) {
       this.$notify({
         title: this.flash
       })
-    },
-    // reveal_type: function(type){
-    //   this.reveal_type = type
-    // }
+    }
   },
   methods: {
-    updateVisibility(visibility) {
-      this.visible = visibility
-    },
     updateMessage(message) {
       this.message = message
     },
@@ -79,6 +69,16 @@ export default {
     showReveal(type) {
       $('#reveal').foundation('open');
     },
+    getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
@@ -95,7 +95,24 @@ export default {
       this.reveal.project_id = pid
       this.showReveal()
     });
+    bus.$on('authEmit', (id) => {
+      this.auth = id
+    })
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      axios.get('/authenticate.json')
+      .then(function (response) {
+        if (response.data.user.id) {
+          vm.auth = response.data.user.id
+        } else {
+          vm.auth = null
+        }
+      }).catch(function (error) {
+        vm.auth = null
+      })
+    })
+  }
 }
 </script>
 

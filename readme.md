@@ -40,6 +40,7 @@ We will need to make sure we can connect to a database to use the app. To do thi
   # db:create : Creates the database
   # db:schema:load : Loads schema into current database
   # db:migrate : Migrates all the database migration files
+  # db:seed : Set up to 
 ```
 
 If you made it to here we are ready to get our basic Rails app Up and Running!

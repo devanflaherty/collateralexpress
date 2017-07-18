@@ -32,6 +32,20 @@ class ApplicationController < ActionController::Base
         url: "#launchContact"
       },
     ];
+
+    if user_signed_in?
+      @links << {
+        name: "Profile",
+        url: "/account/edit"
+      }
+    end
+
+    if user_signed_in? == false && cookies[:current_contact_id]
+      @links << {
+        name: "Profile",
+        url: "/contacts/#{cookies[:current_contact_id]}/edit"
+      }
+    end
   end
 
 end

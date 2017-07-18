@@ -1,17 +1,36 @@
 <template>
   <div>
     <label class="float-label" :class="{floated: float, focused: focus}">{{label}}</label>
-    <textarea rows="4" v-if="inputType == 'textarea'" :id="propKey" v-model.lazy="model" @focus="floatLabel(true)" @blur="floatLabel(false)"></textarea>
-    <input v-else :id="propKey" v-model.lazy="model" @focus="floatLabel(true); focusLabel(true)" @blur="floatLabel(false); focusLabel(false)" type="text">
+
+    <textarea v-if="inputType == 'textarea'"
+      rows="4"
+      :id="propKey"
+      v-validate="validation"
+      v-model.lazy="model"
+      :name="propKey"
+      @focus="floatLabel(true); focusLabel(true)"
+      @blur="floatLabel(false); focusLabel(false)">
+    </textarea>
+
+    <input v-else
+      :id="propKey"
+      v-validate="validation"
+      v-model.lazy="model"
+      @focus="floatLabel(true); focusLabel(true)"
+      @blur="floatLabel(false); focusLabel(false)"
+      :name="propKey"
+      type="text">
   </div>
 </template>
 
 <script>
-import bus from '../../../bus'
+import bus from '../bus'
+import {emitValidationErrors} from './validation'
 
 export default {
   name: 'floatLabel',
-  props: ['attr', 'label', 'propKey', 'obj', 'inputType'],
+  mixins: [emitValidationErrors],
+  props: ['attr', 'label', 'propKey', 'obj', 'inputType', 'validation'],
   data() {
     return {
       float: false,
@@ -39,6 +58,7 @@ export default {
   methods: {
     floatLabel(f) {
       if(this.model && this.model.length > 0 || f) {
+        // console.log(this.model + 'floating')
         this.float = true
       } else {
         this.float = false
@@ -50,7 +70,7 @@ export default {
       } else {
         this.focus = false
       }
-    }
+    },
   },
   created() {
     this.model = this.attr
@@ -59,6 +79,8 @@ export default {
     bus.$on('emptyFloats', () => {
       this.model = ""
     })
+
+    // Validation listeners are in onValidation Mixin
   }
 }
 

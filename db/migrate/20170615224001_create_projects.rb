@@ -14,7 +14,6 @@ class CreateProjects < ActiveRecord::Migration[5.1]
       t.string :business_unit   #
       t.boolean :existing       #
       t.integer :deliverables   #
-      t.text :files,            array: true, default: []
       t.boolean :translation,   default: false
       t.string :reference       #
 
