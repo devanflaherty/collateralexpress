@@ -44,12 +44,7 @@ class ProjectsController < ApplicationController
         format.json { render json: { project: @project, flash: flash} }
       else
         flash[:error] = "Project '#{@project.title}' failed to update."
-<<<<<<< HEAD
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
-=======
-        format.html { render 'edit'}
         format.json { render json: { errors: @project.errors.messages }, status: 422}
->>>>>>> tyler-s3-mailer
       end
     end
   end
