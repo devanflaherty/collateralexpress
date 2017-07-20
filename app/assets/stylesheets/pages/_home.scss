@@ -1,36 +1,52 @@
-#hero {
+#hero, .full-pane-callout {
+  padding: 0;
   .row {
-    .column {
-    }
-  }
-
-  .hero-container {
     position: relative;
     overflow: hidden;
-    padding: 4rem;
-    @include flex;
-    @include flex-align(center, middle);
-    .hero-card {
+    & > .columns {
       position: relative;
-      justify-content: space-between;
-      width: 50%;
-      height: 24rem;
-      background: rgba($primary-color, 0.8);
-      background-blend-mode: multiply;
-      padding: 2rem;
-      color: $white;
+      overflow: hidden;
+      &.brand-color {
+        .hero-card-container {
+          background: rgba($primary-color, 0.8);
+          background-blend-mode: multiply;
+        }
+      }
+      .hero-card-container {
+        background: $black;
+        position: relative;
+        padding: 0 4rem;
+        height: 40rem;
+        @include flex;
+        @include flex-align(center, middle);
 
-      // .card overrides
-      border: none;
-      .button {
-        border-width: 4px;
-        margin: 0;
+        @include breakpoint(small only){
+          padding: 0 2rem;
+          height: 30rem;
+        }
+
+        .hero-card {
+          background: none;
+          position: relative;
+          width: 100%;
+          margin: 0;
+          color: $white;
+          border: none;
+          h2 {
+            margin: 0 0 2rem;
+          }
+          .button {
+            border-width: 4px;
+            margin: 2rem 0 0;
+          }
+        }
       }
     }
   }
 }
 
 #homeSteps {
+  padding: 6rem 0;
   #stepColumns {
     > .columns {
       @include breakpoint(small only) {
@@ -42,16 +58,26 @@
     }
   }
   .row {
-    .columns {
+    .step {
+      @include flex-grid-column(9);
+      margin-bottom: 2rem;
+      @include breakpoint(830px){
+        @include flex-grid-column(4);
+      }
+      @include breakpoint(large){
+        @include flex-grid-column(3);
+      }
       .card {
+        position: relative;
         background: white;
         height: 100%;
         padding: 2rem;
         border: none;
-        justify-content: space-between;
+        border-radius: 6px;
         box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
         .step-image {
-          height: 10rem;
+          height: 6rem;
+          margin-bottom: 2rem;
           @include flex;
           @include flex-align(center,middle);
           img {
@@ -59,13 +85,35 @@
           }
         }
         p {
-          margin-bottom: 4rem;
+          margin-bottom: 5rem;
+          text-align: center;
+          @include breakpoint(830px){
+            text-align: left;
+          }
         }
         .card-buttons {
-          @include flex;
+          position: absolute;
+          bottom: 2rem;
+          left: 0;
+          width: 100%;
+          text-align: center;
+          @include breakpoint(830px){
+            left: 2rem;
+            text-align: left;
+          }
+          // @include flex;
+          // .button {
+          //   flex: 1 0 auto;
+          //   margin-bottom: 0
+          // }
           .button {
-            flex: 1 0 auto;
-            margin-bottom: 0
+            margin-bottom: .25rem;
+          }
+          .button:last-of-type {
+            margin-bottom: .25rem;
+            @include breakpoint(830px){
+              margin-bottom: 0;
+            }
           }
         }
 
@@ -88,15 +136,30 @@
   }
 }
 
+#whyVideo {
+  padding: 6rem 0;
+}
+
 #assets {
   margin: 0;
-  padding: 6rem;
+  padding: 6rem 2rem;
+  @include breakpoint(medium) {
+    padding: 6rem;
+  }
   .row {
     position: relative;
   }
 
+
+  blockquote {
+    p {
+      line-height: 1;
+      strong {
+        line-height: 1;
+      }
+    }
+  }
   .button {
     color: $white;
-    font-weight: 600;
   }
 }

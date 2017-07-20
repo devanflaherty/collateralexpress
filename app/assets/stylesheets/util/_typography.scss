@@ -5,14 +5,71 @@
 h1, h2, h3, h4 {
   text-transform: uppercase;
 }
+h2.banner {
+  color: $white;
+  display: inline-block;
+  padding: .25rem 1rem;
+  font-size: 3rem;
+  background: $primary-color;
+  font-family: $condensed;
+  &.white-banner {
+    background: $white;
+    color: $black;
+  }
+}
+h3 {
+  color: $white;
+  display:inline;
+  box-shadow:.5rem 0 0 $primary-color, -.75rem 0 0 $primary-color;
+  position: relative;
+  padding: .25rem 1rem;
+  font-size: 2rem;
+  background: $primary-color;
+  &.add-tag {
+    display:inline;
+    &:after {
+      content: '';
+      display: block;
+      background: $primary-color;
+      height: 2.8rem;
+      width: 1rem;
+      position: absolute;
+      z-index: 0;
+      left: -1.5rem;
+      bottom: 0;
+    }
+}
+  &.white-banner {
+    background: $white;
+    color: $black;
+    box-shadow:1rem 0 0 $black, 1rem 0 0 $black;
+  }
+}
 h5 {
   font-family: $sans-bold;
   font-weight: normal;
 }
-blockquote {
-  font-family: $condensed;
-}
 
+blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: $condensed;
+  p {
+    color: $white;
+    text-transform: uppercase;
+    font-size: 2.5rem;
+    strong {
+      display: inline-block;
+      padding: .25rem 1rem;
+      font-size: 3.5rem;
+      background: $primary-color;
+    }
+  }
+}
+p {
+  margin: 1rem 0;
+}
 .contrast-text {
   p {
     color: $light-gray;
