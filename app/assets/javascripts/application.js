@@ -19,7 +19,7 @@
 //=
 document.addEventListener("turbolinks:load", function() {
   // $(document).foundation();
-  const element = document.getElementById("processSlides")
+  const element = document.getElementById("processSlides");
   if(element) {
     var mySwiper = new Swiper ('.swiper-container', {
       // Optional parameters
@@ -36,18 +36,18 @@ document.addEventListener("turbolinks:load", function() {
       parallax:true
     })
 
-    var active = Number
-    active = mySwiper.activeIndex + 1
-    $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in')
+    var active = Number;
+    active = mySwiper.activeIndex + 1;
+    $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in');
 
     mySwiper.on("onSlideChangeStart",(function (mySwiper) {
-      active = mySwiper.activeIndex + 1
-      $("#stepIndex").text(active)
-      $(".step-desc").removeClass('fade-in')
+      active = mySwiper.activeIndex + 1;
+      $("#stepIndex").text(active);
+      $(".step-desc").removeClass('fade-in');
     });
 
     mySwiper.on("onSlideChangeEnd",(function (mySwiper) {
-      $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in')
+      $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in');
     });
   }
 })
