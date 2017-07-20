@@ -10,6 +10,11 @@ const FormMethods = {
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
 
+      // this.$validator.validateAll().then(result => {
+      //   if (result) {
+      //   }
+      // }
+
       // If there are no errors
       if (!this.veeErrors.any()) {
 
@@ -22,8 +27,17 @@ const FormMethods = {
           project : this.project
         }
 
-        if(this.project.contact_id) {
-          bus.$emit('postContact', this.project.contact_id)
+        if(this.contactQuery || this.project.contact_id || this.contactSession) {
+          var cid = null
+          if (this.contactQuery != null) {
+            cid = this.contactQuery
+          } else if (this.project.contact_id != null) {
+            cid = this.project.contact_id
+          } else if (this.contactSession) {
+            cid = this.contactSession
+          }
+          console.log(cid)
+          bus.$emit('postContact', cid)
         } else {
           bus.$emit('postContact')
         }
@@ -40,7 +54,7 @@ const FormMethods = {
                 bus.$emit('uploadMedia', response.data.project.id)
               }
               bus.$emit('messageEmit', vm.project.title + " has been created!")
-              bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', vm.project.id);
+              bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
 
               for(var f in response.data.flash) {
                 var flash = response.data.flash[f]
@@ -53,7 +67,7 @@ const FormMethods = {
             })
             .catch(function (error) {
               // IF THERE ARE ERRORS
-              bus.$emit('showReveal','error', vm.project, 'error.message');
+              bus.$emit('showReveal','error', vm.project.title, error.message);
               vm.axErrors(error.response, error.request, error.message);
             });
           } else {
@@ -65,7 +79,7 @@ const FormMethods = {
               }
               bus.$emit('messageEmit', vm.project.title + " has been updated!")
               // And then we will launch the Foundation Reveal
-              bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', vm.project.id);
+              bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
 
 
               // We also want to grab the flash that was sent in the response
@@ -96,7 +110,7 @@ const FormMethods = {
       var vm = this
       Axios.delete('/projects/' + this.project.id)
       .then(function (response) {
-        $('#reveal').foundation('close');
+        bus.$emit('closeReveal')
 
         for(var f in response.data.flash) {
           var flash = response.data.flash[f]

@@ -109,13 +109,6 @@
           </li>
         </ul>
 
-          <div class="form-card">
-            <div class="card-content">
-              <h3>{{project.title}}</h3>
-              <p>{{project.description}}</p>
-            </div>
-          </div>
-
       </div>
     </div><!-- close row -->
   </div>
@@ -163,9 +156,9 @@
 
           Axios.get('/api/v1/projects/' + pid + '.json')
           .then( response => {
-            if(!vm.auth && vm.contactSession != response.data.contact.id) {
+            if(vm.auth == null && vm.contactSession != response.data.project.contact_id) {
               vm.$router.push({ name: 'list' })
-              bus.$emit('showReveal', 'update', "Not Authorized", "Sorry, you don't have access to that project.")
+              bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to that project.")
             } else {
               vm.loading = false
               vm.project = response.data.project
@@ -202,7 +195,7 @@
     },
     beforeRouteLeave (to, from, next) {
       // Before we leave the current view
-      bus.$emit('projectEmit');
+      //bus.$emit('projectEmit');
       next()
     }
   }

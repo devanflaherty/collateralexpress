@@ -115,7 +115,7 @@
     },
     created(){
       this.getProjects()
-    }
+    },
   }
 </script>
 

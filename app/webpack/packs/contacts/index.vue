@@ -153,7 +153,8 @@ export default {
     clearCookie() {
       Axios.post('/contacts/clear')
         .then( response => {
-          console.log("cleared")
+          console.log("cleared contact")
+          window.location.href = "/"
         }).catch(error => {
           console.log(error)
         })

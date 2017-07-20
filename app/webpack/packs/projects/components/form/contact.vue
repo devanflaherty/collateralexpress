@@ -3,7 +3,7 @@
     <div class="columns small-12 medium-6">
       <h3>Contact</h3>
 
-      <div v-if="edit_contact || !contactQuery">
+      <div v-if="edit_contact || !contact.id">
         <div class="float-input">
           <FloatLabel
             :attr="contact.email"
@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div v-if="contactQuery" class="contact-info small-12 medium-6">
+      <div v-if="contact.id" class="contact-info">
         <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
         <button class="button" @click.prevent="makeContactEditable(!edit_contact)">
@@ -148,7 +148,6 @@ export default {
         this.mountContact()
     },
     contactQuery() {
-      console.log('contact query changed')
       this.mountContact()
     }
   },
@@ -179,7 +178,6 @@ export default {
         })
       } else if (id) {
         //If contact exists
-        alert(id)
         Axios.patch('/contacts/' + id, axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll

@@ -11,7 +11,7 @@ Rails.application.routes.draw do
       sign_up: 'signup'
     }
 
-  resources :projects, :except => [:new, :edit, :show]
+  resources :projects, :except => [:index, :new, :edit, :show]
   resources :contacts
   post 'contacts/clear', to: 'contacts#clear', method: :post
   get 'authenticate', to: 'authenticates#index'

@@ -17,5 +17,5 @@
 //= require_tree .
 //=
 document.addEventListener("turbolinks:load", function() {
-  $(document).foundation();
+  // $(document).foundation();
 })

@@ -12,6 +12,7 @@
     <notifications />
 
     <Reveal
+      v-if="reveal"
       :reveal="reveal"
       :flash="flash">
     </Reveal>
@@ -22,7 +23,7 @@
 <script>
 import axios from "axios"
 import bus from "../bus"
-import Reveal from "./components/reveal.vue"
+import Reveal from "../shared/reveal.vue"
 
 export default {
   name: 'Project_Form',
@@ -37,7 +38,8 @@ export default {
       reveal: {
         type: null,
         title: null,
-        msg: null
+        msg: null,
+        project_id: null
       },
       auth: null
     }
@@ -63,11 +65,11 @@ export default {
     updateMessage(message) {
       this.message = message
     },
+    updatePageTite(title) {
+      this.page_title = title
+    },
     updateFlash(flash) {
       this.flash = flash
-    },
-    showReveal(type) {
-      $('#reveal').foundation('open');
     },
     getCookie(name) {
         var nameEQ = name + "=";
@@ -80,7 +82,16 @@ export default {
         return null;
     }
   },
+  beforeCreate() {
+    if(window.location.hash == '#new') {
+      this.$router.push({name: 'new'})
+    }
+    if(window.location.hash == '#all') {
+      this.$router.push({name: 'list'})
+    }
+  },
   mounted() {
+    $(document).foundation();
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
@@ -93,24 +104,19 @@ export default {
       this.reveal.title = title
       this.reveal.msg = msg
       this.reveal.project_id = pid
-      this.showReveal()
+      $('#reveal').foundation('open');
+    });
+    bus.$on('closeReveal', () => {
+      if(this.reveal.type != null) {
+        this.reveal.type = null
+        this.reveal.title = null
+        this.reveal.msg = null
+        this.reveal.project_id = null
+        $('#reveal').foundation('close');
+      }
     });
     bus.$on('authEmit', (id) => {
       this.auth = id
-    })
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      axios.get('/authenticate.json')
-      .then(function (response) {
-        if (response.data.user.id) {
-          vm.auth = response.data.user.id
-        } else {
-          vm.auth = null
-        }
-      }).catch(function (error) {
-        vm.auth = null
-      })
     })
   }
 }

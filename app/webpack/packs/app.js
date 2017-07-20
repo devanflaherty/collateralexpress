@@ -8,7 +8,6 @@ import Header from './layout/header/index.vue'
 
 
 document.addEventListener("turbolinks:load", function() {
-  $(document).foundation();
   AOS.init();
   var rellax = new Rellax('.rellax');
 

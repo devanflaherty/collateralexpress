@@ -35,7 +35,8 @@ export default {
     return {
       float: false,
       focus: false,
-      model: ''
+      model: '',
+      key: ''
     }
   },
   watch: {
@@ -43,19 +44,25 @@ export default {
       this.model = a
     },
     model(m) {
-      if(m && m.length > 0) {
+      if(m && m.length > 0 && m != null || m != 'undefined') {
         this.floatLabel()
-        if(this.label == "Other") {
-          this.$emit('updateOther', this.model)
-        } else if(this.obj == "contact") {
-          bus.$emit('contactPropSet', this.propKey, this.model)
-        } else {
-          bus.$emit('projectPropSet', this.propKey, this.model)
-        }
+        this.setParentData()
       }
     }
   },
   methods: {
+    setParentData() {
+      if(this.model != null && this.key != null) {
+        console.log(this.key + " | " + this.model)
+        if(this.label == "Other") {
+          this.$emit('updateOther', this.model)
+        } else if(this.obj == "contact") {
+          bus.$emit('contactPropSet', this.key, this.model)
+        } else {
+          bus.$emit('projectPropSet', this.key, this.model)
+        }
+      }
+    },
     floatLabel(f) {
       if(this.model && this.model.length > 0 || f) {
         // console.log(this.model + 'floating')
@@ -72,10 +79,10 @@ export default {
       }
     },
   },
-  created() {
-    this.model = this.attr
-  },
   mounted() {
+    this.key = this.propKey
+    this.model = this.attr
+
     bus.$on('emptyFloats', () => {
       this.model = ""
     })

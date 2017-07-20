@@ -14,7 +14,6 @@ const authRequest = function(to, from, next) {
   Axios.get('/authenticate.json')
   .then(function (response) {
     if (response.data.user.id) {
-      bus.$emit('authEmit', response.data.user.id)
       next()
     } else if (response.data.contact.id) {
       next()
@@ -65,6 +64,14 @@ const router = new VueRouter ({
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
+  Axios.get('/authenticate.json')
+  .then(function (response) {
+    if (response.data.user.id) {
+      bus.$emit('authEmit', response.data.user.id)
+    }
+  }).catch(function (error) {
+    console.log('Trouble authneticating user')
+  })
   var vueTitle = to.meta.title
   // if page has a set title do
   if (vueTitle) {
