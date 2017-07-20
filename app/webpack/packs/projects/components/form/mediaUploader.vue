@@ -1,5 +1,5 @@
 <template>
-  <div class="fieldset">
+  <div>
     <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
     <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
       <li class="column" v-for="media in mediaFiles" v-bind:key="media">

@@ -81,10 +81,10 @@
       <div v-if="contact.id" class="contact-info">
         <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
-        <button class="button" @click.prevent="makeContactEditable(!edit_contact)">
+        <button class="button gradient" @click.prevent="makeContactEditable(!edit_contact)">
           {{edit_contact ? "Finish Editing" : "Edit Contact"}}
         </button>
-        <button class="button" @click.prevent="resetContact(true)">
+        <button class="button gradient" @click.prevent="resetContact(true)">
           New Contact
         </button>
       </div>

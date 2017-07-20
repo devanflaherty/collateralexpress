@@ -4,14 +4,13 @@
     <LoadScreen v-if="loading"></LoadScreen>
     <form v-else v-on:submit.prevent="onSubmit" id="form">
       <div id="formContainer" class="row expand align-center">
-        <div class="form-panel small-12 columns" :class="{'medium-9 large-6': project.id, 'medium-12 large-9': !project.id}">
+        <div class="form-panel small-12 columns" :class="{'medium-10 large-6': project.id, 'medium-12 large-10': !project.id}">
 
           <header>
             <div class="row">
               <div class="columns">
                 <h2>{{page_title}}</h2>
                 <h5 v-if="project.id">{{project.title}}</h5>
-                <hr class="no-margin">
               </div>
             </div>
           </header>
@@ -46,16 +45,8 @@
                     propKey="description"
                     inputType='textarea'></FloatLabel>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="row">
-            <div class="column">
-
-              <div class="fieldset">
-                <h3>Project Details</h3>
-                <hr class="no-margin">
+                <h3 style="margin-top:2rem;">Project Details</h3>
                 <div class="float-input">
                   <FloatLabel
                     v-validate="'required'"
@@ -68,43 +59,56 @@
                     propKey="due_date"></FloatLabel>
                 </div>
 
-                <h5 style="margin-top: 1rem">Tactics</h5>
-                <div class="row small-up-2 medium-up-3">
-                  <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
-                    <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
-                    <label :for="tactic">
-                      {{tactic}}
-                    </label>
-                  </div>
-                </div>
-                <span v-for="tactic in project.tactic">{{tactic}}</span>
-                <!-- other field-->
-                <div class="row" v-if="project.tactic.includes('Other')">
-                  <div class="columns small-6">
-                    <div class="float-input">
-                      <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics" validation=""></FloatLabel>
+                <div class="tactics">
+                  <h5 style="margin-top: 1rem">Tactics</h5>
+
+                  <div class="row small-up-2 medium-up-3">
+                    <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
+                      <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
+                      <label :for="tactic">
+                        {{tactic}}
+                      </label>
                     </div>
                   </div>
+
+                  <!-- other field-->
+                  <div class="row" v-if="project.tactic.includes('Other')">
+                    <div class="columns small-6">
+                      <div class="float-input">
+                        <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics" validation=""></FloatLabel>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- close other field -->
                 </div>
 
-                <div class="check-input">
-                  <h5>Does this project already exist?</h5>
-                  <label for="projectExists">
-                    <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
-                    <icon v-if="project.existing" name="check-circle-o"></icon>
-                    <icon v-else name="circle-o"></icon>
-                    <span>{{ project.existing ? "Yes, this project exists." : "No, this is a new project." }}</span>
-                  </label>
-                </div>
-
-                <div class="check-input">
-                  <h5>Does this project need translation?</h5>
-                  <label for="projectTranslation">
-                    <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
-                    <icon v-if="project.translation" name="check-circle-o"></icon>
-                    <icon v-else name="circle-o"></icon>
-                    <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
-                  </label>
+                <div class="toggle-inputs">
+                  <div class="check-input">
+                    <h5>Does this project already exist?</h5>
+                    <label for="projectExists">
+                      <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
+                      <div v-if="project.existing" class="checked checked-true">
+                        <icon name="check"></icon>
+                      </div>
+                      <div v-else class="checked">
+                        <icon name="circle-thin"></icon>
+                      </div>
+                      <span>{{ project.existing ? "Yes, this project exists." : "No, this is a new project." }}</span>
+                    </label>
+                  </div>
+                  <div class="check-input">
+                    <h5>Does this project need translation?</h5>
+                    <label for="projectTranslation">
+                      <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
+                      <div v-if="project.translation" class="checked checked-true">
+                        <icon name="check"></icon>
+                      </div>
+                      <div v-else class="checked">
+                        <icon name="circle-thin"></icon>
+                      </div>
+                      <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
+                    </label>
+                  </div>
                 </div>
 
                 <div class="float-input">
@@ -131,15 +135,8 @@
                     propKey="reference"></FloatLabel>
                   <p class="hint">http://tmap.com/link/to/asset</p>
                 </div>
-              </div>
 
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="small-12 column">
-              <div class="fieldset">
-                <h3>Who is this for?</h3>
+                <h3 style="margin-top:2rem;">Who is this for?</h3>
 
                 <div class="float-input">
                   <FloatLabel
@@ -194,13 +191,13 @@
 
         <div class="form-panel small-12 columns">
           <div id="fileUploader" class="row align-center">
-            <div class="small-12 large-9 column">
+            <div class="small-12 large-10 column">
               <MediaUploader :project-id="project.id" :mediaFiles="project_media" :token="token"></MediaUploader>
             </div>
           </div>
 
           <div class="row align-center" id="contactForm">
-            <div class="small-12 large-9 column">
+            <div class="small-12 large-10 column">
               <div class="fieldset">
                 <contact
                   :contact-query="contactQuery"
@@ -213,7 +210,7 @@
           </div>
 
           <div class="row align-center">
-            <div class="small-12 large-9 columns">
+            <div class="small-12 large-10 columns">
               <div class="fieldset">
                 <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
                 <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
@@ -310,6 +307,7 @@ export default {
         tactic: [],
         due_date: null,
         existing: false,
+        translation: false,
         business_unit: null,
         deliverables: null,
         target: null,
@@ -442,14 +440,6 @@ export default {
   top: 0;
 }
 #formContainer {
-  //height: 100vh;
-  // #infoPanel {
-  //   background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);
-  // }
-  .formPanel {
-    //height: 100vh;
-    overflow-y: scroll;
-  }
   aside {
     margin-top: 2rem;
     padding: 2rem;
