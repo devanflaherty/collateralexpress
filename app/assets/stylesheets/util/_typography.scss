@@ -5,6 +5,10 @@
 h1, h2, h3, h4 {
   text-transform: uppercase;
 }
+h5 {
+  font-family: $sans-bold;
+  font-weight: normal;
+}
 blockquote {
   font-family: $condensed;
 }

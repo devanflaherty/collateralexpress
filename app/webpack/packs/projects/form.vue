@@ -4,12 +4,12 @@
     <LoadScreen v-if="loading"></LoadScreen>
     <form v-else v-on:submit.prevent="onSubmit" id="form">
       <div id="formContainer" class="row expand align-center">
-        <div class="form-panel small-12 medium-6 columns">
+        <div class="form-panel small-12 columns" :class="{'medium-9 large-6': project.id, 'medium-12 large-9': !project.id}">
 
           <header>
             <div class="row">
               <div class="columns">
-                <h3>{{page_title}}</h3>
+                <h2>{{page_title}}</h2>
                 <h5 v-if="project.id">{{project.title}}</h5>
                 <hr class="no-margin">
               </div>
@@ -54,7 +54,7 @@
             <div class="column">
 
               <div class="fieldset">
-                <h2>Project Details</h2>
+                <h3>Project Details</h3>
                 <hr class="no-margin">
                 <div class="float-input">
                   <FloatLabel
@@ -194,13 +194,13 @@
 
         <div class="form-panel small-12 columns">
           <div id="fileUploader" class="row align-center">
-            <div class="small-12 medium-9 column">
+            <div class="small-12 large-9 column">
               <MediaUploader :project-id="project.id" :mediaFiles="project_media" :token="token"></MediaUploader>
             </div>
           </div>
 
           <div class="row align-center" id="contactForm">
-            <div class="small-12 medium-9 column">
+            <div class="small-12 large-9 column">
               <div class="fieldset">
                 <contact
                   :contact-query="contactQuery"
@@ -213,7 +213,7 @@
           </div>
 
           <div class="row align-center">
-            <div class="small-12 medium-9 columns">
+            <div class="small-12 large-9 columns">
               <div class="fieldset">
                 <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
                 <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
