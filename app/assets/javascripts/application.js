@@ -12,7 +12,7 @@
 //
 //= require jquery
 //= require foundation-sites/dist/js/foundation
-//= require swiper/dist/js/swiper.js
+//= require swiper/dist/js/swiper.min.js
 //= require rails-ujs
 //= require turbolinks
 //= require_tree .
@@ -40,13 +40,13 @@ document.addEventListener("turbolinks:load", function() {
     active = mySwiper.activeIndex + 1;
     $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in');
 
-    mySwiper.on("onSlideChangeStart",(function (mySwiper) {
+    mySwiper.on("onSlideChangeStart",function (mySwiper) {
       active = mySwiper.activeIndex + 1;
       $("#stepIndex").text(active);
       $(".step-desc").removeClass('fade-in');
     });
 
-    mySwiper.on("onSlideChangeEnd",(function (mySwiper) {
+    mySwiper.on("onSlideChangeEnd",function (mySwiper) {
       $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in');
     });
   }
