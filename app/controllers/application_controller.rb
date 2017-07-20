@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
       },
       {
         name: "Create Project Request",
-        url: "/projects#new"
+        url: "/projects/new#new"
       },
       {
         name: "How It Works",

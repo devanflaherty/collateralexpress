@@ -18,6 +18,7 @@ const authRequest = function(to, from, next) {
     } else if (response.data.contact.id) {
       next()
     } else {
+      alert('redirect')
       window.location.href = "/account/login"
     }
   }).catch(function (error) {
