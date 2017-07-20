@@ -1,0 +1,44 @@
+.accordion {
+  background: none;
+  .accordion-item {
+    .accordion-title {
+      h3 {
+        margin-bottom: 0;
+        line-height: 1;
+        color: $black;
+      }
+      &:hover {
+        background: rgba($light-gray, 0.33);
+      }
+      &::before {
+        right: auto;
+        left: -4rem;
+        font-size: 3rem;
+        top: 0;
+        margin-top: .6rem;
+        content:"\f067";
+        font-family: 'fontAwesome'
+      }
+    }
+    &.is-active .accordion-title::before {
+      content:"\f068";
+      font-family: 'fontAwesome';
+    }
+
+    .accordion-content {
+      background: none;
+    }
+    &:first-child > :first-child {
+      border-radius: 3px 3px 0 0;
+    }
+    &:last-child > :first-child {
+      border-radius: 0 0 3px 3px;
+    }
+    &.is-active:last-child > :first-child {
+      border-radius: 0;
+    }
+    &.is-active:last-child > :last-child {
+      border-radius: 0 0 3px 3px;
+    }
+  }
+}

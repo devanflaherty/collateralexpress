@@ -8,3 +8,15 @@ h1, h2, h3, h4 {
 blockquote {
   font-family: $condensed;
 }
+
+.contrast-text {
+  p {
+    color: $light-gray;
+  }
+  h1, h2, h3, h4, h5 {
+    color: $white;
+  }
+  span {
+    color: $white;
+  }
+}

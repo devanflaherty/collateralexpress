@@ -40,9 +40,17 @@ We will need to make sure we can connect to a database to use the app. To do thi
   # db:create : Creates the database
   # db:schema:load : Loads schema into current database
   # db:migrate : Migrates all the database migration files
+  # db:seed : Set up to 
 ```
 
-If you made it to here we are ready to get our basic Rails app Up and Running!
+If you made it to here we are ready to get our basic Rails app Up and Running, but OH WUHHH!! We can't forget our front-end and all those node modules!
+
+## Installing Node Modules
+We use Yarn, they were the first to have a lockfile, it's fast, and Yarn is way more fun to type than 'npm'.
+```
+  # Run to install node_modules using Yarn
+  $ yarn
+```
 
 ## Up and Running
 Fill out info on how to get the rails server running, working with the rails console, etc.

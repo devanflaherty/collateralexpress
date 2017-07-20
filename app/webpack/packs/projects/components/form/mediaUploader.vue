@@ -1,35 +1,42 @@
 <template>
-  <div class="row">
-    <div class="small-12 column">
-      <h3>Files</h3>
-      <transition-group name="mediaList" tag="ul" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
-        <li class="column" v-for="media in mediaFiles" v-bind:key="media">
-          <img :src="media.file.thumb.url" @click="removeMedia(media.id)">
-        </li>
-      </transition-group>
+  <div class="fieldset">
+    <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
+    <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
+      <li class="column" v-for="media in mediaFiles" v-bind:key="media">
+        <div class="card">
 
-        <h3>Add Files</h3>
-        <Dropzone
-          ref="dropzoneUploader"
-          id="dropzoneUploader"
-          url="/media"
-          :auto-process-queue="false"
-          :showRemoveLink="true"
-          :upload-multiple="true"
-          :max-number-of-files="6"
-          param-name="file"
-          v-on:vdropzone-success="uploadSuccess"
-          v-on:vdropzone-file-added="readyMedia"
-          useFontAwesome>
-            <!-- Optional parameters if any! -->
-            <input type="hidden" name="utf8" value="✓">
-            <input type="hidden" name="authenticity_token" :value="token">
-            <input id="projectId" type="hidden" name="project_id" :value="projectId ? projectId : projectParam">
-            <!--<input type="hidden" name="project[title]" :value="project.title"> -->
-        </Dropzone>
-        <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
+          <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.thumb.url + ')' }">
+            <button @click.prevent="removeMedia(media.id)">
+              <icon name="close"></icon><br>
+              <span>Remove File</span>
+            </button>
+          </div>
 
-    </div>
+        </div>
+      </li>
+    </transition-group>
+
+    <h3>Add Files</h3>
+    <Dropzone
+      enctype="multipart/form-data"
+      ref="dropzoneUploader"
+      id="dropzoneUploader"
+      url="/media"
+      :auto-process-queue="false"
+      :showRemoveLink="true"
+      :upload-multiple="true"
+      :max-number-of-files="6"
+      param-name="file"
+      v-on:vdropzone-success="uploadSuccess"
+      v-on:vdropzone-file-added="readyMedia"
+      useFontAwesome>
+        <!-- Optional parameters if any! -->
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="authenticity_token" :value="token">
+        <input id="projectId" type="hidden" name="project_id" :value="projectId ? projectId : projectParam">
+        <!--<input type="hidden" name="project[title]" :value="project.title"> -->
+    </Dropzone>
+    <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
   </div>
 </template>
 
@@ -49,7 +56,8 @@
     },
     data() {
       return {
-
+        styles: {
+        }
       }
     },
     computed: {
@@ -73,15 +81,14 @@
         Axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
             console.log('media updated')
-            console.log(response.data.project.medias)
             bus.$emit("mediaEmit", response.data.project.medias)
         })
 
-        // $('#uploader').foundation('close');
+        bus.$emit('closeReveal')
         this.$refs.dropzoneUploader.removeAllFiles()
       },
       readyMedia() {
-        this.dzUpload = true
+        bus.$emit('readyDZ')
       },
       removeMedia(id) {
         var vm = this

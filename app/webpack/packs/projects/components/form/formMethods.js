@@ -10,6 +10,11 @@ const FormMethods = {
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
 
+      // this.$validator.validateAll().then(result => {
+      //   if (result) {
+      //   }
+      // }
+
       // If there are no errors
       if (!this.veeErrors.any()) {
 
@@ -18,71 +23,84 @@ const FormMethods = {
         var vm = this
         var axiosConfig = {
           utf8 : "✓",
-          authenticity_token: vm.token,
-          project : vm.project
+          authenticity_token: this.token,
+          project : this.project
         }
 
-        if (!this.project.id) {
-          // ** if this is a new project
-          console.log('submitted')
-          //** if is a new project but contact exist
-          Axios.post('/projects/', axiosConfig)
-          .then(function (response) {
-            // IF SUCCESFUll
-            if(vm.dzUpload) {
-              bus.$emit('uploadMedia', response.data.project.id)
-            }
-            bus.$emit('messageEmit', vm.project.title + " has been created!")
-            bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', vm.project.id);
-            vm.postTime = new Date()
-
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              if(flash[0] == 'notice') {
-                vm.$emit('flashEmit', flash[1])
-                console.log(flash[1])
-              }
-            }
-
-          })
-          .catch(function (error) {
-            // IF THERE ARE ERRORS
-            bus.$emit('showReveal','error', vm.project, 'error.message');
-            vm.axErrors(error.response, error.request, error.message);
-          });
+        if(this.contactQuery || this.project.contact_id || this.contactSession) {
+          var cid = null
+          if (this.contactQuery != null) {
+            cid = this.contactQuery
+          } else if (this.project.contact_id != null) {
+            cid = this.project.contact_id
+          } else if (this.contactSession) {
+            cid = this.contactSession
+          }
+          console.log(cid)
+          bus.$emit('postContact', cid)
         } else {
-          // ** If the project does exist let's update it
-          Axios.patch('/projects/' + this.project.id, axiosConfig)
-          .then(function (response) {
-            if(vm.dzUpload) {
-              bus.$emit('uploadMedia', response.data.project.id)
-            }
-            bus.$emit('messageEmit', vm.project.title + " has been updated!")
-            // And then we will launch the Foundation Reveal
-            bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', vm.project.id);
-
-            // If post time is update the contact component will Listen
-            // Then contact will trigger a post
-            vm.postTime = new Date()
-
-            // We also want to grab the flash that was sent in the response
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              // for each flash message that matches notice
-              if(flash[0] == 'notice') {
-                // We will update the parents flash data
-                bus.$emit('flashEmit', flash[1])
-              }
-            }
-          })
-          .catch(function (error) {
-            // If there is an error we show the Foundation Reveal
-            console.log(vm.project)
-            bus.$emit('showReveal','error', vm.project.title, error.message);
-            // and run our error function
-            vm.axErrors(error.response, error.request, error.message);
-          });
+          bus.$emit('postContact')
         }
+
+        bus.$on('submitProjectForm', (cid) => {
+          if (!this.project.id) {
+            // ** if this is a new project
+            console.log('submitted')
+            //** if is a new project but contact exist
+            Axios.post('/projects/', axiosConfig)
+            .then(function (response) {
+              // IF SUCCESFUll
+              if(vm.dzUpload) {
+                bus.$emit('uploadMedia', response.data.project.id)
+              }
+              bus.$emit('messageEmit', vm.project.title + " has been created!")
+              bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
+
+              for(var f in response.data.flash) {
+                var flash = response.data.flash[f]
+                if(flash[0] == 'notice') {
+                  vm.$emit('flashEmit', flash[1])
+                  console.log(flash[1])
+                }
+              }
+
+            })
+            .catch(function (error) {
+              // IF THERE ARE ERRORS
+              bus.$emit('showReveal','error', vm.project.title, error.message);
+              vm.axErrors(error.response, error.request, error.message);
+            });
+          } else {
+            // ** If the project does exist let's update it
+            Axios.patch('/projects/' + this.project.id, axiosConfig)
+            .then(function (response) {
+              if(vm.dzUpload) {
+                bus.$emit('uploadMedia', response.data.project.id)
+              }
+              bus.$emit('messageEmit', vm.project.title + " has been updated!")
+              // And then we will launch the Foundation Reveal
+              bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
+
+
+              // We also want to grab the flash that was sent in the response
+              for(var f in response.data.flash) {
+                var flash = response.data.flash[f]
+                // for each flash message that matches notice
+                if(flash[0] == 'notice') {
+                  // We will update the parents flash data
+                  bus.$emit('flashEmit', flash[1])
+                }
+              }
+            })
+            .catch(function (error) {
+              // If there is an error we show the Foundation Reveal
+              console.log(vm.project)
+              bus.$emit('showReveal','error', vm.project.title, error.message);
+              // and run our error function
+              vm.axErrors(error.response, error.request, error.message);
+            });
+          }
+        })
       } // validate end
     },
     deletePrompt() {
@@ -92,7 +110,7 @@ const FormMethods = {
       var vm = this
       Axios.delete('/projects/' + this.project.id)
       .then(function (response) {
-        $('#reveal').foundation('close');
+        bus.$emit('closeReveal')
 
         for(var f in response.data.flash) {
           var flash = response.data.flash[f]

@@ -29,6 +29,24 @@
     },
     "DATABASE_URL": {
       "required": true
+    },
+    "GMAIL_USERNAME": {
+      "required": true
+    },
+    "GMAIL_PASSWORD": {
+      "required": true
+    },
+    "AWS_ACCESS_KEY": {
+      "required": true
+    },
+    "AWS_SECRET_KEY": {
+      "required": true
+    },
+    "AWS_BUCKET_REGION": {
+      "required": true
+    },
+    "AWS_BUCKET_NAME": {
+      "required": true
     }
   },
   "formation": {

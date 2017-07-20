@@ -1,164 +1,229 @@
 <template>
   <div id="projectForm">
     <hr class="no-margin">
-    <div id="formContainer" class="row expand">
-      <LoadScreen v-if="loading"></LoadScreen>
-      <div v-else id="formPanel" class="small-12 medium-9 columns">
+    <LoadScreen v-if="loading"></LoadScreen>
+    <form v-else v-on:submit.prevent="onSubmit" id="form">
+      <div id="formContainer" class="row expand align-center">
+        <div class="form-panel small-12 medium-6 columns">
 
-        <div class="row">
-          <div class="columns">
-            <nav v-if="contactSession">
-              <router-link class="button hollow" :to="{name: 'list'}">All Projects</router-link>
-              <router-link class="button hollow" :to="{name: 'new'}">New</router-link>
+          <header>
+            <div class="row">
+              <div class="columns">
+                <h3>{{page_title}}</h3>
+                <h5 v-if="project.id">{{project.title}}</h5>
+                <hr class="no-margin">
+              </div>
+            </div>
+          </header>
+
+          <vue-progress-bar id="progressBar"></vue-progress-bar>
+
+          <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
+          <div class="row">
+            <div class="columns">
+              <div class="fieldset">
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Project Title"
+                    :has-error="veeErrors.has('Project Title')"
+                    :error-text="veeErrors.first('Project Title')"
+                    :attr="project.title"
+                    label="Project Title"
+                    propKey="title"></FloatLabel>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Project Description"
+                    :has-error="veeErrors.has('Project Description')"
+                    :error-text="veeErrors.first('Project Description')"
+                    :attr="project.description"
+                    label="Project Description"
+                    propKey="description"
+                    inputType='textarea'></FloatLabel>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="column">
+
+              <div class="fieldset">
+                <h2>Project Details</h2>
+                <hr class="no-margin">
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Due Date"
+                    :has-error="veeErrors.has('Due Date')"
+                    :error-text="veeErrors.first('Due Date')"
+                    :attr="project.due_date"
+                    label="Due Date"
+                    propKey="due_date"></FloatLabel>
+                </div>
+
+                <h5 style="margin-top: 1rem">Tactics</h5>
+                <div class="row small-up-2 medium-up-3">
+                  <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
+                    <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
+                    <label :for="tactic">
+                      {{tactic}}
+                    </label>
+                  </div>
+                </div>
+                <span v-for="tactic in project.tactic">{{tactic}}</span>
+                <!-- other field-->
+                <div class="row" v-if="project.tactic.includes('Other')">
+                  <div class="columns small-6">
+                    <div class="float-input">
+                      <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics" validation=""></FloatLabel>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="check-input">
+                  <h5>Does this project already exist?</h5>
+                  <label for="projectExists">
+                    <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
+                    <icon v-if="project.existing" name="check-circle-o"></icon>
+                    <icon v-else name="circle-o"></icon>
+                    <span>{{ project.existing ? "Yes, this project exists." : "No, this is a new project." }}</span>
+                  </label>
+                </div>
+
+                <div class="check-input">
+                  <h5>Does this project need translation?</h5>
+                  <label for="projectTranslation">
+                    <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
+                    <icon v-if="project.translation" name="check-circle-o"></icon>
+                    <icon v-else name="circle-o"></icon>
+                    <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
+                  </label>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate="'numeric'"
+                    data-vv-value-path="model"
+                    data-vv-name="Deliverables"
+                    :has-error="veeErrors.has('Deliverables')"
+                    :error-text="veeErrors.first('Deliverables')"
+                    :attr="project.deliverables"
+                    label="Deliverables"
+                    propKey="deliverables"></FloatLabel>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate="'url'"
+                    data-vv-value-path="model"
+                    data-vv-name="Asset Reference"
+                    :has-error="veeErrors.has('Asset Reference')"
+                    :error-text="veeErrors.first('Asset Reference')"
+                    :attr="project.reference"
+                    label="Asset Reference"
+                    propKey="reference"></FloatLabel>
+                  <p class="hint">http://tmap.com/link/to/asset</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="small-12 column">
+              <div class="fieldset">
+                <h3>Who is this for?</h3>
+
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate=""
+                    data-vv-value-path="model"
+                    data-vv-name="Business Unit"
+                    :has-error="veeErrors.has('Business Unit')"
+                    :error-text="veeErrors.first('Business Unit')"
+                    :attr="project.business_unit"
+                    label="Business Unit"
+                    propKey="business_unit"></FloatLabel>
+                </div>
+
+                <div class="float-input">
+                  <FloatLabel
+                    v-validate=""
+                    data-vv-value-path="model"
+                    data-vv-name="Target Audience"
+                    :has-error="veeErrors.has('Target Audience')"
+                    :error-text="veeErrors.first('Target Audience')"
+                    :attr="project.target"
+                    label="Target Audience"
+                    propKey="target"></FloatLabel>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div><!-- form panel part 1 -->
+
+        <div v-if="project.id || contactSession || auth" id="infoPanel" class="small-12 medium-3 columns">
+          <aside>
+            <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
+              <router-link class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
             </nav>
-            <h3>{{$route.meta.title}}</h3>
-            <hr class="no-margin">
-          </div>
-        </div>
-
-        <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
-          <div class="navigation-actions">
-            <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-          </div>
+            <nav v-if="contactSession || auth">
+              <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
+              <router-link v-if="project.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
+              <a v-if="auth" href="/account/edit">Edit User Profile</a>
+              <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
+            </nav>
+          </aside>
           <a
             id="deleteProject"
+            style="float: right"
+            class="delete-project"
             @click="deletePrompt">
             <icon name="trash"></icon>
             Delete
           </a>
-        </nav>
+        </div><!-- close sidebar -->
 
-        <form v-on:submit.prevent="onSubmit" id="form">
-          <vue-progress-bar id="progressBar"></vue-progress-bar>
-
-          <!-- only show if admin logged in -->
-          <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
-          <div class="row">
-            <div class="columns float-input">
-              <FloatLabel :attr="project.title" label="Project Title" propKey="title"></FloatLabel>
+        <div class="form-panel small-12 columns">
+          <div id="fileUploader" class="row align-center">
+            <div class="small-12 medium-9 column">
+              <MediaUploader :project-id="project.id" :mediaFiles="project_media" :token="token"></MediaUploader>
             </div>
           </div>
 
-          <div class="row">
-            <div class="column float-input">
-              <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea'></FloatLabel>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="column">
-              <h3>Tactics</h3>
-              <div class="row">
-                <div class="small-4 column" v-for="tactic in available_tactics" v-bind:key="tactic" >
-                  <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
-                  <label :for="tactic">
-                    {{tactic}}
-                  </label>
-                </div>
-              </div>
-
-              <div class="row" v-if="project.tactic.includes('Other')">
-                <div class="columns small-6">
-                  <h4>Other</h4>
-                  <input type="text" v-model.lazy="tactic_other" value="">
-                </div>
-              </div>
-              <!-- <br>
-              <span>Selected Tactics: {{ project.tactic }}</span> -->
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="small-12 column">
-              <h3>Who is this for?</h3>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit"></FloatLabel>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.target" label="Target Audience" propKey="target"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label for="projectExists">
-                <input style="display:none" id="projectExists" type="checkbox" v-model="project.existing">
-                <icon v-if="project.existing" name="check-circle-o"></icon>
-                <icon v-else name="circle-o"></icon>
-                <span>{{ project.existing ? "Existing Project" : "New Project" }}</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="small-12 column">
-              <h3>Project Details</h3>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label for="projectTranslation">
-                <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
-                <icon v-if="project.translation" name="check-circle-o"></icon>
-                <icon v-else name="circle-o"></icon>
-                <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
-              </label>
-            </div>
-
-            <div class="small-12 column float-input">
-              <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables"></FloatLabel>
-            </div>
-
-            <div class="small-12 column">
-              <label>Asset Reference: {{project.asset_ref}}</label>
-              <div class="input-group">
-                <span class="input-group-label">http://</span>
-                <input class="input-group-field" v-model="project.asset_ref" name="project[asset_refs]" type="text">
-              </div>
-            </div>
-          </div>
-
-          <MediaUploader :project-id="project.id" :mediaFiles="project.medias" :token="token"></MediaUploader>
-
-          <hr>
-          <div class="row">
-            <div class="column">
-              <div class="callout">
-                <h3>Contact</h3>
+          <div class="row align-center" id="contactForm">
+            <div class="small-12 medium-9 column">
+              <div class="fieldset">
                 <contact
-                  :contact-id="project.contact_id"
+                  :contact-query="contactQuery"
                   :project-id="project.id"
-                  :post-time="postTime"
+                  :contact-session="contactSession"
                   @contactEmit="updateContact"
                 ></contact>
-                <input type="hidden" v-model="project.contact_id" name="project[contact_id]">
               </div>
             </div>
           </div>
 
-          <div class="row">
-            <div class="column">
-              <div class="callout">
-                <h3>Assigned To</h3>
-                <!-- TODO: editable if admin -->
-                <!-- <UserFields :user="user"></UserFields> -->
-                <input type="hidden" v-model="project.user_id" name="project[user_id]">
+          <div class="row align-center">
+            <div class="small-12 medium-9 columns">
+              <div class="fieldset">
+                <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
+                <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
               </div>
             </div>
           </div>
-          <span v-show="veeErrors.any()">Disable</span>
-          <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button expanded">
 
-        </form>
-      </div><!-- close column-->
-
-      <div id="infoPanel" class="columns"></div>
-
-    </div><!--close form container-->
+        </div><!-- close column-->
+      </div><!--close form container-->
+    </form>
     <hr class="no-margin">
   </div><!-- close projectForm -->
 </template>
@@ -167,11 +232,12 @@
 import Axios from "axios"
 import bus from '../bus'
 
-// App Components
-import FloatLabel from "./components/form/floatLabel.vue"
-import Float from "./components/form/float.vue"
+// App Mixins
+import { onValidation } from "../shared/validation"
 import FormMethods from "./components/form/formMethods.js"
 import ProgressMixin from "./components/form/progressMixin.js"
+//Form Components
+import FloatLabel from "../shared/floatLabel.vue"
 import Status from "./components/form/status.vue"
 import MediaUploader from "./components/form/mediaUploader.vue"
 import Contact from "./components/form/contact.vue"
@@ -183,8 +249,8 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'NewForm',
-  props: ['message', 'reveal-type', 'flash', 'contact-session'],
-  mixins: [FormMethods, ProgressMixin],
+  props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
+  mixins: [FormMethods, ProgressMixin, onValidation],
   components: {
     FloatLabel,
     MediaUploader,
@@ -205,7 +271,7 @@ export default {
         contact_id: null,
         status: "",
         description: null,
-        medias: [],
+        reference: null,
         tactic: [],
         due_date: null,
         existing: false,
@@ -216,25 +282,19 @@ export default {
         flag: false,
         archive: false
       },
+      project_media: [],
+      contactQuery: null,
       tactic_other: '',
       available_tactics: [],
       dzUpload: false,
-      postTime: '',
     }
   },
   computed: {
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
-    projectId() {
-      // sets a projectId from the route params
-      // This validates wether we need to get project data
-      if (this.$route.params.id) {
-        this.project.id = this.$route.params.id
-        return this.$route.params.id
-      } else {
-        return null
-      }
+    page_title() {
+      return this.$route.meta.title
     },
     EmptyProject() {
       // we first want to create a object that is equal to our empty project
@@ -246,7 +306,7 @@ export default {
         contact_id: null,
         status: "",
         description: null,
-        medias: [],
+        reference: null,
         tactic: [],
         due_date: null,
         existing: false,
@@ -256,18 +316,14 @@ export default {
         flag: false,
         archive: false
       };
-      // If we find that there is a current ContactSession
-      // Then we will change the empty project state to include
-      // the contactSession id for contact_id
-      if(this.contactSession != "") {
-        console.log("empty")
-        empty.contact_id = this.contactSession
-      }
       return empty
     },
   },
   watch: {
-    '$route': 'fetchData',
+    '$route': function() {
+      this.fetchData
+      this.page_title = this.$route.meta.title
+    },
     tactic_other(other) {
       this.setTactics(other)
     }
@@ -279,39 +335,42 @@ export default {
     },
     getProject() {
       var vm = this
-      if (this.$route.params.id) {
-        Axios.get('/api/v1/projects/' + this.$route.params.id  + '.json')
+      if (vm.$route.params.id) {
+        // Project exists
+        Axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json')
           .then( response => {
-            vm.loading = false
-            vm.updateProject(response.data.project)
+            if(vm.auth == null && vm.contactSession != response.data.project.contact_id) {
+              vm.$router.push({ name: 'list' })
+              bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to that project.")
+            } else {
+              vm.page_title = response.data.project.id
+              vm.loading = false
+              vm.project = response.data.project
+              vm.contactQuery = response.data.project.contact_id
+              vm.project_media = response.data.project_media
 
-            if(vm.contactSession && vm.project.contact_id == null) {
-              vm.updateContact({id: vm.contactSession})
+              document.title = "Edit " + vm.project.title + " | Collateral Express"
             }
-
-            document.title = "Edit " + vm.project.title + " | Collateral Express"
           }).catch(error => {
             // project does not exist
             // Create a new project or browse the project list
             console.log(error)
           })
       } else {
+        //new project
         vm.loading = false
+        bus.$emit('updateMessage', 'New Project')
         bus.$emit('emptyFloats')
-        bus.$emit('projectEmit', this.EmptyProject)
-        if(vm.contactSession) {
-          vm.updateContact({id: vm.contactSession})
-        }
+        bus.$emit('projectEmit', vm.EmptyProject)
       }
-      this.getTactics()
     },
     updateProject(project) {
       this.project = project
     },
     updateContact(contact) {
       this.project.contact_id = contact.id
+      this.contactQuery = contact.id
     },
-
     setTactics(tactic) {
       var vm = this
       var tArray = this.project.tactic.filter(function(tactic) {
@@ -324,41 +383,44 @@ export default {
     getTactics() {
       // Get Available tactics
       var vm = this
+      console.log('get')
       Axios.get('/api/v1/projects/new.json')
         .then( response => {
           vm.available_tactics = response.data.tactics
         }).catch(error => {
           console.log(error)
         })
-    },
-  },
-  created() {
-    this.fetchData()
+    }
   },
   mounted() {
     var vm = this
+    this.getTactics()
+
+    this.contactQuery = this.contactSession
+
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('projectEmit', (project) => {
       this.updateProject(project)
     })
+
     bus.$on('projectPropSet', (key, val) => {
       this.$set(vm.project, key, val)
+      //this.$validator.validateAll();
+    })
+
+    bus.$on('readyDz', () => {
+      this.dzUpload(true)
     })
 
     bus.$on('mediaEmit', (media) => {
       console.log('media emit')
-      this.project.medias = media
+      this.project_media = media
     })
-
-    bus.$on('errors-changed', (errors) => {
-      this.veeErrors.clear();
-      this.$validator.validateAll();
-
-      var errs = [...this.veeErrors.errors, ...errors.errors]
-      var filtered = errs.filter((err, index, self) => self.findIndex((e) => {return e.field === err.field && e.msg === err.msg; }) === index)
-
-      this.veeErrors.errors = filtered
-    });
+  },
+  beforeRouteEnter (to,from,next) {
+    next(vm => {
+      vm.fetchData()
+    })
   },
   beforeRouteUpdate (to, from, next) {
     this.fetchData()
@@ -366,7 +428,7 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current view
-    $('#reveal').foundation('close');
+    bus.$emit('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
   }
@@ -374,18 +436,32 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '../../../assets/stylesheets/util/colors';
 #progressBar {
   position: fixed;
   top: 0;
 }
 #formContainer {
   //height: 100vh;
-  #infoPanel {
-    background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);
-  }
-  #formPanel {
+  // #infoPanel {
+  //   background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);
+  // }
+  .formPanel {
     //height: 100vh;
     overflow-y: scroll;
+  }
+  aside {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 3px;
+  }
+  .delete-project {
+    padding: 1rem;
+    color: $alert;
+    svg {
+      padding-top: .25rem;
+    }
   }
 }
 

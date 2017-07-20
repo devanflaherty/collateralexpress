@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  layout 'vue'
+  #before_action :authenticate_user!, except: [:index, :show, :new]
   before_action :find_contact
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 
@@ -15,15 +15,15 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
     respond_to do |format|
       if @project.save
-        ProjectMailer.new_project(@project).deliver
+        ProjectMailer.new_project(@project).deliver_later
 
         flash[:notice] = "Project '#{@project.title}' created succesfully."
 
-        session[:current_contact_id] = @project.contact_id
+        # session[:current_contact_id] = @project.contact_id
 
         format.json { render json: { project: @project, flash: flash} }
       else
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
     end
   end
@@ -35,18 +35,16 @@ class ProjectsController < ApplicationController
       if @project.update_attributes(project_params)
         if @project.status != status
           puts "changed"
-          ProjectMailer.status_update(@project).deliver
+          ProjectMailer.status_update(@project).deliver_later
         end
         session[:current_contact_id] = @project.contact_id
 
         flash[:notice] = "Project '#{@project.title}' updated succesfully."
 
-        format.html { redirect_to(projects_path(@project)) }
         format.json { render json: { project: @project, flash: flash} }
       else
         flash[:error] = "Project '#{@project.title}' failed to update."
-        format.html { render 'edit'}
-        format.json { render :json => { :errors => @project.errors.messages }, :status => 422}
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
     end
   end
@@ -60,7 +58,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
-      format.json { render :json => {project: @project, flash: flash, :redirect => "/projects"} }
+      format.json { render json: {project: @project, flash: flash} }
     end
   end
 
@@ -87,12 +85,16 @@ class ProjectsController < ApplicationController
         :status,
         :description,
         :due_date,
-        :files,
         :contact_id,
         :user_id,
         :archive,
         :flag,
         :asset,
+        :reference,
+        :deliverables,
+        :existing,
+        :business_unit,
+        :target,
         :legal_review,
         { :tactic => [] }
         )

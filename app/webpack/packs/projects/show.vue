@@ -4,11 +4,11 @@
     <div class="row" v-if="!loading">
       <!-- Project Info -->
       <div class="columns medium-7">
-        <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+        <router-link v-if="project.id" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
 
         <hr>
 
-        <AdminUpdates :project="project"></AdminUpdates>
+        <AdminUpdates v-if="auth" :project="project"></AdminUpdates>
 
         <div id="projectInfo">
           <h2>{{project.title}}</h2>
@@ -109,13 +109,6 @@
           </li>
         </ul>
 
-          <div class="form-card">
-            <div class="card-content">
-              <h3>{{project.title}}</h3>
-              <p>{{project.description}}</p>
-            </div>
-          </div>
-
       </div>
     </div><!-- close row -->
   </div>
@@ -132,25 +125,23 @@
     components: {
       AdminUpdates
     },
+    props: ['contactSession', 'auth'],
     data() {
       return {
         loading: false,
-        project: {},
+        project: {
+          id: null
+        },
         contact: {},
         dzUpload: false,
         error: null
       }
     },
     watch: {
-      '$route': 'fetchData'
-    },
-    created() {
-      this.fetchData()
-    },
-    mounted() {
-      bus.$on('projectPropSet', (key, val) => {
-        this.$set(this.project, key, val)
-      })
+      '$route': 'fetchData',
+      // auth() {
+      //   this.direct()
+      // }
     },
     methods: {
       fetchData() {
@@ -159,26 +150,44 @@
         this.getProject()
       },
       getProject() {
-        if (this.$route.params.id) {
-          var pid = this.$route.params.id
-          var vm = this
+        var vm = this
+        if (vm.$route.params.id) {
+          var pid = vm.$route.params.id
 
           Axios.get('/api/v1/projects/' + pid + '.json')
           .then( response => {
+            if(vm.auth == null && vm.contactSession != response.data.project.contact_id) {
+              vm.$router.push({ name: 'list' })
+              bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to that project.")
+            } else {
               vm.loading = false
               vm.project = response.data.project
               vm.contact = response.data.contact
 
               document.title = vm.project.title + " | Collateral Express"
+            }
           }).catch(error => {
             // Push to 404
             vm.$router.push({ name: 'list' })
             console.log(error)
           })
         } else {
-          this.$router.push({name: 'list'})
+          vm.$router.push({name: 'list'})
         }
+      },
+      direct() {
+        window.location.href = '/account/login'
       }
+    },
+    mounted() {
+      bus.$on('projectPropSet', (key, val) => {
+        this.$set(this.project, key, val)
+      })
+    },
+    beforeRouteEnter (to,from,next) {
+      next(vm => {
+        vm.fetchData()
+      })
     },
     beforeRouteUpdate (to, from, next) {
       this.fetchData()
@@ -186,7 +195,7 @@
     },
     beforeRouteLeave (to, from, next) {
       // Before we leave the current view
-      bus.$emit('projectEmit');
+      //bus.$emit('projectEmit');
       next()
     }
   }

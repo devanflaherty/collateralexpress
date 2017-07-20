@@ -16,7 +16,6 @@ export default {
   methods: {
     toggle() {
       this.active = !this.active;
-      //console.log(this.active);
     }
   }
 }

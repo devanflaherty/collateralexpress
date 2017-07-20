@@ -30,7 +30,7 @@ Vue.use(VueProgressBar, {
 import Notifications from 'vue-notification'
 Vue.use(Notifications)
 
-import LoadScreen from './components/loadScreen.vue'
+import LoadScreen from '../shared/loadScreen.vue'
 Vue.component('LoadScreen', LoadScreen)
 
 // Components
@@ -38,7 +38,8 @@ import ProjectApp from './index.vue'
 
 document.addEventListener('turbolinks:load', () => {
 //document.addEventListener('DOMContentLoaded', () => {
-  var element = document.getElementById("app")
+  const element = document.getElementById("app")
+  // const props = JSON.parse(element.getAttribute('data'))
   if (element != null) {
     var projApp = new Vue({
       el: '#app',

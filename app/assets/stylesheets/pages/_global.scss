@@ -45,6 +45,15 @@ blockquote {
   height: 100%;
 }
 
-a, button {
-  transition: all 0.5s ease;
+// Background classes
+.primary-bg {
+  background: $primary-color;
+}
+.gradient-bg {
+  background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);
+}
+
+// Utility Classes
+.no-border {
+  border: none
 }

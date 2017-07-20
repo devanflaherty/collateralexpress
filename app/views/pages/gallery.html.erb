@@ -1,2 +1,30 @@
-<%= @page_title = "Gallery" %>
-<h2>Gallery</h2>
+<% @page_title = "Gallery" %>
+<% @header = {
+    :title => "<p>See what's been made<br><strong>With collateral express</strong></p>",
+    :image => "https://unsplash.it/g/1200/720"
+  }
+%>
+
+<%= render "shared/hero_header" %>
+
+<section id="gallery">
+  <div class="row">
+    <div class="column">
+      <h2>Gallery</h2>
+      <p>See what has been made through Collateral Express.</p>
+
+      <div class="row small-up-2 medium-up-3">
+        <% 6.times do %>
+          <div class="column">
+            <div class="card">
+              <div class="gallery-image-hover text-center">
+                <%= fa_icon "arrows-alt" %><br>
+                <span>View Real Pixels</span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

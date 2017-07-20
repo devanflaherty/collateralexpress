@@ -1,13 +1,11 @@
 <template>
   <div id="projectApp">
-
     <transition name="fade" appear>
       <router-view
-        :reveal-type="reveal.type"
+        :auth="auth"
         :contactSession="contactSession"
-        @visibleEmit="updateVisibility"
-        :flash="flash"
-        v-show="visible">
+        :reveal-type="reveal.type"
+        :flash="flash">
       </router-view>
     </transition>
 
@@ -22,15 +20,12 @@
 </template>
 
 <script>
+import axios from "axios"
 import bus from "../bus"
-import Reveal from "./components/reveal.vue"
-
-// Import Plugins
-let contactEl = document.getElementById('cid')
-let cid = contactEl ? contactEl.dataset.cid : ''
+import Reveal from "../shared/reveal.vue"
 
 export default {
-  name: 'Project_Form',
+  name: 'Project_App',
   components: {
     Reveal
   },
@@ -39,48 +34,63 @@ export default {
       page_title: "Projects",
       message: "Update Form",
       flash: "",
-      visible: true,
       reveal: {
         type: null,
         title: null,
-        msg: null
-      }
+        msg: null,
+        project_id: null
+      },
+      auth: null
     }
   },
   computed: {
     contactSession() {
+      var cid = this.getCookie('current_contact_id')
       if (cid) {
         return parseInt(cid)
       } else {
         return null
       }
-    }
+    },
   },
   watch: {
     flash: function(flash) {
       this.$notify({
         title: this.flash
       })
-    },
-    // reveal_type: function(type){
-    //   this.reveal_type = type
-    // }
+    }
   },
   methods: {
-    updateVisibility(visibility) {
-      this.visible = visibility
-    },
     updateMessage(message) {
       this.message = message
+    },
+    updatePageTite(title) {
+      this.page_title = title
     },
     updateFlash(flash) {
       this.flash = flash
     },
-    showReveal(type) {
-      $('#reveal').foundation('open');
-    },
+    getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+  },
+  beforeCreate() {
+    if(window.location.hash == '#new') {
+      this.$router.push({name: 'new'})
+    }
+    if(window.location.hash == '#all') {
+      this.$router.push({name: 'list'})
+    }
   },
   mounted() {
+    $(document).foundation();
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
@@ -93,9 +103,21 @@ export default {
       this.reveal.title = title
       this.reveal.msg = msg
       this.reveal.project_id = pid
-      this.showReveal()
+      $('#reveal').foundation('open');
     });
-  },
+    bus.$on('closeReveal', () => {
+      if(this.reveal.type != null) {
+        this.reveal.type = null
+        this.reveal.title = null
+        this.reveal.msg = null
+        this.reveal.project_id = null
+        $('#reveal').foundation('close');
+      }
+    });
+    bus.$on('authEmit', (id) => {
+      this.auth = id
+    })
+  }
 }
 </script>
 
