@@ -3,8 +3,8 @@
     <transition name="fade" appear>
       <router-view
         :auth="auth"
-        :reveal-type="reveal.type"
         :contactSession="contactSession"
+        :reveal-type="reveal.type"
         :flash="flash">
       </router-view>
     </transition>
@@ -12,7 +12,6 @@
     <notifications />
 
     <Reveal
-      v-if="reveal"
       :reveal="reveal"
       :flash="flash">
     </Reveal>
@@ -26,7 +25,7 @@ import bus from "../bus"
 import Reveal from "../shared/reveal.vue"
 
 export default {
-  name: 'Project_Form',
+  name: 'Project_App',
   components: {
     Reveal
   },

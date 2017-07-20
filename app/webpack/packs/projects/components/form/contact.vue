@@ -6,58 +6,69 @@
       <div v-if="edit_contact || !contact.id">
         <div class="float-input">
           <FloatLabel
-            :attr="contact.email"
-            obj="contact"
+            v-validate="'required|email'"
+            data-vv-value-path="model"
+            data-vv-name="Contact Email"
             label="Contact Email"
+            :has-error="veeErrors.has('Contact Email')"
+            :error-text="veeErrors.first('Contact Email')"
+            :attr="contact.email"
             propKey="email"
-            validation=""></FloatLabel>
-          <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
+            obj="contact"></FloatLabel>
         </div>
 
         <div class="row">
           <div class="columns float-input">
             <FloatLabel
-              :attr="contact.first_name"
-              obj="contact"
+              v-validate="'required'"
+              data-vv-value-path="model"
+              data-vv-name="First Name"
               label="First Name"
+              :has-error="veeErrors.has('First Name')"
+              :error-text="veeErrors.first('First Name')"
+              :attr="contact.first_name"
               propKey="first_name"
-              validation=""></FloatLabel>
+              obj="contact"></FloatLabel>
           </div>
           <div class="columns float-input">
             <FloatLabel
-              :attr="contact.last_name"
-              obj="contact"
+              v-validate="'required'"
+              data-vv-value-path="model"
+              data-vv-name="Last Name"
               label="Last Name"
+              :has-error="veeErrors.has('Last Name')"
+              :error-text="veeErrors.first('Last Name')"
+              :attr="contact.last_name"
               propKey="last_name"
-              validation=""></FloatLabel>
+              obj="contact"></FloatLabel>
           </div>
         </div>
 
         <div class="float-input">
           <FloatLabel
-            :attr="contact.phone"
-            obj="contact"
+            v-validate="'required'"
+            data-vv-value-path="model"
+            data-vv-name="Phone Number"
             label="Phone Number"
+            :has-error="veeErrors.has('Phone Number')"
+            :error-text="veeErrors.first('Phone Number')"
+            :attr="contact.phone"
             propKey="phone"
-            validation=""></FloatLabel>
+            obj="contact"></FloatLabel>
         </div>
 
         <div class="row">
           <div class="columns float-input">
             <FloatLabel
-              :attr="contact.position"
-              obj="contact"
-              label="T-Mobile Position"
-              propKey="position"
-              validation=""></FloatLabel>
-          </div>
-          <div class="columns float-input">
-            <FloatLabel
+              v-validate=""
+              data-vv-value-path="model"
+              data-vv-name="Location"
+              label="Location"
+              :has-error="veeErrors.has('Location')"
+              :error-text="veeErrors.first('Location')"
               :attr="contact.branch"
-              obj="contact"
-              label="Branch"
               propKey="branch"
-              validation=""></FloatLabel>
+              obj="contact"></FloatLabel>
           </div>
         </div>
       </div>
@@ -94,7 +105,7 @@
             <span>{{contact.position}}</span>
           </li>
           <li v-if="contact.branch">
-            <label>Branch</label>
+            <label>Location</label>
             <span>{{contact.branch}}</span>
           </li>
         </ul>
@@ -116,7 +127,7 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'contact',
-  mixins: ['emitValidationErrors'],
+  mixins: [emitValidationErrors],
   components: {
     FloatLabel
   },
@@ -132,7 +143,6 @@ export default {
         first_name: '',
         last_name: '',
         phone: '',
-        position: '',
         branch: ''
       },
       contacts: [],
@@ -141,11 +151,11 @@ export default {
   watch: {
     'contact.email': function(newEmail) {
       this.$emit('contactEmit', {id: null})
-      if(this.contactQuery == null) {
+      if(this.contactQuery == null && newEmail && newEmail.indexOf('@') === -1) {
         this.findContact(newEmail)
       }
-        // console.log('sup')
-        this.mountContact()
+      // console.log('sup')
+      this.mountContact()
     },
     contactQuery() {
       this.mountContact()
@@ -233,6 +243,7 @@ export default {
             this.resetContact()
             //this.contactQuery = null
             this.$emit("contactEmit", {id: null})
+            this.veeErrors.clear();
           }
         })
 

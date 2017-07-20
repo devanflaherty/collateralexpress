@@ -2,24 +2,25 @@
   <div>
     <label class="float-label" :class="{floated: float, focused: focus}">{{label}}</label>
 
-    <textarea v-if="inputType == 'textarea'"
+    <textarea
+      v-if="inputType == 'textarea'"
       rows="4"
       :id="propKey"
-      v-validate="validation"
       v-model.lazy="model"
-      :name="propKey"
+      :name="label"
       @focus="floatLabel(true); focusLabel(true)"
-      @blur="floatLabel(false); focusLabel(false)">
+      @blur="floatLabel(false); focusLabel(false); emitInput()">
     </textarea>
 
     <input v-else
       :id="propKey"
-      v-validate="validation"
       v-model.lazy="model"
       @focus="floatLabel(true); focusLabel(true)"
-      @blur="floatLabel(false); focusLabel(false)"
-      :name="propKey"
+      @blur="floatLabel(false); focusLabel(false); emitInput()"
+      :name="label"
       type="text">
+
+      <span v-show="hasError" class="error-message">{{errorText}}</span>
   </div>
 </template>
 
@@ -29,8 +30,8 @@ import {emitValidationErrors} from './validation'
 
 export default {
   name: 'floatLabel',
-  mixins: [emitValidationErrors],
-  props: ['attr', 'label', 'propKey', 'obj', 'inputType', 'validation'],
+  // mixins: [emitValidationErrors],
+  props: ['attr', 'label', 'propKey', 'obj', 'inputType', 'has-error', 'error-text'],
   data() {
     return {
       float: false,
@@ -53,7 +54,6 @@ export default {
   methods: {
     setParentData() {
       if(this.model != null && this.key != null) {
-        console.log(this.key + " | " + this.model)
         if(this.label == "Other") {
           this.$emit('updateOther', this.model)
         } else if(this.obj == "contact") {
@@ -62,6 +62,9 @@ export default {
           bus.$emit('projectPropSet', this.key, this.model)
         }
       }
+    },
+    emitInput() {
+      this.$emit('input', this.model);
     },
     floatLabel(f) {
       if(this.model && this.model.length > 0 || f) {
@@ -81,7 +84,7 @@ export default {
   },
   mounted() {
     this.key = this.propKey
-    this.model = this.attr
+    this.model = Number.isInteger(this.attr) ? this.attr.toString() : this.attr
 
     bus.$on('emptyFloats', () => {
       this.model = ""

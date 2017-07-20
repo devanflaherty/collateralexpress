@@ -23,18 +23,28 @@
             <div class="columns">
               <div class="fieldset">
                 <div class="float-input">
-                  <FloatLabel :attr="project.title" label="Project Title" propKey="title" validation="required"></FloatLabel>
-                  <span v-show="veeErrors.has('title')">{{ veeErrors.first('title') }}</span>
-                </div>
-                <div class="float-input">
-                  <!-- <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit" validation="required"></FloatLabel> -->
-                  <!-- <input type="text" name="business_unit" v-model="project.business_unit" v-validate="'required'"> -->
-                  <!-- <span v-show="veeErrors.has('business_unit')">{{ veeErrors.first('business_unit') }}</span> -->
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Project Title"
+                    :has-error="veeErrors.has('Project Title')"
+                    :error-text="veeErrors.first('Project Title')"
+                    :attr="project.title"
+                    label="Project Title"
+                    propKey="title"></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.description" label="Project Description" propKey="description" inputType='textarea' validation="required"></FloatLabel>
-                  <span v-show="veeErrors.has('description')">{{ veeErrors.first('description') }}</span>
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Project Description"
+                    :has-error="veeErrors.has('Project Description')"
+                    :error-text="veeErrors.first('Project Description')"
+                    :attr="project.description"
+                    label="Project Description"
+                    propKey="description"
+                    inputType='textarea'></FloatLabel>
                 </div>
               </div>
             </div>
@@ -47,7 +57,15 @@
                 <h2>Project Details</h2>
                 <hr class="no-margin">
                 <div class="float-input">
-                  <FloatLabel :attr="project.due_date" label="Due Date" propKey="due_date" validation=""></FloatLabel>
+                  <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Due Date"
+                    :has-error="veeErrors.has('Due Date')"
+                    :error-text="veeErrors.first('Due Date')"
+                    :attr="project.due_date"
+                    label="Due Date"
+                    propKey="due_date"></FloatLabel>
                 </div>
 
                 <h5 style="margin-top: 1rem">Tactics</h5>
@@ -90,11 +108,27 @@
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.deliverables" label="Deliverables" propKey="deliverables" validation=""></FloatLabel>
+                  <FloatLabel
+                    v-validate="'numeric'"
+                    data-vv-value-path="model"
+                    data-vv-name="Deliverables"
+                    :has-error="veeErrors.has('Deliverables')"
+                    :error-text="veeErrors.first('Deliverables')"
+                    :attr="project.deliverables"
+                    label="Deliverables"
+                    propKey="deliverables"></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.reference" label="Asset Reference" propKey="reference" validation=""></FloatLabel>
+                  <FloatLabel
+                    v-validate="'url'"
+                    data-vv-value-path="model"
+                    data-vv-name="Asset Reference"
+                    :has-error="veeErrors.has('Asset Reference')"
+                    :error-text="veeErrors.first('Asset Reference')"
+                    :attr="project.reference"
+                    label="Asset Reference"
+                    propKey="reference"></FloatLabel>
                   <p class="hint">http://tmap.com/link/to/asset</p>
                 </div>
               </div>
@@ -108,13 +142,27 @@
                 <h3>Who is this for?</h3>
 
                 <div class="float-input">
-                  <!-- <FloatLabel :attr="project.business_unit" label="Business Unit" propKey="business_unit" validation="required"></FloatLabel> -->
-                  <input type="text" name="business_unit" v-model="project.business_unit" v-validate="'required'">
-                  <span v-show="veeErrors.has('business_unit')">{{ veeErrors.first('business_unit') }}</span>
+                  <FloatLabel
+                    v-validate=""
+                    data-vv-value-path="model"
+                    data-vv-name="Business Unit"
+                    :has-error="veeErrors.has('Business Unit')"
+                    :error-text="veeErrors.first('Business Unit')"
+                    :attr="project.business_unit"
+                    label="Business Unit"
+                    propKey="business_unit"></FloatLabel>
                 </div>
 
                 <div class="float-input">
-                  <FloatLabel :attr="project.target" label="Target Audience" propKey="target" validation=""></FloatLabel>
+                  <FloatLabel
+                    v-validate=""
+                    data-vv-value-path="model"
+                    data-vv-name="Target Audience"
+                    :has-error="veeErrors.has('Target Audience')"
+                    :error-text="veeErrors.first('Target Audience')"
+                    :attr="project.target"
+                    label="Target Audience"
+                    propKey="target"></FloatLabel>
                 </div>
               </div>
 
@@ -131,7 +179,7 @@
               <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
               <router-link v-if="project.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
               <a v-if="auth" href="/account/edit">Edit User Profile</a>
-              <a v-else="!auth && contactSession" :href="'/contacts' + contactSession + 'edit'">Edit Contact Profile</a>
+              <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
             </nav>
           </aside>
           <a
@@ -164,20 +212,15 @@
             </div>
           </div>
 
-          <!-- <div class="row">
-            <div class="column">
-              <div class="callout">
-                <h3>Assigned To</h3> -->
-
-                <!-- <UserFields :user="user"></UserFields> -->
-                <!-- <input type="hidden" v-model="project.user_id" name="project[user_id]">
+          <div class="row align-center">
+            <div class="small-12 medium-9 columns">
+              <div class="fieldset">
+                <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
+                <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
               </div>
             </div>
-          </div> -->
-          <div class="fieldset">
-            <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
-            <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
           </div>
+
         </div><!-- close column-->
       </div><!--close form container-->
     </form>
@@ -189,11 +232,12 @@
 import Axios from "axios"
 import bus from '../bus'
 
-// App Components
+// App Mixins
 import { onValidation } from "../shared/validation"
-import FloatLabel from "../shared/floatLabel.vue"
 import FormMethods from "./components/form/formMethods.js"
 import ProgressMixin from "./components/form/progressMixin.js"
+//Form Components
+import FloatLabel from "../shared/floatLabel.vue"
 import Status from "./components/form/status.vue"
 import MediaUploader from "./components/form/mediaUploader.vue"
 import Contact from "./components/form/contact.vue"
@@ -252,16 +296,6 @@ export default {
     page_title() {
       return this.$route.meta.title
     },
-    projectId() {
-      // sets a projectId from the route params
-      // This validates wether we need to get project data
-      if (this.$route.params.id) {
-        this.project.id = this.$route.params.id
-        return this.$route.params.id
-      } else {
-        return null
-      }
-    },
     EmptyProject() {
       // we first want to create a object that is equal to our empty project
       var empty = {
@@ -307,8 +341,6 @@ export default {
           .then( response => {
             if(vm.auth == null && vm.contactSession != response.data.project.contact_id) {
               vm.$router.push({ name: 'list' })
-              console.log(vm.contactSession)
-              console.log(response.data.project.contact_id)
               bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to that project.")
             } else {
               vm.page_title = response.data.project.id

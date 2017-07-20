@@ -1,7 +1,6 @@
 <template>
   <div class="flex align-center align-middle">
     <div class="flex align-center align-middle">
-      <img src="/assets/loading.gif">
       <h5>Loading</h5>
     </div>
   </div>
