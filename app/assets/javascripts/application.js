@@ -40,13 +40,13 @@ document.addEventListener("turbolinks:load", function() {
     active = mySwiper.activeIndex + 1
     $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in')
 
-    mySwiper.on("onSlideChangeStart",(mySwiper) => {
+    mySwiper.on("onSlideChangeStart",(function (mySwiper) {
       active = mySwiper.activeIndex + 1
       $("#stepIndex").text(active)
       $(".step-desc").removeClass('fade-in')
     });
 
-    mySwiper.on("onSlideChangeEnd",(mySwiper) => {
+    mySwiper.on("onSlideChangeEnd",(function (mySwiper) {
       $("[data-key="+ active +"]").find($(".step-desc")).addClass('fade-in')
     });
   }
