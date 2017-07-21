@@ -40,18 +40,9 @@ export default {
         msg: null,
         project_id: null
       },
-      auth: null
+      auth: null,
+      contactSession: null
     }
-  },
-  computed: {
-    contactSession() {
-      var cid = this.getCookie('current_contact_id')
-      if (cid) {
-        return parseInt(cid)
-      } else {
-        return null
-      }
-    },
   },
   watch: {
     flash: function(flash) {
@@ -69,6 +60,14 @@ export default {
     },
     updateFlash(flash) {
       this.flash = flash
+    },
+    getContactSession() {
+      var cid = this.getCookie('current_contact_id')
+      if (cid) {
+        return parseInt(cid)
+      } else {
+        return null
+      }
     },
     getCookie(name) {
         var nameEQ = name + "=";
@@ -91,12 +90,17 @@ export default {
   },
   mounted() {
     $(document).foundation();
+    this.contactSession = this.getContactSession()
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
     })
     bus.$on('flashEmit', (flash) => {
       this.updateFlash(flash)
+    })
+    bus.$on('contactSessionEmit', () => {
+      alert('get contact')
+      this.contactSession = this.getContactSession()
     })
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type

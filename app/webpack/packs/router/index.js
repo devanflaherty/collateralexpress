@@ -65,6 +65,7 @@ const router = new VueRouter ({
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
+  // Set Auth
   Axios.get('/authenticate.json')
   .then(function (response) {
     if (response.data.user.id) {
@@ -73,6 +74,11 @@ router.beforeEach((to, from, next) => {
   }).catch(function (error) {
     console.log('Trouble authneticating user')
   })
+
+  // Set Session
+  bus.$emit('contactSessionEmit')
+
+  // Set Title
   var vueTitle = to.meta.title
   // if page has a set title do
   if (vueTitle) {
