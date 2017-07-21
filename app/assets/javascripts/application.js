@@ -18,7 +18,7 @@
 //= require_tree .
 //=
 document.addEventListener("turbolinks:load", function() {
-  // $(document).foundation();
+  $(document).foundation();
   const element = document.getElementById("processSlides");
   if(element) {
     var mySwiper = new Swiper ('.swiper-container', {

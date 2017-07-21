@@ -142,22 +142,14 @@
 
 #assets {
   margin: 0;
-  padding: 6rem 2rem;
+  height: 50vh;
+  min-height: 450px;
+  padding: 0 2rem;
   @include breakpoint(medium) {
     padding: 6rem;
   }
   .row {
     position: relative;
-  }
-
-
-  blockquote {
-    p {
-      line-height: 1;
-      strong {
-        line-height: 1;
-      }
-    }
   }
   .button {
     color: $white;
