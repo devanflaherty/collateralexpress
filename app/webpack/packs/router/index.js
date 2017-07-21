@@ -18,11 +18,13 @@ const authRequest = function(to, from, next) {
     } else if (response.data.contact.id) {
       next()
     } else {
-      alert('redirect')
-      window.location.href = "/account/login"
+      bus.$emit('setRedirect', from, to)
+      next()
+      // bus.$emit('setRedirect', from)
+      // window.location.href = "/contact/login"
     }
   }).catch(function (error) {
-    window.location.href = "/account/login"
+    window.location.href = "/"
   })
 }
 

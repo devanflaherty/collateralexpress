@@ -10,11 +10,6 @@ const FormMethods = {
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
 
-      // this.$validator.validateAll().then(result => {
-      //   if (result) {
-      //   }
-      // }
-
       // If there are no errors
       if (!this.veeErrors.any()) {
 
@@ -46,7 +41,7 @@ const FormMethods = {
           if (!this.project.id) {
             // ** if this is a new project
             console.log('submitted')
-            //** if is a new project but contact exist
+            // ** if is a new project but contact exist
             Axios.post('/projects/', axiosConfig)
             .then(function (response) {
               // IF SUCCESFUll

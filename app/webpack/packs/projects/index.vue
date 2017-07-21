@@ -1,5 +1,5 @@
 <template>
-  <div id="projectApp">
+  <main id="projectApp">
     <transition name="fade" appear>
       <router-view
         :auth="auth"
@@ -16,7 +16,7 @@
       :flash="flash">
     </Reveal>
     <!-- @deleteRequest="deleteProject" -->
-  </div>
+  </main>
 </template>
 
 <script>
@@ -98,10 +98,6 @@ export default {
     bus.$on('flashEmit', (flash) => {
       this.updateFlash(flash)
     })
-    bus.$on('contactSessionEmit', () => {
-      alert('get contact')
-      this.contactSession = this.getContactSession()
-    })
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
       this.reveal.title = title
@@ -120,6 +116,9 @@ export default {
     });
     bus.$on('authEmit', (id) => {
       this.auth = id
+    })
+    bus.$on('contactSessionEmit', () => {
+      this.contactSession = this.getContactSession()
     })
   }
 }

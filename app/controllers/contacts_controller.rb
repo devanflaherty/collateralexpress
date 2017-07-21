@@ -69,14 +69,22 @@ class ContactsController < ApplicationController
     end
   end
 
-  # def show
-  #   @contact = Contact.find(params[:id])
-  # end
-  #
-  # def new
-  #   @contact = Contact.new
-  # end
-  #
+  def login
+    if params[:contact_email]
+      if params[:persistent_url]
+        url = params[:persistent_url]
+      end
+
+      @contact = Contact.search(params[:contact_email]).first
+      if @contact
+        cookies[:current_contact_id] = @contact.id
+        flash[:notice] = "Succesfully logged in #{@contact.full_name}."
+        respond_to do |format|
+          format.json { render :json => {flash: flash, url: url} }
+        end
+      end
+    end
+  end
 
   def edit
     if cookies[:current_contact_id] == params[:id]

@@ -16,6 +16,7 @@ class ProjectsController < ApplicationController
     respond_to do |format|
       if @project.save
         ProjectMailer.new_project(@project).deliver_later
+        ProjectMailer.new_project_to_admin(@project).deliver_later
 
         flash[:notice] = "Project '#{@project.title}' created succesfully."
 

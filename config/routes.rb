@@ -12,8 +12,9 @@ Rails.application.routes.draw do
     }
 
   resources :projects, :except => [:index, :new, :edit, :show]
-  resources :contacts
+  resources :contacts, :except => [:new, :show]
   post 'contacts/clear', to: 'contacts#clear', method: :post
+  post 'contacts/login', to: 'contacts#login', method: :post
   get 'authenticate', to: 'authenticates#index'
 
   resources :media, only: [:create, :delete, :destroy]

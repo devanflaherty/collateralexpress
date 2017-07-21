@@ -1,12 +1,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></pre>
-<h1>Your project '<%= @project.title %>' was created succesfully</h1>
+<h1>'<%= @project.title %>' has been created</h1>
 
-<p>Attached is a summary of your Project Request '<%= @project.title %>' you submitted on <%= @project.created_on %>.
-  To view your full request click the link below.</p>
+<p>Attached is a summary of the Project Request '<%= @project.title %>' submitted on <%= @project.created_on %>, by <%= @contact.full_name %>.</p>
 
-<p>As this project's status is changed you will be notified via email.</p>
+<p>To update the project's status, to flag, or archive it view this project online by clicking the link below</p>
 
-<a href="http://localhost:3000/project/<%= @project.slug %>"
+<a href="http://localhost:3000/project/<%= @project.slug %>?admin=true"
   style="display:block; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; background: #EB0183; background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
 
 <hr>
@@ -45,10 +44,9 @@
   </p>
 <% end %>
 
-<a href="localhost:3000/project/<%= @project.slug %>"
+<a href="localhost:3000/project/<%= @project.slug %>?admin=true"
   style="display:block; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; background: #EB0183; background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
 
 <hr>
 
-<p><small>This email was sent out to you, because you are the contact associated to this project request.
-If you would like to change your contact information please go here <a href="http://localhost:3000/contact/<%= @project.contact_id %>/edit">.</small></p>
+<p><small>This email was sent out to you, because you are the assigned admin to this project request.</small></p>
