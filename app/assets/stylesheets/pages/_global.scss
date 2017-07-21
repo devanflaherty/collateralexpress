@@ -1,11 +1,18 @@
 $padding: 6rem;
 section {
   position: relative;
-  // padding: $padding 0;
   .section-heading {
     text-align: center;
     margin-bottom: $padding;
   }
+  &.pad {
+    padding: $padding 0;
+  }
+}
+
+// Flex classes
+.space-between {
+  justify-content: space-between;
 }
 
 hr {
