@@ -333,6 +333,9 @@ export default {
     tactic_other(other) {
       this.setTactics(other)
     },
+    'project.contact_id': function(id) {
+      this.validateUser(this.contactSession)
+    },
     contactSession(id) {
       this.validateUser(id)
       this.contactQuery = id
@@ -345,7 +348,7 @@ export default {
   },
   methods: {
     validateUser(id) {
-      if(id == this.project.contact_id) {
+      if(id == this.project.contact_id && id != null) {
         this.validUser = true
       }
     },

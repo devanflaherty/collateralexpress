@@ -150,6 +150,9 @@
       contactSession(id) {
         this.validateUser(id)
       },
+      'contact.id': function(id) {
+        this.validateUser(this.contactSession)
+      },
       validUser(status) {
         if(this.validUser == true) {
           this.fetchData()
@@ -158,7 +161,7 @@
     },
     methods: {
       validateUser(id) {
-        if(id == this.contact.id) {
+        if(id == this.contact.id && id != null) {
           this.validUser = true
         }
       },
@@ -229,7 +232,7 @@
       if(this.auth != null) {
         this.validUser = true
       }
-      this.validateUser(this.contact_session)
+      this.validateUser(this.contactSession)
       bus.$on('projectPropSet', (key, val) => {
         this.$set(this.project, key, val)
       })
