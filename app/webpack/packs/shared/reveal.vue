@@ -1,5 +1,5 @@
 <template>
-  <div class="reveal" :class="reveal.type" id="reveal" data-reveal>
+  <div class="reveal" :class="reveal.type" id="reveal" data-reveal data-close-on-click="false">
     <h1 v-if="reveal.type == 'new'">Project '{{reveal.title}}' saved!</h1>
     <h1 v-else-if="reveal.type == 'update'">Project '{{reveal.title}}' Updated!</h1>
     <h1 v-else-if="reveal.type == 'notice'">{{reveal.title}}</h1>
@@ -21,7 +21,8 @@
 
     <button v-if="reveal.type == 'delete'" @click="deleteEmit" class="button alert">Delete</button>
 
-    <button class="close-button" data-close aria-label="Close modal" type="button">
+
+    <button v-if="!reveal.project_id" class="close-button" data-close aria-label="Close modal" type="button">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>

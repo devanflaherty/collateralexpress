@@ -164,13 +164,8 @@
           // var filteredProjects = vm.projects.filter(p => p.id !== project.id)
           // vm.projects = filteredProjects
 
-          for(var f in response.data.flash) {
-            var flash = response.data.flash[f]
-            if(flash[0] == 'notice') {
-              bus.$emit('flashEmit', flash[1])
-              console.log(flash[1])
-            }
-          }
+          bus.$emit('flashEmit', response.data.flash[0][1])
+
           var url = ""
           if(vm.scope != null) {
             url = vm.resource_url + "?q=" + vm.scope + "&page=" + vm.pagination.current

@@ -52,12 +52,8 @@
             this.contact_name = response.data.contact.first_name + " " + response.data.contact.last_name
             bus.$emit('contactSessionEmit', response.data.contact.id)
 
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              if(flash[0] == 'notice') {
-                bus.$emit('flashEmit', 'Log In Status', flash[1])
-              }
-            }
+            bus.$emit('flashEmit', 'Login Status', response.data.flash[0][1])
+
           }).catch(error => {
             console.log(error)
           })

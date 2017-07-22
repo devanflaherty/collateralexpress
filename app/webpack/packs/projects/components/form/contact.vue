@@ -170,7 +170,6 @@ export default {
   watch: {
     'contact.email': function(newEmail, oldEmail) {
       if(newEmail != oldEmail && this.contact.email != null) {
-        // this.$emit('contactEmit', {id: null})
         this.findContact(newEmail)
       }
       this.mountContact()

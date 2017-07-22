@@ -47,6 +47,14 @@ export default {
       contactSession: null
     }
   },
+  watch: {
+    'flash.title': function(){
+      this.$notify({
+        title: this.flash.title,
+        text: this.flash.text
+      })
+    }
+  },
   methods: {
     updateMessage(message) {
       this.message = message
@@ -57,10 +65,6 @@ export default {
     updateFlash(title, text) {
       this.flash.title = title
       this.flash.text = text
-      this.$notify({
-        title: this.flash.title,
-        text: this.flash.text
-      })
     },
     getContactSession() {
       var cid = this.getCookie('current_contact_id')

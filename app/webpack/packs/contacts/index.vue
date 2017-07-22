@@ -204,14 +204,7 @@ export default {
             bus.$emit('messageEmit', vm.full_name + " has been saved!")
             bus.$emit('showReveal','contact', response.data.full_name, 'congratulations, you just created a contact.', vm.contact.id);
 
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              if(flash[0] == 'notice') {
-                vm.$emit('flashEmit', flash[1])
-                console.log(flash[1])
-              }
-            }
-
+            bus.$emit('flashEmit', response.data.flash[0][1])
           })
           .catch(function (error) {
             // IF THERE ARE ERRORS
@@ -225,15 +218,7 @@ export default {
             // And then we will launch the Foundation Reveal
             bus.$emit('showReveal','update', vm.full_name, 'congratulations, you just updated your contact.', vm.contact.id);
 
-            // We also want to grab the flash that was sent in the response
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              // for each flash message that matches notice
-              if(flash[0] == 'notice') {
-                // We will update the parents flash data
-                bus.$emit('flashEmit', flash[1])
-              }
-            }
+            bus.$emit('flashEmit', response.data.flash[0][1])
           })
           .catch(function (error) {
             // If there is an error we show the Foundation Reveal

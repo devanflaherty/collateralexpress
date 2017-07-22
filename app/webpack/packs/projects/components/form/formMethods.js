@@ -13,9 +13,6 @@ const FormMethods = {
       // If there are no errors
       if (!this.veeErrors.any()) {
 
-        // Let's go on with the submission!
-        // Let's set up some configurations
-
         if(this.contactQuery || this.project.contact_id || this.contactSession) {
           var cid = null
           if (this.contactQuery != null) {
@@ -25,7 +22,6 @@ const FormMethods = {
           } else if (this.contactSession) {
             cid = this.contactSession
           }
-          console.log(cid)
           bus.$emit('postContact', cid)
         } else {
           bus.$emit('postContact')
@@ -41,12 +37,9 @@ const FormMethods = {
       .then(function (response) {
         bus.$emit('closeReveal')
 
-        for(var f in response.data.flash) {
-          var flash = response.data.flash[f]
-          if(flash[0] == 'notice') {
-            bus.$emit('flashEmit', flash[1])
-          }
-        }
+        vm.$notify({
+          title: response.data.flash[0][1]
+        })
         // If Delete is succesfull we route to the list page
         vm.$router.push({ name: 'list' })
       })
@@ -89,6 +82,8 @@ const FormMethods = {
     }
   },
   mounted() {
+    bus.$off('submitProjectForm')
+
     bus.$on('deleteRequest', () => {
       this.deleteProject()
     })
@@ -102,10 +97,11 @@ const FormMethods = {
       }
       if (!this.project.id) {
         // ** if this is a new project
-        console.log('submitted')
         // ** if is a new project but contact exist
         Axios.post('/projects/', axiosConfig)
         .then(function (response) {
+          console.log('submitted')
+
           // IF SUCCESFUll
           if(vm.dzUpload) {
             bus.$emit('uploadMedia', response.data.project.id)
@@ -113,12 +109,10 @@ const FormMethods = {
           bus.$emit('messageEmit', vm.project.title + " has been created!")
           bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
 
-          for(var f in response.data.flash) {
-            var flash = response.data.flash[f]
-            if(flash[0] == 'notice') {
-              bus.$emit('flashEmit', flash[1])
-            }
-          }
+          // vm.$notify({
+          //   title: response.data.flash[0][1]
+          // })
+          bus.$emit('flashEmit', response.data.flash[0][1])
 
         })
         .catch(function (error) {
@@ -137,34 +131,28 @@ const FormMethods = {
           // And then we will launch the Foundation Reveal
           bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
 
-
           // We also want to grab the flash that was sent in the response
-          for(var f in response.data.flash) {
-            var flash = response.data.flash[f]
-            // for each flash message that matches notice
-            if(flash[0] == 'notice') {
-              // We will update the parents flash data
-              bus.$emit('flashEmit', flash[1])
-            }
-          }
+          // vm.$notify({
+          //   title: response.data.flash[0][1]
+          // })
+          bus.$emit('flashEmit', response.data.flash[0][1])
         })
         .catch(function (error) {
           // If there is an error we show the Foundation Reveal
           bus.$emit('showReveal','error', vm.project.title, error.message);
           // Get the flash
-          for(var f in response.data.flash) {
-            var flash = response.data.flash[f]
-            // for each flash message that matches notice
-            if(flash[0] == 'notice') {
-              // We will update the parents flash data
-              bus.$emit('flashEmit', flash[1])
-            }
-          }
+          vm.$notify({
+            title: response.data.flash[0][1]
+          })
           // and run our error function
           vm.axErrors(error.response, error.request, error.message);
         });
       }
     })
+  },
+  beforeDestroy() {
+    bus.$off('submitProjectForm')
+    bus.$off('deleteRequest')
   }
 }
 
