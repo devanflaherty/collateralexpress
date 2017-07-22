@@ -1,11 +1,11 @@
 <template>
-  <div class="fieldset">
+  <div>
     <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
     <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
       <li class="column" v-for="media in mediaFiles" v-bind:key="media">
         <div class="card">
 
-          <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.thumb.url + ')' }">
+          <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.url + ')' }">
             <button @click.prevent="removeMedia(media.id)">
               <icon name="close"></icon><br>
               <span>Remove File</span>
@@ -81,14 +81,14 @@
         Axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
             console.log('media updated')
-            bus.$emit("mediaEmit", response.data.project.medias)
+            bus.$emit("mediaEmit", response.data.project_media.medias)
         })
 
         bus.$emit('closeReveal')
         this.$refs.dropzoneUploader.removeAllFiles()
       },
       readyMedia() {
-        bus.$emit('readyDZ')
+        bus.$emit('readyDZ', true)
       },
       removeMedia(id) {
         var vm = this

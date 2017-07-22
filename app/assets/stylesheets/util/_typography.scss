@@ -5,10 +5,128 @@
 h1, h2, h3, h4 {
   text-transform: uppercase;
 }
-blockquote {
+h2.banner {
+  color: $white;
+  display: inline-block;
+  padding: .25rem 1rem;
+  font-size: 3rem;
+  background: $primary-color;
   font-family: $condensed;
+  &.white-banner {
+    background: $white;
+    color: $black;
+  }
+  &.black-banner {
+    background: $black;
+    color: $white;
+  }
+}
+h3.banner {
+  color: $white;
+  display:inline;
+  box-shadow:.5rem 0 0 $primary-color, -.75rem 0 0 $primary-color;
+  position: relative;
+  padding: .25rem 1rem;
+  font-size: 2rem;
+  background: $primary-color;
+  &.add-tag {
+    display:inline;
+    &:after {
+      content: '';
+      display: block;
+      background: $primary-color;
+      height: 2.8rem;
+      width: 1rem;
+      position: absolute;
+      z-index: 0;
+      left: -1.5rem;
+      bottom: 0;
+    }
+}
+  &.white-banner {
+    background: $white;
+    color: $black;
+    box-shadow:1rem 0 0 $black, 1rem 0 0 $black;
+  }
+  &.black-banner {
+    background: $black;
+    color: $white;
+  }
+}
+h5 {
+  font-family: $sans-bold;
+  font-weight: normal;
 }
 
+blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: $condensed;
+  p {
+    color: $white;
+    text-transform: uppercase;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    strong {
+      display: inline;
+      padding: .25rem 1rem;
+      font-size: 3.5rem;
+      background: $primary-color;
+      box-shadow:.5rem 0 0 $primary-color, -.75rem 0 0 $primary-color;
+      position: relative;
+      &:after {
+        content: '';
+        display: block;
+        background: $primary-color;
+        height: 73px;
+        width: 1rem;
+        position: absolute;
+        z-index: 0;
+        left: -1.5rem;
+        bottom: 0;
+      }
+    }
+    &.white-banner {
+      strong {
+        color: $black;
+        background: $white;
+        box-shadow:.5rem 0 0 $white, -.75rem 0 0 $white;
+        &:after {
+          background: $white;
+        }
+      }
+    }
+  }
+  @include breakpoint(small only) {
+    p {
+      font-size: 1rem;
+      line-height: 1.4;
+      strong {
+        font-size: 2rem;
+        &:after {
+          left: -1rem;
+          height: 45px;
+        }
+      }
+    }
+  }
+  @include breakpoint(medium only) {
+    p {
+      font-size: 1.5rem;
+      strong {
+        font-size: 2.5rem;
+        &:after {
+          left: -1rem;
+          height: 54px;
+        }
+      }
+    }
+  }
+}
+p {
+  margin: 1rem 0;
+}
 .contrast-text {
   p {
     color: $light-gray;

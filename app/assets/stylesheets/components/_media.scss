@@ -1,0 +1,77 @@
+#fileUploader {
+  background: white;
+  padding: 4rem 1rem;
+  margin: 2rem 0;
+  @include breakpoint(medium) {
+    padding: 4rem 4rem;
+    margin: 2rem 0;
+  }
+}
+
+#fileList {
+  list-style-type: none;
+  li {
+    list-style-type: none;
+    .card {
+      border-radius: 6px;
+      position: relative;
+    }
+    .thumb-container {
+      @include aspect-ratio(1,1);
+      background-size: cover;
+      background-position: center;
+      .filename {
+        display: block;
+        padding: .5rem;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        text-align: center;
+        font-size: .75rem;
+        color: $white;
+        background: rgba($black, 0.33);
+      }
+
+      button {
+        cursor: pointer;
+        background: rgba(0,0,0,0);
+        position: absolute;
+        width: 100%;
+        margin: auto;
+        top: 0; bottom: 0;
+        left: 0; right: 0;
+        transition: all 0.5s ease;
+        svg {
+          opacity: 0;
+          transform: scale(.5);
+          transition: transform 0.5s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+        }
+        span {
+          display: block;
+          position: absolute;
+          bottom: 1rem;
+          width: 100%;
+          opacity: 0;
+          color: $white;
+          font-size: .8rem;
+          font-family: $sans-bold;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          transition: all 0.5s ease;
+        }
+        &:hover {
+          background: rgba(0,0,0,0.66);
+          svg {
+            opacity: 1;
+            transform: scale(2);
+            fill: $primary-color;
+          }
+          span {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}

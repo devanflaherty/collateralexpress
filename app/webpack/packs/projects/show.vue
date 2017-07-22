@@ -1,116 +1,155 @@
 <template>
-  <div id="projectShow">
-    <LoadScreen v-if="loading"></LoadScreen>
-    <div class="row" v-if="!loading">
-      <!-- Project Info -->
-      <div class="columns medium-7">
-        <router-link v-if="project.id" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
-
-        <hr>
-
-        <AdminUpdates v-if="auth" :project="project"></AdminUpdates>
-
-        <div id="projectInfo">
-          <h2>{{project.title}}</h2>
-          <span v-if="project.existing" class="exists-tag-true">
-            Existing Project
-          </span>
-          <span v-else class="exists-tag-false">
-            new Project
-          </span>
-
-          <div class="dates">
-            <icon name="calendar"></icon>
-            <span class="created-date">{{project.created_at}}</span>
-            <icon name="arrow-right"></icon>
-            <span class="due-date">{{project.due_date}}</span>
+  <div>
+    <hr class="no-margin">
+    <section id="projectShow" v-if="validUser == true">
+      <LoadScreen v-if="loading"></LoadScreen>
+      <div class="row expanded small-collapse" v-else>
+        <!-- Project Info -->
+        <div class="columns small-12 medium-8 large-9 pad-small">
+          <div class="pad-in-small">
+            <router-link v-if="project.id" class="" :to="{name: 'new'}">Add New Project</router-link>
           </div>
-        </div>
 
-        <div class="description">
-          <h3>Project Description</h3>
-          {{project.description}}
-        </div>
+          <hr class="no-margin">
 
-        <div class="reference" v-if="project.reference">
-          <h3>Link to reference</h3>
-          <a :href="project.reference" target="_blank">View Link</a>
-        </div>
+          <AdminUpdates v-if="auth" :project="project"></AdminUpdates>
 
-        <div class="files" v-if="project.medias">
-          <h3>Files</h3>
-          <div class="row small-3-up">
-            <div class="column" v-for="media in project.medias">
-              <div class="card">
-                <img :src="media.file.thumb.url">
-                {{media.name}}
-                <a :href="media.file.url" class="button rounded">
-                  <icon name="download"></icon> Download
-                </a>
-              </div>
+          <div id="projectInfo" class="pad-small pad-in-small">
+            <h2 class="banner" :class="{'black-banner':project.archive}">{{project.title}}</h2><br>
+            <span class="tag flagged" v-if="project.flagged">Flagged</span>
+            <span class="tag" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}" v-if="project.status">{{project.status}}</span>
+            <span v-if="project.existing" class="tag exists-tag-true">
+              Existing Project
+            </span>
+            <span v-else class="exists-tag-false">
+              new Project
+            </span>
+
+            <div class="dates" style="margin-top: 2rem;">
+              <icon name="calendar"></icon>
+              <span class="created-date">{{project.created_at}}</span>
+              <icon name="arrow-right"></icon>
+              <span class="due-date">{{project.due_date}}</span>
             </div>
           </div>
+
+          <div class="description pad-default pad-in-small">
+            <h3>Project Description</h3>
+            {{project.description}}
+          </div>
+
+          <div class="legal pad-small pad-in-small" v-if="project.legal">
+            <h3>Legal</h3>
+            {{project.legal}}
+          </div>
+
+          <div class="files pad-small pad-in-small white-bg" v-if="project_media">
+            <div class="row">
+              <div class="columns">
+                <h3>Files</h3>
+              </div>
+            </div>
+            <ul id="fileList" class="row small-up-2 medium-up-3 large-up-4">
+              <li class="column" v-for="media in project_media">
+
+                <div class="card">
+                  <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.thumb.url + ')' }">
+                    <span class="filename" v-if="media.name">{{media.name}}</span>
+                  </div>
+                  <!-- <img :src="media.file.thumb.url"> -->
+                  <a :href="media.file.url" class="button rounded">
+                    <icon name="download"></icon> Download
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div id="deliveryInfo" class="pad-in-small">
+            <!-- add comma breaker -->
+            <div class="tactics pad-small" v-if="project.tactic">
+              <h3>Tactics</h3>
+              <span v-for="tactic in project.tactic" class="tag">{{tactic}}</span>
+            </div>
+
+            <div id="details" class="row pad-small expanded" style="margin-left: -0.625rem; margin-right: -0.625rem;">
+              <div class="columns small-6 medium-4 large-3" v-if="project.deliverables">
+                <h4>Deliverables</h4>
+                <h6>{{project.deliverables}}</h6>
+              </div>
+              <div class="columns small-6 medium-4 large-3" v-if="project.target">
+                <h4>Target Audience</h4>
+                <h6>{{project.target}}</h6>
+              </div>
+              <div class="columns small-6 medium-4 large-3" v-if="project.business_unit">
+                <h4>Business Unit</h4>
+                <h6>{{project.business_unit}}</h6>
+              </div>
+              <div class="columns small-6 medium-4 large-3" v-if="project.translation">
+                <h4>Translation</h4>
+                <h6>{{project.translation ? 'Needs Translation' : "No Translation needed"}}</h6>
+              </div>
+            </div>
+
+            <div class="reference" v-if="project.reference">
+              <h4>Link to reference</h4>
+              <a class="button hollow expanded" :href="project.reference" target="_blank">View Link</a>
+            </div>
+          </div>
+
         </div>
+        <!-- close Project Panel -->
+        <!-- Contact Info -->
+        <aside id="contact" class="columns small-12 medium-4 large-3">
+          <div class="aside-container">
+            <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
+              <router-link v-if="project.id" class="button expanded" :class="{'disabled' : project.archive}" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+            </nav>
+            <nav v-if="contactSession || auth">
+              <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
+              <a v-if="auth" href="/account/edit">Edit User Profile</a>
+              <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
+              <a v-if="project.id"
+                id="deleteProject"
+                style="float: right"
+                class="delete-project"
+                @click="deletePrompt">
+                <icon name="trash"></icon>
+                Delete
+              </a>
+            </nav>
+            <div id="contactCard">
+              <hr class="no-margin">
+              <h3 class="banner">Contact</h3>
 
-        <div id="deliveryInfo">
-          <hr>
-          <!-- add comma breaker -->
-          <div class="tactics" v-if="project.tactic">
-            <h3>Tactics</h3>
-            <span v-for="tactic in project.tactic">{{tactic}}</span>
+              <h4 v-if="contact.full_name">{{contact.full_name}}</h4>
+              <ul>
+                <li v-if="contact.email">
+                  <label>Email</label>
+                  <a :href="'mailto:' + contact.email"><span>{{contact.email}}</span></a>
+                </li>
+                <li v-if="contact.phone">
+                  <label>Phone</label>
+                  <span>{{contact.phone}}</span>
+                </li>
+                <li v-if="contact.position">
+                  <label>Position</label>
+                  <span>{{contact.position}}</span>
+                </li>
+                <li v-if="contact.branch">
+                  <label>Location</label>
+                  <span>{{contact.branch}}</span>
+                </li>
+              </ul>
+            </div><!--close callout-->
           </div>
+        </aside>
+      </div><!-- close row -->
+    </section><!-- close projectShow -->
 
-          <div class="target" v-if="project.target">
-            <h3>Target</h3>
-            <h4>{{project.target}}</h4>
-          </div>
-
-          <div class="business-unit" v-if="project.business_unit">
-            <h4>Business Unit: {{project.business_unit}}</h4>
-          </div>
-
-          <div class="translation" v-if="project.translation">
-            <h4>Needs translation</h4>
-          </div>
-        </div>
-
-      </div>
-      <!-- close Project Panel -->
-
-
-      <!-- Contact Info -->
-      <div class="columns medium-5">
-        <h3>Contact Information</h3>
-
-        <ul>
-          <li v-if="contact.avatar">
-            <span>Avatar</span>
-            <h5>{{contact.avatar}}</h5>
-          </li>
-          <li v-if="contact.full_name">
-            <span>Name</span>
-            <h5>{{contact.full_name}}</h5>
-          </li>
-          <li v-if="contact.email">
-            <span>Email</span>
-            <h5>{{contact.email}}</h5>
-          </li>
-          <li v-if="contact.phone">
-            <span>Phone</span>
-            <h5>{{contact.phone}}</h5>
-          </li>
-          <li v-if="contact.branch">
-            <span>Branch</span>
-            <h5>{{contact.branch}}</h5>
-          </li>
-          <li v-if="contact.position">
-            <span>Position</span>
-            <h5>{{contact.position}}</h5>
-          </li>
-        </ul>
-
-      </div>
-    </div><!-- close row -->
+    <div id="login" v-if="!loading && validUser == false">
+      <ContactLogin :project-user="contact.id"></ContactLogin>
+    </div>
   </div>
 </template>
 
@@ -118,20 +157,24 @@
   import Axios from "axios"
   import bus from "../bus.js"
 
+  import ContactLogin from "../shared/contactLogin.vue"
   import AdminUpdates from "./components/form/adminUpdates.vue"
 
   export default {
     name: 'Show',
     components: {
-      AdminUpdates
+      AdminUpdates,
+      ContactLogin
     },
     props: ['contactSession', 'auth'],
     data() {
       return {
         loading: false,
+        validUser: false,
         project: {
           id: null
         },
+        project_media: [],
         contact: {},
         dzUpload: false,
         error: null
@@ -139,11 +182,24 @@
     },
     watch: {
       '$route': 'fetchData',
-      // auth() {
-      //   this.direct()
-      // }
+      contactSession(id) {
+        this.validateUser(id)
+      },
+      'contact.id': function(id) {
+        this.validateUser(this.contactSession)
+      },
+      validUser(status) {
+        if(this.validUser == true) {
+          this.fetchData()
+        }
+      }
     },
     methods: {
+      validateUser(id) {
+        if(id == this.contact.id && id != null) {
+          this.validUser = true
+        }
+      },
       fetchData() {
         this.error = this.post = null
         this.loading = true
@@ -151,35 +207,67 @@
       },
       getProject() {
         var vm = this
+
+        //If we have route params
         if (vm.$route.params.id) {
           var pid = vm.$route.params.id
 
-          Axios.get('/api/v1/projects/' + pid + '.json')
-          .then( response => {
-            if(vm.auth == null && vm.contactSession != response.data.project.contact_id) {
-              vm.$router.push({ name: 'list' })
-              bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to that project.")
-            } else {
-              vm.loading = false
-              vm.project = response.data.project
-              vm.contact = response.data.contact
+          if(this.auth || this.contactSession) {
+            // if there is an admin user authorized or if we find a contact Session
+            // Let's make a request
+            Axios.get('/api/v1/projects/' + pid + '.json')
+            .then( response => {
+              // Before we update our DOM we want to make sure
+              // if we have a contact session but no admin user the contact has access
+              if(vm.contactSession != response.data.contact.id && vm.auth == null) {
+                vm.$notify({
+                  title: "Please Log In",
+                  text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
+                })
+              } else {
+                vm.loading = false
+                vm.validUser = true
+                vm.project = response.data.project
+                vm.project_media = response.data.project_media.medias
+                vm.contact = response.data.contact
 
-              document.title = vm.project.title + " | Collateral Express"
-            }
-          }).catch(error => {
-            // Push to 404
-            vm.$router.push({ name: 'list' })
-            console.log(error)
-          })
+                document.title = vm.project.title + " | Collateral Express"
+              }
+            }).catch(error => {
+              // Push to 404
+              vm.$router.push({ name: 'list' })
+              console.log(error)
+            })
+          } else {
+            // if no valid session is found
+            // We will just grab some Ids so we can validate
+            Axios.get('/api/v1/projects/' + pid + '.json')
+            .then( response => {
+                vm.loading = false
+                vm.$set(vm.project, 'id', response.data.project.id)
+                vm.$set(vm.project, 'title', response.data.project.title)
+                vm.$set(vm.contact, 'id', response.data.contact.id)
+
+                document.title = vm.project.title + " | Collateral Express"
+            }).catch(error => {
+              // Push to 404
+              vm.$router.push({ name: 'list' })
+              console.log(error)
+            })
+          }
         } else {
+          // if no route param
           vm.$router.push({name: 'list'})
         }
-      },
-      direct() {
-        window.location.href = '/account/login'
       }
     },
     mounted() {
+      // When we first mount lets see if there is an admin
+      // If so the user is valid and everything is great
+      if(this.auth != null) {
+        this.validUser = true
+      }
+      this.validateUser(this.contactSession)
       bus.$on('projectPropSet', (key, val) => {
         this.$set(this.project, key, val)
       })
@@ -219,6 +307,52 @@
     .card-content {
       position: absolute;
       top: 0; left: 0;
+    }
+  }
+  #deliveryInfo {
+    #details .columns {
+      margin-bottom: 2rem;
+    }
+    h4 {
+      border-bottom: 1px solid #484848;
+      padding-bottom: .5rem;
+      margin-bottom: .5rem;
+    }
+    h6 {
+      font-family: tele-nor;
+    }
+  }
+  #contact {
+    height: 100vh;
+    position: relative;
+    background: #181818;
+    .aside-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 2rem 2rem;
+      width:100%;
+      height: 100vh;
+    }
+    .delete-project {
+      svg {
+        fill: white;
+      }
+    }
+    #contactCard {
+      hr {
+        margin: 2rem 0;
+        border-color: #323232!important;
+      }
+      h3 {
+        box-shadow: none;
+      }
+      h4 {
+        margin-top: 2rem;
+      }
+      h4, span {
+        color: white;
+      }
     }
   }
 </style>
