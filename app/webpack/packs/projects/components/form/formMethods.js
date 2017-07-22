@@ -15,12 +15,6 @@ const FormMethods = {
 
         // Let's go on with the submission!
         // Let's set up some configurations
-        var vm = this
-        var axiosConfig = {
-          utf8 : "✓",
-          authenticity_token: this.token,
-          project : this.project
-        }
 
         if(this.contactQuery || this.project.contact_id || this.contactSession) {
           var cid = null
@@ -36,66 +30,6 @@ const FormMethods = {
         } else {
           bus.$emit('postContact')
         }
-
-        bus.$on('submitProjectForm', (cid) => {
-          if (!this.project.id) {
-            // ** if this is a new project
-            console.log('submitted')
-            // ** if is a new project but contact exist
-            Axios.post('/projects/', axiosConfig)
-            .then(function (response) {
-              // IF SUCCESFUll
-              if(vm.dzUpload) {
-                bus.$emit('uploadMedia', response.data.project.id)
-              }
-              bus.$emit('messageEmit', vm.project.title + " has been created!")
-              bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
-
-              for(var f in response.data.flash) {
-                var flash = response.data.flash[f]
-                if(flash[0] == 'notice') {
-                  vm.$emit('flashEmit', flash[1])
-                  console.log(flash[1])
-                }
-              }
-
-            })
-            .catch(function (error) {
-              // IF THERE ARE ERRORS
-              bus.$emit('showReveal','error', vm.project.title, error.message);
-              vm.axErrors(error.response, error.request, error.message);
-            });
-          } else {
-            // ** If the project does exist let's update it
-            Axios.patch('/projects/' + this.project.id, axiosConfig)
-            .then(function (response) {
-              if(vm.dzUpload) {
-                bus.$emit('uploadMedia', response.data.project.id)
-              }
-              bus.$emit('messageEmit', vm.project.title + " has been updated!")
-              // And then we will launch the Foundation Reveal
-              bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
-
-
-              // We also want to grab the flash that was sent in the response
-              for(var f in response.data.flash) {
-                var flash = response.data.flash[f]
-                // for each flash message that matches notice
-                if(flash[0] == 'notice') {
-                  // We will update the parents flash data
-                  bus.$emit('flashEmit', flash[1])
-                }
-              }
-            })
-            .catch(function (error) {
-              // If there is an error we show the Foundation Reveal
-              console.log(vm.project)
-              bus.$emit('showReveal','error', vm.project.title, error.message);
-              // and run our error function
-              vm.axErrors(error.response, error.request, error.message);
-            });
-          }
-        })
       } // validate end
     },
     deletePrompt() {
@@ -157,6 +91,79 @@ const FormMethods = {
   mounted() {
     bus.$on('deleteRequest', () => {
       this.deleteProject()
+    })
+
+    bus.$on('submitProjectForm', (cid) => {
+      var vm = this
+      var axiosConfig = {
+        utf8 : "✓",
+        authenticity_token: this.token,
+        project : this.project
+      }
+      if (!this.project.id) {
+        // ** if this is a new project
+        console.log('submitted')
+        // ** if is a new project but contact exist
+        Axios.post('/projects/', axiosConfig)
+        .then(function (response) {
+          // IF SUCCESFUll
+          if(vm.dzUpload) {
+            bus.$emit('uploadMedia', response.data.project.id)
+          }
+          bus.$emit('messageEmit', vm.project.title + " has been created!")
+          bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
+
+          for(var f in response.data.flash) {
+            var flash = response.data.flash[f]
+            if(flash[0] == 'notice') {
+              bus.$emit('flashEmit', flash[1])
+            }
+          }
+
+        })
+        .catch(function (error) {
+          // IF THERE ARE ERRORS
+          bus.$emit('showReveal','error', vm.project.title, error.message);
+          vm.axErrors(error.response, error.request, error.message);
+        });
+      } else {
+        // ** If the project does exist let's update it
+        Axios.patch('/projects/' + this.project.id, axiosConfig)
+        .then(function (response) {
+          if(vm.dzUpload) {
+            bus.$emit('uploadMedia', response.data.project.id)
+          }
+          bus.$emit('messageEmit', vm.project.title + " has been updated!")
+          // And then we will launch the Foundation Reveal
+          bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
+
+
+          // We also want to grab the flash that was sent in the response
+          for(var f in response.data.flash) {
+            var flash = response.data.flash[f]
+            // for each flash message that matches notice
+            if(flash[0] == 'notice') {
+              // We will update the parents flash data
+              bus.$emit('flashEmit', flash[1])
+            }
+          }
+        })
+        .catch(function (error) {
+          // If there is an error we show the Foundation Reveal
+          bus.$emit('showReveal','error', vm.project.title, error.message);
+          // Get the flash
+          for(var f in response.data.flash) {
+            var flash = response.data.flash[f]
+            // for each flash message that matches notice
+            if(flash[0] == 'notice') {
+              // We will update the parents flash data
+              bus.$emit('flashEmit', flash[1])
+            }
+          }
+          // and run our error function
+          vm.axErrors(error.response, error.request, error.message);
+        });
+      }
     })
   }
 }

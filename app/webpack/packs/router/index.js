@@ -73,12 +73,13 @@ router.beforeEach((to, from, next) => {
     if (response.data.user.id) {
       bus.$emit('authEmit', response.data.user.id)
     }
+    if (response.data.contact.id) {
+      // Set Session
+      bus.$emit('contactSessionEmit', response.data.contact.id)
+    }
   }).catch(function (error) {
     console.log('Trouble authneticating user')
   })
-
-  // Set Session
-  bus.$emit('contactSessionEmit')
 
   // Set Title
   var vueTitle = to.meta.title

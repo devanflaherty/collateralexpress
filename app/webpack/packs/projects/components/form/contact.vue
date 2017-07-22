@@ -168,14 +168,17 @@ export default {
     }
   },
   watch: {
-    'contact.email': function(newEmail) {
-      this.$emit('contactEmit', {id: null})
-
-      this.findContact(newEmail)
-      // this.mountContact()
+    'contact.email': function(newEmail, oldEmail) {
+      if(newEmail != oldEmail && this.contact.email != null) {
+        // this.$emit('contactEmit', {id: null})
+        this.findContact(newEmail)
+      }
+      this.mountContact()
     },
     contactQuery() {
-      this.mountContact()
+      if (this.contactQuery != null) {
+        this.mountContact()
+      }
     }
   },
   methods: {
@@ -240,24 +243,12 @@ export default {
         // Will find contact based on email entered in watched input
         // Once it has been found it will emit an update to the contact_id
 
-        var foundContact = {}
         this.contacts.find(c => {
           if (c.email == email) {
             console.log('find contact ' + email)
             this.contact.id = c.id
-            //this.contactQuery = c.id
             this.$emit("contactEmit", {id: c.id})
             this.makeContactEditable(false)
-            foundContact = this.contact
-          }
-        })
-
-        this.$nextTick(() => {
-          if(foundContact.id == null) {
-            this.resetContact()
-            //this.contactQuery = null
-            this.$emit("contactEmit", {id: null})
-            this.veeErrors.clear();
           }
         })
 
@@ -268,9 +259,11 @@ export default {
       if(totalReset) {
         console.log('reset')
         this.contact.email = null
+        this.$emit('contactEmit', {id: null})
       }
       this.contact.id = ''
       this.contact.first_name = ''
+      this.contact.full_name = ''
       this.contact.last_name = ''
       this.contact.phone = ''
       this.contact.position = ''

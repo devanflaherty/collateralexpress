@@ -4,6 +4,7 @@ class ProjectsController < ApplicationController
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 
   def index
+    params
     @projects = Project.all
     respond_to do |format|
       format.html
@@ -18,7 +19,7 @@ class ProjectsController < ApplicationController
         ProjectMailer.new_project(@project).deliver_later
         ProjectMailer.new_project_to_admin(@project).deliver_later
 
-        flash[:notice] = "Project '#{@project.title}' created succesfully."
+        flash.now[:notice] = "Project '#{@project.title}' created succesfully."
 
         # session[:current_contact_id] = @project.contact_id
 
@@ -40,7 +41,7 @@ class ProjectsController < ApplicationController
         end
         session[:current_contact_id] = @project.contact_id
 
-        flash[:notice] = "Project '#{@project.title}' updated succesfully."
+        flash.now[:notice] = "Project '#{@project.title}' updated succesfully."
 
         format.json { render json: { project: @project, flash: flash} }
       else
@@ -56,7 +57,7 @@ class ProjectsController < ApplicationController
       m.destroy
     end
     @project.destroy
-    flash[:notice] = "Project '#{@project.title}' deleted succesfully."
+    flash.now[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
       format.html { render 'index'}
       format.json { render json: {project: @project, flash: flash} }

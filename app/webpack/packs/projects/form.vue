@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-else v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-10 large-6': project.id, 'medium-12 large-10': !project.id}">
+          <div class="form-panel small-12 columns" :class="{'medium-10 large-6': project.id, 'medium-12 large-6': !project.id}">
 
             <header>
               <div class="row">
@@ -180,7 +180,7 @@
                 <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
               </nav>
             </aside>
-            <a
+            <a v-if="project.id"
               id="deleteProject"
               style="float: right"
               class="delete-project"
@@ -226,7 +226,7 @@
     </section><!-- close projectForm -->
 
     <div id="login" v-else>
-      <ContactLogin></ContactLogin>
+      <ContactLogin :project-user="project.contact_id"></ContactLogin>
     </div>
   </div>
 </template>
@@ -337,6 +337,7 @@ export default {
       if(id == this.project.contact_id) {
         this.validUser = true
       }
+      this.contactQuery = id
     },
     validUser(status) {
       if(this.validUser == true) {

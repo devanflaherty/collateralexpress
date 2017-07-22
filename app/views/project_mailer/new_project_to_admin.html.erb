@@ -1,7 +1,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></pre>
 <h1>'<%= @project.title %>' has been created</h1>
 
-<p>Attached is a summary of the Project Request '<%= @project.title %>' submitted on <%= @project.created_on %>, by <%= @contact.full_name %>.</p>
+<p>Attached is a summary of the Project Request '<%= @project.title %>' submitted on <%= @project.created_at %>, by <%= @contact.full_name %>.</p>
 
 <p>To update the project's status, to flag, or archive it view this project online by clicking the link below</p>
 
@@ -36,7 +36,7 @@
 <% if @project.tactic %>
   <h4>Project Tactics</h4>
   <p>
-  <% @project.tactics.each do |t| %>
+  <% @project.tactic.each do |t| %>
     <% if t != "other" %>
       <span><%= t %></span>
     <% end %>

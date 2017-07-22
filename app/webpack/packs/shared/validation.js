@@ -15,7 +15,6 @@ const onValidation = {
           this.veeErrors.errors = [...this.veeErrors.errors, {field: error.field, msg: error.msg, rule: error.rule, scope: error.scope}]
         }
       })
-      console.log(oldErrors)
       if(newErrors == '') {
         var filter = this.veeErrors.errors.filter(function (error) {
           return error.field != 'Contact Email'

@@ -33,7 +33,10 @@ export default {
     return {
       page_title: "Projects",
       message: "Update Form",
-      flash: "",
+      flash: {
+        title: null,
+        text: null
+      },
       reveal: {
         type: null,
         title: null,
@@ -44,13 +47,6 @@ export default {
       contactSession: null
     }
   },
-  watch: {
-    flash: function(flash) {
-      this.$notify({
-        title: this.flash
-      })
-    }
-  },
   methods: {
     updateMessage(message) {
       this.message = message
@@ -58,8 +54,13 @@ export default {
     updatePageTite(title) {
       this.page_title = title
     },
-    updateFlash(flash) {
-      this.flash = flash
+    updateFlash(title, text) {
+      this.flash.title = title
+      this.flash.text = text
+      this.$notify({
+        title: this.flash.title,
+        text: this.flash.text
+      })
     },
     getContactSession() {
       var cid = this.getCookie('current_contact_id')
@@ -90,13 +91,12 @@ export default {
   },
   mounted() {
     $(document).foundation();
-    this.contactSession = this.getContactSession()
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
     })
-    bus.$on('flashEmit', (flash) => {
-      this.updateFlash(flash)
+    bus.$on('flashEmit', (title, text) => {
+      this.updateFlash(title,text)
     })
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
@@ -117,8 +117,12 @@ export default {
     bus.$on('authEmit', (id) => {
       this.auth = id
     })
-    bus.$on('contactSessionEmit', () => {
-      this.contactSession = this.getContactSession()
+    bus.$on('contactSessionEmit', (id) => {
+      if(id) {
+        this.contactSession = id
+      } else {
+        this.contactSession = this.getContactSession()
+      }
     })
   }
 }

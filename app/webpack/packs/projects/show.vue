@@ -113,7 +113,7 @@
     </section><!-- close projectShow -->
 
     <div id="login" v-else>
-      <ContactLogin></ContactLogin>
+      <ContactLogin :project-user="contact.id"></ContactLogin>
     </div>
   </div>
 </template>
@@ -178,7 +178,10 @@
               // Before we update our DOM we want to make sure
               // if we have a contact session but no admin user the contact has access
               if(vm.contactSession != response.data.contact.id && vm.auth == null) {
-                bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
+                vm.$notify({
+                  title: "Please Log In",
+                  text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
+                })
               } else {
                 vm.loading = false
                 vm.validUser = true

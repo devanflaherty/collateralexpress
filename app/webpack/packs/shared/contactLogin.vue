@@ -4,6 +4,12 @@
       <h3 class="banner">Login</h3>
       <input type="email" v-model="contact_email" placeholder="Enter your email here">
       <button @click="loginContact" class="button gradient">Login</button>
+
+      <div class="callout alert" v-if="contact_id && contact_id != projectUser">
+        <p>
+          You've succesfully logged in as {{contact_name}}, but you don't have access to this project.
+        </p>
+      </div>
     </div>
     <div class="columns small-9">
       <hr>
@@ -25,10 +31,13 @@
     name: 'ContactLogin',
     data() {
       return {
+        contact_id: null,
+        contact_name: null,
         contact_email: null,
         persistent_url: null
       }
     },
+    props: ['project-user'],
     methods: {
       loginContact() {
         var vm = this
@@ -39,12 +48,16 @@
           persistent_url : this.persistent_url
         })
           .then( response => {
-            bus.$emit('contactSessionEmit')
-            console.log(response.data.flash)
-            console.log(response.data.url)
-            vm.$notify({
-              title: response.data.flash
-            })
+            this.contact_id = response.data.contact.id
+            this.contact_name = response.data.contact.first_name + " " + response.data.contact.last_name
+            bus.$emit('contactSessionEmit', response.data.contact.id)
+
+            for(var f in response.data.flash) {
+              var flash = response.data.flash[f]
+              if(flash[0] == 'notice') {
+                bus.$emit('flashEmit', 'Log In Status', flash[1])
+              }
+            }
           }).catch(error => {
             console.log(error)
           })

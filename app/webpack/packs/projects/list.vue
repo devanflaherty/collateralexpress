@@ -6,9 +6,9 @@
           <h2>Project Requests</h2>
 
           <nav>
-            <a href="#all" @click.prevent="getProjects()">All</a>
-            <a href="#open" @click.prevent="getProjects('open')">Open</a>
-            <a href="#flagged" @click.prevent="getProjects('flagged')">flagged</a>
+            <a href="#all" @click.prevent="setScope()">All</a>
+            <a href="#open" @click.prevent="setScope('complete')">Complete</a>
+            <a href="#flagged" @click.prevent="setScope('flagged')">flagged</a>
           </nav>
         </div>
       </div>
@@ -36,7 +36,7 @@
                 </td>
               </tr>
             </tbody>
-            <transition-group v-else name="list" tag="tbody">
+            <transition-group name="list" tag="tbody">
               <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
                 <td>{{project.title}}</td>
                 <td>{{project.description}}</td>
@@ -51,6 +51,10 @@
             </transition-group>
           </table>
 
+          <nav id="pagination" v-if="pagination.next || pagination.prev">
+            <button @click="nextPage" class="button" :class="{'disabled': !pagination.next}">Next Page</button>
+            <button @click="previousPage" class="button" :class="{'disabled': !pagination.prev}">Previous Page</button>
+          </nav>
         </div>
       </div>
     </section>
@@ -63,6 +67,7 @@
 
 <script>
   import Axios from 'axios'
+  import bus from '../bus'
   import ContactLogin from '../shared/contactLogin.vue'
 
   export default {
@@ -76,8 +81,14 @@
         loading: false,
         validUser: false,
         message: '',
-        scope: '',
-        projects: []
+        projects: [],
+        pagination: {
+          current: null,
+          next: null,
+          prev: null,
+        },
+        resource_url: '/api/v1/projects.json',
+        scope: null
       }
     },
     watch: {
@@ -87,25 +98,56 @@
         }
       },
       validUser(status) {
-        if(this.validUser == true) {
-          this.getProjects()
+        if(this.validUser == true && this.projects.length == 0) {
+          this.getProjects(this.resource_url)
         }
       }
     },
     methods: {
-      getProjects(query) {
-        var vm = this
-        this.loading = true
-        this.scope = query
-        var fetchUrl = '/api/v1/projects.json'
-        if(query){
-          fetchUrl = '/api/v1/projects.json?q=' + query
+      setScope(scope) {
+        if(scope) {
+          this.scope = scope
+          var url = this.resource_url + "?q=" + this.scope
+          this.getProjects(url)
+        } else {
+          this.scope = null
+          this.getProjects()
         }
-        Axios.get(fetchUrl)
+      },
+      nextPage() {
+        if(this.pagination.next != null) {
+          if (this.scope != null) {
+            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
+            this.getProjects(url)
+          } else {
+            var url = this.resource_url + "?page=" + this.pagination.next
+            this.getProjects(url)
+          }
+        }
+      },
+      previousPage() {
+        if(this.pagination.prev != null){
+          if (this.scope != null) {
+            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
+            this.getProjects(url)
+          } else {
+            var url = this.resource_url + "?page=" + this.pagination.prev
+            this.getProjects(url)
+          }
+        }
+      },
+      getProjects(url) {
+        var vm = this
+        if(!url) { url = this.resource_url }
+        this.loading = true
+        Axios.get(url)
           .then( response => {
             vm.loading = false
             vm.projects = response.data.projects
             vm.message = "Succesfully found all projects."
+            vm.pagination.next = response.data.next_page
+            vm.pagination.prev = response.data.prev_page
+            vm.pagination.current = response.data.current_page
             if(response.data.projects.length < 1) {
               vm.message = "You have no '" + vm.scope + "' projects."
             }
@@ -119,17 +161,24 @@
           project : project,
         })
         .then(function (response) {
-          var filteredProjects = vm.projects.filter(p => p.id !== project.id)
-          vm.projects = filteredProjects
+          // var filteredProjects = vm.projects.filter(p => p.id !== project.id)
+          // vm.projects = filteredProjects
 
           for(var f in response.data.flash) {
             var flash = response.data.flash[f]
             if(flash[0] == 'notice') {
-              vm.$emit('flashEmit', flash[1])
+              bus.$emit('flashEmit', flash[1])
               console.log(flash[1])
             }
           }
-          vm.$router.push({ name: 'list'})
+          var url = ""
+          if(vm.scope != null) {
+            url = vm.resource_url + "?q=" + vm.scope + "&page=" + vm.pagination.current
+          } else {
+            url = vm.resource_url + "?page=" + vm.pagination.current
+          }
+          vm.getProjects(url)
+          // vm.$router.push({ name: 'list'})
         })
         .catch(function (error) {
           console.log(error)
@@ -137,17 +186,18 @@
       },
     },
     created(){
-      this.getProjects()
-    },
-    mounted() {
       if(this.auth != null || this.contactSession != null) {
         this.validUser = true
+        // this.getProjects()
       }
     }
   }
 </script>
 
 <style scoped lang="scss">
+.list-move {
+  transition: transform 1s;
+}
 .list-enter-active, .list-leave-active {
   transition: all 1s;
 }

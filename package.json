@@ -42,6 +42,7 @@
     "vue-template-compiler": "^2.3.4",
     "vue-turbolinks": "^1.0.2",
     "vue2-dropzone": "^2.0.0",
+    "vuejs-paginator": "^2.0.1",
     "webpack": "^3.1.0",
     "webpack-manifest-plugin": "^1.1.2",
     "webpack-merge": "^4.1.0"

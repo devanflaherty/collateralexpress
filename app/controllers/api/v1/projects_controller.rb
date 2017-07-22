@@ -2,22 +2,7 @@ class Api::V1::ProjectsController < ApplicationController
   before_action :define_project_lexicon, only: [:new, :edit]
 
   def index
-    if user_signed_in?
-      query_projects
-      if query_projects == false
-        @projects = Project.all
-      end
-      @user = current_user
-      @userProjects = @user.projects
-    elsif cookies[:current_contact_id]
-      @contact = Contact.find_by_id(cookies[:current_contact_id])
-      query_projects
-      if query_projects == false
-        @projects = @contact.projects
-      end
-    else
-      @projects = Project.all
-    end
+    query_projects
   end
 
   def show
@@ -41,20 +26,40 @@ class Api::V1::ProjectsController < ApplicationController
   private
 
     def query_projects
+      if user_signed_in?
+        @authUser = current_user
+      elsif cookies[:current_contact_id]
+        @authUser = Contact.find_by_id(cookies[:current_contact_id])
+      end
+
       query = request.query_parameters
-      if query.keys.count > 0
+
+      if query[:page]
+        page = query[:page]
+      else
+        page = 1
+      end
+      if query[:q]
         if query[:q] == "flagged"
-          @projects = Project.flagged.all
+          @projects = @authUser.projects.flagged.page(page).per(10)
         elsif query[:q] == "complete"
-          @projects = Project.complete.all
+          @projects = @authUser.projects.complete.page(page).per(10)
         elsif query[:q] == "archived"
-          @projects = Project.archived.all
+          @projects = @authUser.projects.archived.page(page).per(10)
         elsif query[:q] == "duefirst"
-          @projects = Project.due_first.all
+          @projects = @authUser.projects.due_first.page(page).per(10)
         end
       else
-        return false
+        @projects = @authUser.projects.page(page).per(10)
       end
+      @pagination = {
+        current_page: @projects.current_page,
+        last_page: @projects.total_pages,
+        next_page: @projects.next_page,
+        next_page_url: @projects.next_page,
+        prev_page: @projects.prev_page,
+        prev_page_url: @projects.prev_page,
+      }
     end
 
     def define_project_lexicon
