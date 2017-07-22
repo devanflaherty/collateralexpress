@@ -37,9 +37,7 @@ const FormMethods = {
       .then(function (response) {
         bus.$emit('closeReveal')
 
-        vm.$notify({
-          title: response.data.flash[0][1]
-        })
+        bus.$emit('flashEmit', response.data.flash[0][1])
         // If Delete is succesfull we route to the list page
         vm.$router.push({ name: 'list' })
       })
@@ -141,9 +139,7 @@ const FormMethods = {
           // If there is an error we show the Foundation Reveal
           bus.$emit('showReveal','error', vm.project.title, error.message);
           // Get the flash
-          vm.$notify({
-            title: response.data.flash[0][1]
-          })
+          bus.$emit('flashEmit', response.data.flash[0][1])
           // and run our error function
           vm.axErrors(error.response, error.request, error.message);
         });

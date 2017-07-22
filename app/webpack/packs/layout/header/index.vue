@@ -1,7 +1,7 @@
 <template>
   <div>
-    <toggle class="hide-for-medium" @toggleNav="toggleNav()"></toggle>
-    <MobileNav :links="links" :toggleState="nav_visible" class="hide-for-medium"></MobileNav>
+    <toggle class="hide-for-navbreak" @toggleNav="toggleNav()"></toggle>
+    <MobileNav :links="links" :toggleState="nav_visible" class="hide-for-navbreak"></MobileNav>
   </div>
 </template>
 
