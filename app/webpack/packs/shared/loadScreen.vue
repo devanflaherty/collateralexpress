@@ -1,7 +1,7 @@
 <template>
-  <div class="flex align-center align-middle">
+  <div class="overlay flex align-center align-middle">
     <div class="flex align-center align-middle">
-      <h5>Loading</h5>
+      <h2>Loading</h2>
     </div>
   </div>
 </template>
@@ -16,4 +16,14 @@
 </script>
 
 <style scoped lang="scss">
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 1s 0.5s ease;
+}
 </style>

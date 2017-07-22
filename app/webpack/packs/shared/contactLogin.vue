@@ -14,7 +14,7 @@
     <div class="columns small-9">
       <hr>
       <p>If you are an admin user click the link below to login.</p>
-      <a :href="'/account/login?url=' + persistent_url">Admin Login</a>
+      <a :href="'/account/login'">Admin Login</a>
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@
         contact_id: null,
         contact_name: null,
         contact_email: null,
-        persistent_url: null
+        // persistent_url: null
       }
     },
     props: ['project-user'],
@@ -45,7 +45,7 @@
           utf8 : "✓",
           authenticity_token: token,
           contact_email : this.contact_email,
-          persistent_url : this.persistent_url
+          // persistent_url : this.persistent_url
         })
           .then( response => {
             this.contact_id = response.data.contact.id
@@ -60,9 +60,9 @@
       }
     },
     mounted() {
-      bus.$on('setRedirect', (from, to) => {
-        this.persistent_url = to.path
-      })
+      // bus.$on('setRedirect', (from, to) => {
+      //   this.persistent_url = to.path
+      // })
     }
   }
 </script>

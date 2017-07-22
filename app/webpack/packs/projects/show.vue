@@ -112,7 +112,7 @@
       </div><!-- close row -->
     </section><!-- close projectShow -->
 
-    <div id="login" v-else>
+    <div id="login" v-if="!loading && validUser == false">
       <ContactLogin :project-user="contact.id"></ContactLogin>
     </div>
   </div>
@@ -148,9 +148,7 @@
     watch: {
       '$route': 'fetchData',
       contactSession(id) {
-        if(id == this.contact.id) {
-          this.validUser = true
-        }
+        this.validateUser(id)
       },
       validUser(status) {
         if(this.validUser == true) {
@@ -159,6 +157,11 @@
       }
     },
     methods: {
+      validateUser(id) {
+        if(id == this.contact.id) {
+          this.validUser = true
+        }
+      },
       fetchData() {
         this.error = this.post = null
         this.loading = true
@@ -226,6 +229,7 @@
       if(this.auth != null) {
         this.validUser = true
       }
+      this.validateUser(this.contact_session)
       bus.$on('projectPropSet', (key, val) => {
         this.$set(this.project, key, val)
       })

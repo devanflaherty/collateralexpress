@@ -1,5 +1,8 @@
 <template>
   <div>
+    <transition name="fade">
+      <LoadScreen v-if="loading"></LoadScreen>
+    </transition>
     <section id="projectList" v-if="validUser">
       <div class="row">
         <div class="columns">
@@ -8,7 +11,7 @@
           <nav>
             <a href="#all" @click.prevent="setScope()">All</a>
             <a href="#open" @click.prevent="setScope('complete')">Complete</a>
-            <a href="#flagged" @click.prevent="setScope('flagged')">flagged</a>
+            <a href="#falgged" @click.prevent="setScope('flagged')">flagged</a>
           </nav>
         </div>
       </div>
@@ -25,15 +28,13 @@
                 <td>Actions</td>
               </tr>
             </thead>
-            <tbody v-if="loading || projects.length < 1">
-              <tr v-if="loading">
-                <td width="100%"><LoadScreen v-if="loading"></LoadScreen></td>
-              </tr>
-              <tr v-else>
+            <tbody v-if="projects.length < 1">
+              <tr>
                 <td width="100%">
                   <h3>{{message}}</h3>
                   <p>Please try a different filter.</p>
                 </td>
+                <td></td><td></td><td></td><td></td>
               </tr>
             </tbody>
             <transition-group name="list" tag="tbody">
@@ -59,7 +60,7 @@
       </div>
     </section>
 
-    <div id="login" v-else>
+    <div id="login" v-if="!loading && !validUser">
       <ContactLogin></ContactLogin>
     </div>
   </div>
@@ -139,7 +140,7 @@
       getProjects(url) {
         var vm = this
         if(!url) { url = this.resource_url }
-        this.loading = true
+        // this.loading = true
         Axios.get(url)
           .then( response => {
             vm.loading = false
@@ -149,7 +150,11 @@
             vm.pagination.prev = response.data.prev_page
             vm.pagination.current = response.data.current_page
             if(response.data.projects.length < 1) {
-              vm.message = "You have no '" + vm.scope + "' projects."
+              if(this.scope) {
+                vm.message = "You have no '" + vm.scope + "' projects."
+              } else {
+                vm.message = "You have no saved projects."
+              }
             }
           }).catch(error => {
             console.log(error)
@@ -191,13 +196,18 @@
 
 <style scoped lang="scss">
 .list-move {
-  transition: transform 1s;
+  transition: opacity .5s;
 }
 .list-enter-active, .list-leave-active {
-  transition: all 1s;
+  transition: all .5s;
 }
 .list-enter, .list-leave-to /* .list-leave-active for <2.1.8 */ {
   opacity: 0;
-  transform: translateY(30px);
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .125s ease;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
 }
 </style>

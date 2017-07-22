@@ -225,7 +225,7 @@
       <hr class="no-margin">
     </section><!-- close projectForm -->
 
-    <div id="login" v-else>
+    <div id="login" v-if="!loading && validUser == false">
       <ContactLogin :project-user="project.contact_id"></ContactLogin>
     </div>
   </div>
@@ -334,9 +334,7 @@ export default {
       this.setTactics(other)
     },
     contactSession(id) {
-      if(id == this.project.contact_id) {
-        this.validUser = true
-      }
+      this.validateUser(id)
       this.contactQuery = id
     },
     validUser(status) {
@@ -346,6 +344,11 @@ export default {
     }
   },
   methods: {
+    validateUser(id) {
+      if(id == this.project.contact_id) {
+        this.validUser = true
+      }
+    },
     fetchData() {
       this.loading = true
       this.getProject()
@@ -433,9 +436,10 @@ export default {
     if(this.auth != null) {
       this.validUser = true
     }
+    this.validateUser(this.contactSession)
+    this.contactQuery = this.contactSession
 
     this.getTactics()
-    this.contactQuery = this.contactSession
 
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('projectEmit', (project) => {

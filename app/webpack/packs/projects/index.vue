@@ -1,13 +1,13 @@
 <template>
   <main id="projectApp">
-    <transition name="fade" appear>
+    <!-- <transition name="fade" appear> -->
       <router-view
         :auth="auth"
         :contactSession="contactSession"
         :reveal-type="reveal.type"
         :flash="flash">
       </router-view>
-    </transition>
+    <!-- </transition> -->
 
     <notifications />
 
@@ -55,6 +55,11 @@ export default {
       })
     }
   },
+  // computed: {
+  //   contactSession() {
+  //     return this.getContactSession()
+  //   }
+  // },
   methods: {
     updateMessage(message) {
       this.message = message
@@ -94,6 +99,7 @@ export default {
     }
   },
   mounted() {
+    this.contactSession = this.getContactSession()
     $(document).foundation();
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
@@ -122,7 +128,7 @@ export default {
       this.auth = id
     })
     bus.$on('contactSessionEmit', (id) => {
-      if(id) {
+      if(id != null) {
         this.contactSession = id
       } else {
         this.contactSession = this.getContactSession()
@@ -134,7 +140,7 @@ export default {
 
 <style scoped lang="scss">
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+  transition: opacity .125s
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
