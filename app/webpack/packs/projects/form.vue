@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-else v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-10 large-6': project.id, 'medium-12 large-6': !project.id}">
+          <div class="form-panel small-12 columns" :class="{'medium-10 large-7': project.id, 'medium-12 large-10': !validUser, 'medium-10 large-7': validUser }">
 
             <header>
               <div class="row">

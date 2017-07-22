@@ -42,7 +42,6 @@
         }
         @include breakpoint(780px){
           .check-input {
-            @include flex-grid-column(6, 0);
             label {
               display: inline-block;
             }
