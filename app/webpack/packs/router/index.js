@@ -82,8 +82,4 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
-  //$('#reveal').foundation();
-})
-
 export default router

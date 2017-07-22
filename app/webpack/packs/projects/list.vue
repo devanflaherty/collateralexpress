@@ -37,7 +37,7 @@
                 <td></td><td></td><td></td><td></td>
               </tr>
             </tbody>
-            <transition-group name="list" tag="tbody">
+            <tbody>
               <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
                 <td>{{project.title}}</td>
                 <td>{{project.description}}</td>
@@ -49,7 +49,7 @@
                   <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
                 </td>
               </tr>
-            </transition-group>
+            </tbody>
           </table>
 
           <nav id="pagination" v-if="pagination.next || pagination.prev">
@@ -140,7 +140,7 @@
       getProjects(url) {
         var vm = this
         if(!url) { url = this.resource_url }
-        // this.loading = true
+        this.loading = true
         Axios.get(url)
           .then( response => {
             vm.loading = false
