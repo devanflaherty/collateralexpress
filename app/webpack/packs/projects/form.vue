@@ -168,7 +168,7 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="project.id || contactSession || auth" id="infoPanel" class="small-12 medium-3 columns">
+          <div v-if="project.id || contactSession || auth" id="infoPanel" class="small-12 medium-3 columns show-for-medium">
             <aside>
               <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
                 <router-link class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
@@ -190,7 +190,7 @@
             </a>
           </div><!-- close sidebar -->
 
-          <div class="form-panel small-12 columns">
+          <div class="form-panel small-12 columns" style="padding: 0;">
             <div id="fileUploader" class="row align-center">
               <div class="small-12 large-10 column">
                 <MediaUploader :project-id="project.id" :mediaFiles="project_media" :token="token"></MediaUploader>
@@ -225,7 +225,7 @@
       <hr class="no-margin">
     </section><!-- close projectForm -->
 
-    <div id="login" v-if="!loading && validUser == false">
+    <div id="login" v-if="!loading && validUser == false && $route.name == 'edit'">
       <ContactLogin :project-user="project.contact_id"></ContactLogin>
     </div>
   </div>

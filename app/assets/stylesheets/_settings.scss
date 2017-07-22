@@ -285,7 +285,7 @@ $breadcrumbs-item-separator-color: $medium-gray;
 // ----------
 
 $button-font-family: inherit;
-$dding: 0.85em 1em;
+$button-padding: 0.85em 1em;
 $button-margin: 0 0 $global-margin 0;
 $button-fill: solid;
 $button-background: $primary-color;
@@ -303,7 +303,7 @@ $button-sizes: (
 $button-palette: $foundation-palette;
 $button-opacity-disabled: 0.25;
 $button-background-hover-lightness: -20%;
-$button-hollow-hover-lightness: -50%;
+$button-hollow-hover-lightness: -20%;
 $button-transition: background-color 0.25s ease-out, color 0.25s ease-out;
 
 // 12. Button Group
@@ -772,14 +772,14 @@ $switch-paddle-transition: all 0.25s ease-out;
 // ---------
 
 $table-background: $white;
-$table-color-scale: 5%;
+$table-color-scale: 10%;
 $table-border: 1px solid smart-scale($table-background, $table-color-scale);
 $table-padding: rem-calc(8 10 10);
 $table-hover-scale: 2%;
 $table-row-hover: darken($table-background, $table-hover-scale);
 $table-row-stripe-hover: darken($table-background, $table-color-scale + $table-hover-scale);
 $table-is-striped: true;
-$table-striped-background: smart-scale($table-background, $table-color-scale);
+$table-striped-background: #F9F9F9;
 $table-stripe: even;
 $table-head-background: smart-scale($table-background, $table-color-scale / 2);
 $table-head-row-hover: darken($table-head-background, $table-hover-scale);

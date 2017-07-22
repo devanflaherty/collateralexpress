@@ -29,15 +29,25 @@
   bottom: 0;
 }
 
-@mixin pad($padding: null, $bp: null) {
+@mixin pad($padding: null, $bp: null, $in: false) {
   @if ($bp) {
     @include breakpoint($bp){
+      @if ($in) {
+        padding-left: $padding;
+        padding-right: $padding;
+      } @else {
+        padding-top: $padding;
+        padding-bottom: $padding;
+      }
+    }
+  } @else {
+    @if ($in) {
+      padding-left: $padding;
+      padding-right: $padding;
+    } @else {
       padding-top: $padding;
       padding-bottom: $padding;
     }
-  } @else {
-    padding-top: $padding;
-    padding-bottom: $padding;
   }
 }
 
@@ -51,6 +61,16 @@
   }
 }
 
+.pad-in-small {
+  @include pad(1rem, small, true);
+  &-medium {
+    @include pad(1rem, medium, true);
+  }
+  &-large {
+    @include pad(1rem, large, true);
+  }
+}
+
 .pad-default {
   @include pad(4rem);
   &-medium {
@@ -58,5 +78,15 @@
   }
   &-large {
     @include pad(4rem, large);
+  }
+}
+
+.pad-in-default {
+  @include pad(2rem, small, true);
+  &-medium {
+    @include pad(2rem, medium, true);
+  }
+  &-large {
+    @include pad(2rem, large, true);
   }
 }

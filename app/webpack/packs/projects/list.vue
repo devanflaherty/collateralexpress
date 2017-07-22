@@ -3,16 +3,17 @@
     <transition name="fade">
       <LoadScreen v-if="loading"></LoadScreen>
     </transition>
-    <section id="projectList" v-if="validUser">
+    <section id="projectList" class="pad-small" v-if="validUser">
       <div class="row">
         <div class="columns">
           <h2>Project Requests</h2>
 
-          <nav>
-            <a href="#all" @click.prevent="setScope()">All</a>
-            <a href="#open" @click.prevent="setScope('complete')">Complete</a>
-            <a href="#falgged" @click.prevent="setScope('flagged')">flagged</a>
+          <nav class="project-scope-nav">
+            <a href="#all" @click.prevent="setScope()" :class="{'active': scope == null}">All</a>
+            <a href="#open" @click.prevent="setScope('complete')" :class="{'active': scope == 'complete'}">Complete</a>
+            <a href="#falgged" @click.prevent="setScope('flagged')" :class="{'active': scope == 'flagged'}">Flagged</a>
           </nav>
+          <hr class="no-margin" style="margin-bottom:1.25rem">
         </div>
       </div>
 
@@ -53,8 +54,8 @@
           </table>
 
           <nav id="pagination" v-if="pagination.next || pagination.prev">
-            <button @click="nextPage" class="button" :class="{'disabled': !pagination.next}">Next Page</button>
             <button @click="previousPage" class="button" :class="{'disabled': !pagination.prev}">Previous Page</button>
+            <button @click="nextPage" class="button" :class="{'disabled': !pagination.next}">Next Page</button>
           </nav>
         </div>
       </div>
@@ -195,6 +196,36 @@
 </script>
 
 <style scoped lang="scss">
+.project-scope-nav {
+  padding-top: 2rem;
+  a {
+    color: #aaa;
+    position: relative;
+    padding-bottom: .5rem;
+    margin-right: 1.5rem;
+    font-size: 1.25rem;
+    font-family: tele-Fet;
+    &:hover {
+      color: black;
+    }
+    &:after {
+      content: '';
+      bottom: 4px;
+      left: 0;
+      position: absolute;
+      height: 2px;
+      width: 100%;
+      transition: all 0.5s ease;
+    }
+  }
+  .active {
+    color: black;
+    font-family: tele-Ult;
+    &:after {
+      background: magenta
+    }
+  }
+}
 .list-move {
   transition: opacity .5s;
 }

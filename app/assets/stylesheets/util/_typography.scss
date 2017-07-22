@@ -16,6 +16,10 @@ h2.banner {
     background: $white;
     color: $black;
   }
+  &.black-banner {
+    background: $black;
+    color: $white;
+  }
 }
 h3.banner {
   color: $white;
@@ -43,6 +47,10 @@ h3.banner {
     background: $white;
     color: $black;
     box-shadow:1rem 0 0 $black, 1rem 0 0 $black;
+  }
+  &.black-banner {
+    background: $black;
+    color: $white;
   }
 }
 h5 {
