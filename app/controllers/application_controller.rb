@@ -8,10 +8,6 @@ class ApplicationController < ActionController::Base
   def get_links
     @links = [
       {
-        name: "Home",
-        url: "/"
-      },
-      {
         name: "Create Project Request",
         url: "/projects/new#new"
       },
@@ -48,7 +44,7 @@ class ApplicationController < ActionController::Base
     end
 
     if user_signed_in? || cookies[:current_contact_id]
-      @links.insert(2, {
+      @links.insert(1, {
         name: "All Projects",
         url: "/projects#all"
       })

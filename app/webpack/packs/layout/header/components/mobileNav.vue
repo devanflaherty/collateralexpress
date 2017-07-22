@@ -1,5 +1,6 @@
 <template>
   <nav id="mobileNav" :class="{'show' : toggleState, 'hidden' : !toggleState}" :style="{height: topSet}">
+    <a href="/">Home</a>
     <a :href="link.url" v-for="link in links">{{link.name}}</a>
   </nav>
 </template>
