@@ -81,6 +81,8 @@ router.beforeEach((to, from, next) => {
     console.log('Trouble authneticating user')
   })
 
+  bus.$emit('contactSessionEmit')
+
   // Set Title
   var vueTitle = to.meta.title
   // if page has a set title do

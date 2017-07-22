@@ -365,7 +365,7 @@ export default {
               vm.validUser = true
               vm.project = response.data.project
               vm.contactQuery = response.data.project.contact_id
-              vm.project_media = response.data.project_media
+              vm.project_media = response.data.project_media.medias
 
               document.title = "Edit " + vm.project.title + " | Collateral Express"
             }
@@ -447,8 +447,9 @@ export default {
       //this.$validator.validateAll();
     })
 
-    bus.$on('readyDz', () => {
-      this.dzUpload(true)
+    bus.$on('readyDZ', (bool) => {
+      console.log('ready')
+      this.dzUpload = bool
     })
 
     bus.$on('mediaEmit', (media) => {

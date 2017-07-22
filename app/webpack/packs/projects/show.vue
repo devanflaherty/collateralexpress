@@ -38,10 +38,10 @@
             <a :href="project.reference" target="_blank">View Link</a>
           </div>
 
-          <div class="files" v-if="project.medias">
+          <div class="files" v-if="project_media">
             <h3>Files</h3>
-            <div class="row small-3-up">
-              <div class="column" v-for="media in project.medias">
+            <div class="row small-up-3">
+              <div class="column" v-for="media in project_media">
                 <div class="card">
                   <img :src="media.file.thumb.url">
                   {{media.name}}
@@ -139,6 +139,7 @@
         project: {
           id: null
         },
+        project_media: [],
         contact: {},
         dzUpload: false,
         error: null
@@ -186,6 +187,7 @@
                 vm.loading = false
                 vm.validUser = true
                 vm.project = response.data.project
+                vm.project_media = response.data.project_media.medias
                 vm.contact = response.data.contact
 
                 document.title = vm.project.title + " | Collateral Express"
