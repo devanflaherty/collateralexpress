@@ -1,86 +1,94 @@
 <template>
-  <section id="contactApp">
+  <section id="contactApp" class="pad">
     <transition name="fade" appear>
-      <div class="row">
-        <div class="columns">
-          <h2>Edit {{full_name}}</h2>
+      <div class="row align-center">
+        <div class="columns small-11 medium-9 large-6">
+          <div class="flex space-between">
+            <div>
+              <h4>Account Info</h4>
+              <h2 class="banner">{{full_name}}</h2>
+            </div>
+            <button @click="clearCookie" class="self-align-bottom">Logout</button>
+          </div>
 
-          <button @click="clearCookie" class="button alert">Logout</button>
-
-          <form v-on:submit.prevent="onSubmit" id="form">
+          <form v-on:submit.prevent="onSubmit" id="form" class="callout">
             <div class="float-input">
               <FloatLabel
+                v-validate="'required|email'"
+                data-vv-value-path="model"
+                data-vv-name="Contact Email"
+                :has-error="veeErrors.has('Contact Email')"
+                :error-text="veeErrors.first('Contact Email')"
                 :attr="contact.email"
                 obj="contact"
                 label="Contact Email"
-                propKey="email"
-                validation="required|email"></FloatLabel>
-              <span v-show="veeErrors.has('email')">{{ veeErrors.first('email') }}</span>
+                propKey="email"></FloatLabel>
             </div>
 
             <div class="row">
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="First Name"
+                    :has-error="veeErrors.has('First Name')"
+                    :error-text="veeErrors.first('First Name')"
                     :attr="contact.first_name"
                     obj="contact"
                     label="First Name"
-                    propKey="first_name"
-                    validation="required"></FloatLabel>
-                  <span v-show="veeErrors.has('first_name')">{{ veeErrors.first('first_name') }}</span>
+                    propKey="first_name"></FloatLabel>
                 </div>
               </div>
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Last Name"
+                    :has-error="veeErrors.has('Last Name')"
+                    :error-text="veeErrors.first('Last Name')"
                     :attr="contact.last_name"
                     obj="contact"
                     label="Last Name"
-                    propKey="last_name"
-                    validation="required"></FloatLabel>
-                  <span v-show="veeErrors.has('last_name')">{{ veeErrors.first('last_name') }}</span>
+                    propKey="last_name"></FloatLabel>
                 </div>
               </div>
-            </div>
-
-            <div class="float-input">
-              <FloatLabel
-                :attr="contact.phone"
-                obj="contact"
-                label="Phone Number"
-                propKey="phone"
-                validation="required"></FloatLabel>
-              <span v-show="veeErrors.has('phone')">{{ veeErrors.first('phone') }}</span>
             </div>
 
             <div class="row">
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
-                    :attr="contact.position"
+                    v-validate="'required'"
+                    data-vv-value-path="model"
+                    data-vv-name="Phone Number"
+                    :has-error="veeErrors.has('Phone Number')"
+                    :error-text="veeErrors.first('Phone Number')"
+                    :attr="contact.phone"
                     obj="contact"
-                    label="T Mobile Position"
-                    propKey="position"
-                    validation=""></FloatLabel>
-                  <!-- <span v-show="veeErrors.has('position')">{{ veeErrors.first('position') }}</span> -->
+                    label="Phone Number"
+                    propKey="phone"></FloatLabel>
                 </div>
               </div>
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    data-vv-value-path="model"
+                    data-vv-name="Location"
+                    :has-error="veeErrors.has('Location')"
+                    :error-text="veeErrors.first('Location')"
                     :attr="contact.branch"
                     obj="contact"
-                    label="T Mobile Branch"
-                    propKey="branch"
-                    validation=""></FloatLabel>
-                  <!-- <span v-show="veeErrors.has('branch')">{{ veeErrors.first('branch') }}</span> -->
+                    label="Location"
+                    propKey="branch"></FloatLabel>
                 </div>
               </div>
             </div>
 
-            <div class="fieldset">
+            <div>
               <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
-              <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button expanded">
+              <input type="submit" value="Update Info" :disabled="veeErrors.any()" class="button gradient expanded">
             </div>
           </form>
         </div>
@@ -204,14 +212,7 @@ export default {
             bus.$emit('messageEmit', vm.full_name + " has been saved!")
             bus.$emit('showReveal','contact', response.data.full_name, 'congratulations, you just created a contact.', vm.contact.id);
 
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              if(flash[0] == 'notice') {
-                vm.$emit('flashEmit', flash[1])
-                console.log(flash[1])
-              }
-            }
-
+            bus.$emit('flashEmit', response.data.flash[0][1])
           })
           .catch(function (error) {
             // IF THERE ARE ERRORS
@@ -225,15 +226,7 @@ export default {
             // And then we will launch the Foundation Reveal
             bus.$emit('showReveal','update', vm.full_name, 'congratulations, you just updated your contact.', vm.contact.id);
 
-            // We also want to grab the flash that was sent in the response
-            for(var f in response.data.flash) {
-              var flash = response.data.flash[f]
-              // for each flash message that matches notice
-              if(flash[0] == 'notice') {
-                // We will update the parents flash data
-                bus.$emit('flashEmit', flash[1])
-              }
-            }
+            bus.$emit('flashEmit', response.data.flash[0][1])
           })
           .catch(function (error) {
             // If there is an error we show the Foundation Reveal

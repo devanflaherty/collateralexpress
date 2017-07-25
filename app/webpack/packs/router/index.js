@@ -10,20 +10,21 @@ import ProjectIndex from '../projects/list.vue'
 import ProjectForm from '../projects/form.vue'
 import ProjectShow from '../projects/show.vue'
 
-const authRequest = function(to, from, next) {
-  Axios.get('/authenticate.json')
-  .then(function (response) {
-    if (response.data.user.id) {
-      next()
-    } else if (response.data.contact.id) {
-      next()
-    } else {
-      window.location.href = "/account/login"
-    }
-  }).catch(function (error) {
-    window.location.href = "/account/login"
-  })
-}
+// const authRequest = function(to, from, next) {
+//   Axios.get('/authenticate.json')
+//   .then(function (response) {
+//     if (response.data.user.id || response.data.contact.id) {
+//       next()
+//     } else {
+//       bus.$emit('setRedirect', from, to)
+//       next()
+//       // bus.$emit('setRedirect', from)
+//       // window.location.href = "/contact/login"
+//     }
+//   }).catch(function (error) {
+//     window.location.href = "/"
+//   })
+// }
 
 const router = new VueRouter ({
   mode: 'history',
@@ -33,18 +34,15 @@ const router = new VueRouter ({
     path:'/projects/',
     component: ProjectIndex,
     meta: {title: 'Projects'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    // beforeEnter: (to, from, next) => {
+    //   authRequest(to, from, next)
+    // }
   },
   {
     name: 'edit',
     path:'/projects/:id/edit',
     component: ProjectForm,
     meta: {title: 'Edit Project'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
   },
   {
     name: 'new',
@@ -56,14 +54,12 @@ const router = new VueRouter ({
     name: 'show',
     path:'/project/:id',
     component: ProjectShow,
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
   }]
 })
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
+  // Set Auth
   Axios.get('/authenticate.json')
   .then(function (response) {
     if (response.data.user.id) {
@@ -72,6 +68,10 @@ router.beforeEach((to, from, next) => {
   }).catch(function (error) {
     console.log('Trouble authneticating user')
   })
+
+  bus.$emit('contactSessionEmit')
+
+  // Set Title
   var vueTitle = to.meta.title
   // if page has a set title do
   if (vueTitle) {
@@ -80,10 +80,6 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
-})
-
-router.afterEach((to, from) => {
-  //$('#reveal').foundation();
 })
 
 export default router

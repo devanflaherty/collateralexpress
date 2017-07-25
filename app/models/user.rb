@@ -15,4 +15,8 @@ class User < ApplicationRecord
   scope :newest_first, -> { order(created_at: "DESC") }
   scope :search, -> (query) {where(["email LIKE ?", "%#{query}%"])}
 
+  def format_email
+    self.email = self.email.delete(' ').downcase
+  end
+
 end

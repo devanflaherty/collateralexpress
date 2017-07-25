@@ -7,9 +7,9 @@
 
 <%= render "shared/hero_header" %>
 
-<section id="copy">
-  <div class="row">
-    <div class="columns">
+<section id="copy" class="pad">
+  <div class="row align-center">
+    <div class="columns small-11 medium-5">
       <h3>How are we different?</h3>
       <p>
         With tools like TMAP and Brand Muscle already in your tool belt you might be wondering, “Why do I need to use Collateral Express?”, well that is a great question.
@@ -22,7 +22,8 @@
       </p>
     </div>
 
-    <div class="columns">
+    <div class="columns small-11 medium-5 medium-offset-1">
+      <div style="margin-top:4rem" class="hide-for-medium"></div>
       <h4>What you need to know</h4>
       <p>
         Making all project requests go through a system to make your life easier will of course require some change in protocols. This is for the best!
@@ -38,56 +39,80 @@
 </section>
 
 <section id="processSlides">
-  <h3>Step <span id="stepIndex">1</span></h3>
+  <div class="step-container row">
+    <div class="columns">
+      <h4>Step <span id="stepIndex">1</span></h4>
+    </div>
+  </div>
   <div class="swiper-container">
     <!-- Additional required wrapper -->
     <div class="swiper-wrapper">
         <!-- Slides -->
         <div class="swiper-slide" data-key="1" style="background: black">
-          <div class="row">
-            <div class="columns small-9">
+          <div class="row align-center">
+            <div class="columns small-10 medium-5">
               <blockquote data-swiper-parallax="-200">
                 <p>
                   Fill Out A<br>
                   <strong>Project Request</strong>
                 </p>
               </blockquote>
-              <p class="step-desc">Use the form and answer all the questions to the best of your knowledge. There are a variety of fields that will help the design team to take your request, so you can relax.</p>
+              <p class="step-desc" style="margin-left:2rem;">Use the form and answer all the questions to the best of your knowledge. There are a variety of fields that will help the design team to take your request, so you can relax.</p>
             </div>
-            <div class="columns">
+            <div class="columns small-10 medium-3 show-for-medium">
               <%= image_tag "slides/airplane.png", :data => {swiper_parallax: "-500"} %>
             </div>
           </div>
+          <div class="hide-for-medium" style="position: absolute; opacity: 0.66; bottom: -25%;" data-swiper-parallax="-500">
+            <%= image_tag "slides/airplane.png" %>
+          </div>
         </div>
+
         <div class="swiper-slide gradient-bg" data-key="2">
-          <div class="row">
-            <div class="columns small-9">
+          <div class="row align-center">
+            <div class="columns small-10 medium-6">
               <blockquote data-swiper-parallax="-200">
-                <p>
-                  Fill Out A<br>
-                  <strong>Project Request</strong>
+                <p class="white-banner">
+                  Stay connected as we<br>
+                  <strong>Review, assign, and complete</strong>
                 </p>
               </blockquote>
               <p class="step-desc">Another description and step</p>
             </div>
-            <div class="columns">
+            <div class="columns small-10 medium-3 show-for-medium">
               <%= image_tag "slides/airplane.png", :data => {swiper_parallax: "-500"} %>
             </div>
           </div>
         </div>
-        <div class="swiper-slide" data-key="3" style="background: black">Slide 3</div>
-        ...
+
+        <div class="swiper-slide" data-key="3" style="background-image: url(https://unsplash.it/g/1200/720)">
+          <div class="overlay"></div>
+          <div class="row align-center">
+            <div class="columns small-10 medium-3 show-for-medium">
+              <%= image_tag "slides/airplane.png", :data => {swiper_parallax: "-500"} %>
+            </div>
+            <div class="columns small-10 medium-7">
+              <blockquote data-swiper-parallax="-200">
+                <p class="white-banner">
+                  Start using your new asset<br>
+                  <strong>Project Complete</strong>
+                </p>
+              </blockquote>
+              <p class="step-desc">Another description and step</p>
+            </div>
+          </div>
+        </div>
     </div>
     <!-- If we need pagination -->
     <div class="swiper-pagination"></div>
 
     <!-- If we need navigation buttons -->
-    <div class="swiper-button-prev swiper-button-white"></div>
-    <div class="swiper-button-next swiper-button-white"></div>
+    <div class="swiper-button-prev swiper-button-white show-for-medium"></div>
+    <div class="swiper-button-next swiper-button-white show-for-medium"></div>
   </div>
 </section>
 
-<section id="canDo">
+<section id="canDo" class="pad">
   <div class="text-center">
     <h2>What can you do</h2>
     <p>
@@ -96,39 +121,36 @@
     </p>
   </div>
 
-  <div class="row">
-    <div class="columns">
-      <div class="card-container">
-        <div class="card">
-          <div class="flex align-center">
-            <%= image_tag "icons/search.png" %>
-          </div>
-          <p>
-            Find an exisiting asset to help communicate the direction of your project request, include the link or file  on the project request form.
-          </p>
-          <div class="flex">
-            <a href="#" class="expanded button gradient">
-              TMAP
-            </a>
-            <a href="#" class="expanded button gradient">
-              Brand Muscle
-            </a>
-          </div>
+  <div class="can-do-cards row align-center">
+    <div class="can-do-col">
+      <div class="card space-between">
+        <div class="can-do-image">
+          <%= image_tag "icons/search.png" %>
+        </div>
+        <p>
+          Find an exisiting asset to help communicate the direction of your project request, include the link or file  on the project request form.
+        </p>
+        <div class="can-do-buttons">
+          <a href="#" class="expanded button hollow">
+            TMAP
+          </a>
+          <a href="#" class="expanded button hollow">
+            Brand Muscle
+          </a>
         </div>
       </div>
     </div>
 
-    <div class="columns">
-      <div class="card-container">
-        <div class="card primary-bg no-border text-center contrast-text">
-          <div class="flex align-center">
-            <%= image_tag "marketing/phone.png" %>
-          </div>
-          <div>
-            <h4>Project Requests</h4>
-            <span>Request, Check-In, Complete</span>
-          </div>
+    <div class="can-do-col">
+      <div class="card primary-bg no-border text-center contrast-text">
+        <div class="can-do-image">
+          <%= image_tag "marketing/phone.png" %>
+        </div>
+        <div>
+          <h4>Project Requests</h4>
+          <span>Request, Check-In, Complete</span>
         </div>
       </div>
+    </div>
   </div>
 </section>

@@ -10,14 +10,7 @@
 @admin = User.create(
   first_name: "Admin",
   last_name: "User",
-  email: "hello@saltagency.co",
-  password: "password"
-)
-#@root.add_role :admin
-@user = User.create(
-  first_name: "Devan",
-  last_name: "Flaherty",
-  email: "devan@saltagency.co",
+  email: "coexdemo@gmail.com",
   password: "password"
 )
 
@@ -26,8 +19,7 @@
   last_name: "Flaherty",
   email: "devanflaherty@gmail.com",
   phone: "480.388.1741",
-  branch: "Salt Agency",
-  position: "Web Developer"
+  branch: "Salt Agency"
 )
 
 @contactConnie = Contact.create(
@@ -35,8 +27,7 @@
   last_name: "Cermak",
   email: "connie@zoompop.com",
   phone: "444.333.7777",
-  branch: "ZoomPop",
-  position: "Creative Director"
+  branch: "ZoomPop"
 )
 
 # Create an initial event for the home page

@@ -1,13 +1,13 @@
 <template>
-  <div id="projectApp">
-    <transition name="fade" appear>
+  <main id="projectApp">
+    <!-- <transition name="fade" appear> -->
       <router-view
         :auth="auth"
         :contactSession="contactSession"
         :reveal-type="reveal.type"
         :flash="flash">
       </router-view>
-    </transition>
+    <!-- </transition> -->
 
     <notifications />
 
@@ -16,7 +16,7 @@
       :flash="flash">
     </Reveal>
     <!-- @deleteRequest="deleteProject" -->
-  </div>
+  </main>
 </template>
 
 <script>
@@ -33,33 +33,33 @@ export default {
     return {
       page_title: "Projects",
       message: "Update Form",
-      flash: "",
+      flash: {
+        title: null,
+        text: null
+      },
       reveal: {
         type: null,
         title: null,
         msg: null,
         project_id: null
       },
-      auth: null
+      auth: null,
+      contactSession: null
     }
   },
-  computed: {
-    contactSession() {
-      var cid = this.getCookie('current_contact_id')
-      if (cid) {
-        return parseInt(cid)
-      } else {
-        return null
-      }
-    },
-  },
   watch: {
-    flash: function(flash) {
+    'flash.title': function(){
       this.$notify({
-        title: this.flash
+        title: this.flash.title,
+        text: this.flash.text
       })
     }
   },
+  // computed: {
+  //   contactSession() {
+  //     return this.getContactSession()
+  //   }
+  // },
   methods: {
     updateMessage(message) {
       this.message = message
@@ -67,8 +67,17 @@ export default {
     updatePageTite(title) {
       this.page_title = title
     },
-    updateFlash(flash) {
-      this.flash = flash
+    updateFlash(title, text) {
+      this.flash.title = title
+      this.flash.text = text
+    },
+    getContactSession() {
+      var cid = this.getCookie('current_contact_id')
+      if (cid) {
+        return parseInt(cid)
+      } else {
+        return null
+      }
     },
     getCookie(name) {
         var nameEQ = name + "=";
@@ -90,13 +99,14 @@ export default {
     }
   },
   mounted() {
+    this.contactSession = this.getContactSession()
     $(document).foundation();
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
     })
-    bus.$on('flashEmit', (flash) => {
-      this.updateFlash(flash)
+    bus.$on('flashEmit', (title, text) => {
+      this.updateFlash(title,text)
     })
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
@@ -117,13 +127,20 @@ export default {
     bus.$on('authEmit', (id) => {
       this.auth = id
     })
+    bus.$on('contactSessionEmit', (id) => {
+      if(id != null) {
+        this.contactSession = id
+      } else {
+        this.contactSession = this.getContactSession()
+      }
+    })
   }
 }
 </script>
 
 <style scoped lang="scss">
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+  transition: opacity .125s
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0

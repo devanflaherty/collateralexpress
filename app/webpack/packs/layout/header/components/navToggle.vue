@@ -16,6 +16,7 @@ export default {
   methods: {
     toggle() {
       this.active = !this.active;
+      this.$emit('toggleNav')
     }
   }
 }
@@ -28,14 +29,17 @@ export default {
     width: 4rem;
     height: 4rem;
     position: relative;
-    z-index: 100;
+    z-index: 200;
     border: none;
-    background: black;
+    background: none;
     cursor: pointer;
     transition: all 0.5s ease;
+    outline:none;
 
     &:hover {
-      box-shadow: 1px 1px 6px rgba(black, 0.1);
+      span:after, span:before {
+        background: #EB0183;
+      }
     }
   }
   span {
@@ -47,18 +51,18 @@ export default {
     position: absolute;
     display: block;
     content: '';
-    transition: all 1s cubic-bezier(.75,0,.50, 2);
+    transition: all 1s cubic-bezier(.75,0,.50, 2), background-color .5s ease;
   }
   span:after, span:before {
     cursor: pointer;
     border-radius: 6px;
     height: 3px;
     width: 2rem;
-    background: white;
+    background: black;
     position: absolute;
     display: block;
     content: '';
-    transition: all 1s cubic-bezier(.75,0,.50, 2);
+    transition: all 1s cubic-bezier(.75,0,.50, 2), background-color .5s ease;
   }
   span:before {
     top: -5px;
@@ -68,9 +72,11 @@ export default {
   }
   .isActive span:after  {
     bottom: 1px;
+    background: #EB0183;
   }
   .isActive span:before {
     top:0;
+    background: #EB0183;
   }
   .isActive span {
     background-color: transparent;

@@ -12,7 +12,7 @@ if @project.contact
   json.contact(@project.contact, :id, :full_name, :email, :phone, :branch, :position, :avatar)
 end
 if @project.user
-  json.contact(@project.user, :id, :full_name, :email, :phone, :branch, :position, :avatar)
+  json.user(@project.user, :id, :full_name, :email, :phone, :branch, :position, :avatar)
 end
 json.project_media do
   json.(@project, :medias)

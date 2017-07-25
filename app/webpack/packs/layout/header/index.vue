@@ -1,7 +1,7 @@
 <template>
   <div>
-    <toggle class="hide-for-medium"></toggle>
-    <MobileNav :links="links" class="hide-for-medium"></MobileNav>
+    <toggle class="hide-for-navbreak" @toggleNav="toggleNav()"></toggle>
+    <MobileNav :links="links" :toggleState="nav_visible" class="hide-for-navbreak"></MobileNav>
   </div>
 </template>
 
@@ -18,7 +18,14 @@ export default {
   },
   props: ['links'],
   data() {
-    return {}
+    return {
+      nav_visible: false
+    }
+  },
+  methods: {
+    toggleNav() {
+      this.nav_visible = !this.nav_visible
+    }
   }
 }
 </script>
