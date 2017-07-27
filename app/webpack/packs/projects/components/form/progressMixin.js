@@ -51,6 +51,7 @@ const ProgressMixin = {
     }
   },
   mounted() {
+    // Allows other components to set prog to 0
     bus.$on('progressEmit', (val) => {
       this.set(val);
     })

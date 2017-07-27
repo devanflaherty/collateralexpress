@@ -24,9 +24,6 @@ const onValidation = {
       }
     })
 
-    // //Listen on the bus for the parent component running validation
-    // this.$validator.validateAll();
-    // bus.$on('validate', this.onValidate)
   }
 }
 
@@ -43,6 +40,8 @@ const emitValidationErrors = {
   mounted() {
     //Listen on the bus for the parent component running validation
     bus.$on('validate', this.onValidate)
+
+    // Watch if veeErrors.updates
     this.$watch(() => this.veeErrors.errors, (newValue, oldValue) => {
       const newErrors = newValue.filter(error =>
         find(propEq('field', error.field))(oldValue)

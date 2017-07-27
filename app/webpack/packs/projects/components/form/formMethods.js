@@ -10,10 +10,10 @@ const FormMethods = {
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
 
-      // If there are no errors
       if (!this.veeErrors.any()) {
-
+        // If there are no errors we continue
         if(this.contactQuery || this.project.contact_id || this.contactSession) {
+          // Let set what Contact ID we send to contact Submission
           var cid = null
           if (this.contactQuery != null) {
             cid = this.contactQuery
@@ -22,14 +22,16 @@ const FormMethods = {
           } else if (this.contactSession) {
             cid = this.contactSession
           }
+          // Since we found an ID we send it on and will patch that contact
           bus.$emit('postContact', cid)
         } else {
+          // Else we will send nothing and create a new contact
           bus.$emit('postContact')
         }
       } // validate end
     },
     deletePrompt() {
-        bus.$emit('showReveal', 'delete', this.project.title, 'Are you sure you want to delete this project?')
+      bus.$emit('showReveal', 'delete', this.project.title, 'Are you sure you want to delete this project?')
     },
     deleteProject() {
       var vm = this
@@ -86,6 +88,8 @@ const FormMethods = {
       this.deleteProject()
     })
 
+    // Once a contact has been updated/saved THEN we post the form
+    // A project has to have a contact
     bus.$on('submitProjectForm', (cid) => {
       var vm = this
       var axiosConfig = {
@@ -94,12 +98,9 @@ const FormMethods = {
         project : this.project
       }
       if (!this.project.id) {
-        // ** if this is a new project
-        // ** if is a new project but contact exist
+        // if this is a new project
         Axios.post('/projects/', axiosConfig)
         .then(function (response) {
-          console.log('submitted')
-
           // IF SUCCESFUll
           if(vm.dzUpload) {
             bus.$emit('uploadMedia', response.data.project.id)
@@ -107,9 +108,6 @@ const FormMethods = {
           bus.$emit('messageEmit', vm.project.title + " has been created!")
           bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
 
-          // vm.$notify({
-          //   title: response.data.flash[0][1]
-          // })
           bus.$emit('flashEmit', response.data.flash[0][1])
 
         })
@@ -119,9 +117,11 @@ const FormMethods = {
           vm.axErrors(error.response, error.request, error.message);
         });
       } else {
-        // ** If the project does exist let's update it
+        // If the project does exist let's update it
         Axios.patch('/projects/' + this.project.id, axiosConfig)
         .then(function (response) {
+          // Successful
+
           if(vm.dzUpload) {
             bus.$emit('uploadMedia', response.data.project.id)
           }
@@ -130,9 +130,6 @@ const FormMethods = {
           bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
 
           // We also want to grab the flash that was sent in the response
-          // vm.$notify({
-          //   title: response.data.flash[0][1]
-          // })
           bus.$emit('flashEmit', response.data.flash[0][1])
         })
         .catch(function (error) {

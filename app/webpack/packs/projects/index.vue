@@ -69,10 +69,8 @@ export default {
     getContactSession() {
       var cid = this.getCookie('current_contact_id')
       if (cid) {
-        console.log('get contact ' + cid)
         return parseInt(cid)
       } else {
-        console.log('get contact ' + "null")
         return null
       }
     },
