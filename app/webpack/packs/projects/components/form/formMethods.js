@@ -30,25 +30,6 @@ const FormMethods = {
         }
       } // validate end
     },
-    deletePrompt() {
-      bus.$emit('showReveal', 'delete', this.project.title, 'Are you sure you want to delete this project?')
-    },
-    deleteProject() {
-      var vm = this
-      Axios.delete('/projects/' + this.project.id)
-      .then(function (response) {
-        bus.$emit('closeReveal')
-
-        bus.$emit('flashEmit', response.data.flash[0][1])
-        // If Delete is succesfull we route to the list page
-        vm.$router.push({ name: 'list' })
-      })
-      .catch(function (error) {
-        // if it fails we just console log an error for now
-        console.log(error)
-      });
-
-    },
     axErrors(res,req,msg) {
       var vm = this
       if (res) {
@@ -83,10 +64,6 @@ const FormMethods = {
   },
   mounted() {
     bus.$off('submitProjectForm')
-
-    bus.$on('deleteRequest', () => {
-      this.deleteProject()
-    })
 
     // Once a contact has been updated/saved THEN we post the form
     // A project has to have a contact
@@ -145,7 +122,6 @@ const FormMethods = {
   },
   beforeDestroy() {
     bus.$off('submitProjectForm')
-    bus.$off('deleteRequest')
   }
 }
 

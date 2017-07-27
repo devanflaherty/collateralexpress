@@ -15,7 +15,6 @@
       :reveal="reveal"
       :flash="flash">
     </Reveal>
-    <!-- @deleteRequest="deleteProject" -->
   </main>
 </template>
 

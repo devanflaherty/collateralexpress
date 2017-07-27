@@ -238,6 +238,7 @@ import bus from '../bus'
 // App Mixins
 import { onValidation } from "../shared/validation"
 import FormMethods from "./components/form/formMethods.js"
+import DeleteProject from "./components/deleteProject.js"
 import ProgressMixin from "./components/form/progressMixin.js"
 import ContactLogin from "../shared/contactLogin.vue"
 //Form Components
@@ -254,7 +255,7 @@ Axios.defaults.headers.common['Accept'] = 'application/json'
 export default {
   name: 'NewForm',
   props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
-  mixins: [FormMethods, ProgressMixin, onValidation],
+  mixins: [FormMethods, DeleteProject, ProgressMixin, onValidation],
   components: {
     ContactLogin,
     FloatLabel,

@@ -157,6 +157,10 @@
   import Axios from "axios"
   import bus from "../bus.js"
 
+  // Mixins
+  import DeleteProject from "./components/deleteProject.js"
+
+  // Components
   import ContactLogin from "../shared/contactLogin.vue"
   import AdminUpdates from "./components/form/adminUpdates.vue"
 
@@ -166,6 +170,7 @@
       AdminUpdates,
       ContactLogin
     },
+    mixins: [DeleteProject],
     props: ['contactSession', 'auth'],
     data() {
       return {
@@ -259,7 +264,7 @@
           // if no route param
           vm.$router.push({name: 'list'})
         }
-      }
+      },
     },
     mounted() {
       // When we first mount lets see if there is an admin
@@ -271,6 +276,7 @@
       bus.$on('projectPropSet', (key, val) => {
         this.$set(this.project, key, val)
       })
+
     },
     beforeRouteEnter (to,from,next) {
       next(vm => {
