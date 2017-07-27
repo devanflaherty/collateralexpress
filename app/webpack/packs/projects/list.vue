@@ -29,7 +29,7 @@
                 <td>Actions</td>
               </tr>
             </thead>
-            <tbody v-if="projects.length < 1">
+            <tbody v-if="!loading && projects.length < 1">
               <tr>
                 <td width="100%">
                   <h3>{{message}}</h3>
@@ -61,7 +61,7 @@
       </div>
     </section>
 
-    <div id="login" v-if="!loading && !validUser">
+    <div id="login" v-if="!loading && login">
       <ContactLogin></ContactLogin>
     </div>
   </div>
@@ -82,6 +82,7 @@
       return {
         loading: false,
         validUser: false,
+        login: false,
         message: '',
         projects: [],
         pagination: {
@@ -94,6 +95,11 @@
       }
     },
     watch: {
+      auth(id) {
+        if(id != null) {
+          this.validUser = true
+        }
+      },
       contactSession(id) {
         if(id != null) {
           this.validUser = true
@@ -186,12 +192,31 @@
         });
       },
     },
-    created(){
+    beforeCreate(){
+      // Because we hit this page from outside of vue router we have to do some secondary checks.
+      // We will run this get request to set our authentication
+      // And set wether login is visible or not
+      var vm = this
+      Axios.get('/authenticate.json')
+      .then(function (response) {
+        if (response.data.user.id) {
+          vm.login = false
+          bus.$emit('authEmit', response.data.user.id)
+        } else if (response.data.contact.id) {
+          vm.login = false
+          bus.$emit('contactSessionEmit', response.data.contact.id)
+        } else {
+          vm.login = true
+        }
+      }).catch(function (error) {
+        console.log('Trouble authenticating user.')
+      })
+    },
+    mounted(){
       if(this.auth != null || this.contactSession != null) {
         this.validUser = true
-        // this.getProjects()
       }
-    }
+    },
   }
 </script>
 

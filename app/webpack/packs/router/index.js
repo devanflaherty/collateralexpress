@@ -10,21 +10,23 @@ import ProjectIndex from '../projects/list.vue'
 import ProjectForm from '../projects/form.vue'
 import ProjectShow from '../projects/show.vue'
 
-// const authRequest = function(to, from, next) {
-//   Axios.get('/authenticate.json')
-//   .then(function (response) {
-//     if (response.data.user.id || response.data.contact.id) {
-//       next()
-//     } else {
-//       bus.$emit('setRedirect', from, to)
-//       next()
-//       // bus.$emit('setRedirect', from)
-//       // window.location.href = "/contact/login"
-//     }
-//   }).catch(function (error) {
-//     window.location.href = "/"
-//   })
-// }
+const authRequest = function(to, from, next) {
+  Axios.get('/authenticate.json')
+  .then(function (response) {
+    if (response.data.user.id) {
+      bus.$emit('authEmit', response.data.user.id)
+      next()
+    } else if(response.data.contact.id) {
+      bus.$emit('contactSessionEmit', response.data.contact.id)
+      next()
+    } else {
+      next()
+    }
+  }).catch(function (error) {
+    console.log('Trouble authentication user.')
+    next()
+  })
+}
 
 const router = new VueRouter ({
   mode: 'history',
@@ -34,40 +36,49 @@ const router = new VueRouter ({
     path:'/projects/',
     component: ProjectIndex,
     meta: {title: 'Projects'},
-    // beforeEnter: (to, from, next) => {
-    //   authRequest(to, from, next)
-    // }
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   },
   {
     name: 'edit',
     path:'/projects/:id/edit',
     component: ProjectForm,
     meta: {title: 'Edit Project'},
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   },
   {
     name: 'new',
     path:'/projects/new',
     component: ProjectForm,
-    meta: {title: 'New Project'}
+    meta: {title: 'New Project'},
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   },
   {
     name: 'show',
     path:'/project/:id',
     component: ProjectShow,
+    beforeEnter: (to, from, next) => {
+      authRequest(to, from, next)
+    }
   }]
 })
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
   // Set Auth
-  Axios.get('/authenticate.json')
-  .then(function (response) {
-    if (response.data.user.id) {
-      bus.$emit('authEmit', response.data.user.id)
-    }
-  }).catch(function (error) {
-    console.log('Trouble authneticating user')
-  })
+  // Axios.get('/authenticate.json')
+  // .then(function (response) {
+  //   if (response.data.user.id) {
+  //     bus.$emit('authEmit', response.data.user.id)
+  //   }
+  // }).catch(function (error) {
+  //   console.log('Trouble authneticating user')
+  // })
 
   bus.$emit('contactSessionEmit')
 

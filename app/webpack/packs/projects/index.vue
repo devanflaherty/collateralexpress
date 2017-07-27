@@ -55,11 +55,6 @@ export default {
       })
     }
   },
-  // computed: {
-  //   contactSession() {
-  //     return this.getContactSession()
-  //   }
-  // },
   methods: {
     updateMessage(message) {
       this.message = message

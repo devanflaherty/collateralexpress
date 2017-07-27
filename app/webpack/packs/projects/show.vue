@@ -147,7 +147,7 @@
       </div><!-- close row -->
     </section><!-- close projectShow -->
 
-    <div id="login" v-if="!loading && validUser == false">
+    <div id="login" v-if="!loading && !validUser">
       <ContactLogin :project-user="contact.id"></ContactLogin>
     </div>
   </div>
