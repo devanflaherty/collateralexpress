@@ -35,52 +35,30 @@ const router = new VueRouter ({
     name: 'list',
     path:'/projects/',
     component: ProjectIndex,
-    meta: {title: 'Projects'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    meta: {title: 'Projects'}
   },
   {
     name: 'edit',
     path:'/projects/:id/edit',
     component: ProjectForm,
-    meta: {title: 'Edit Project'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    meta: {title: 'Edit Project'}
   },
   {
     name: 'new',
     path:'/projects/new',
     component: ProjectForm,
-    meta: {title: 'New Project'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    meta: {title: 'New Project'}
   },
   {
     name: 'show',
     path:'/project/:id',
-    component: ProjectShow,
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    component: ProjectShow
   }]
 })
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
-  // Set Auth
-  // Axios.get('/authenticate.json')
-  // .then(function (response) {
-  //   if (response.data.user.id) {
-  //     bus.$emit('authEmit', response.data.user.id)
-  //   }
-  // }).catch(function (error) {
-  //   console.log('Trouble authneticating user')
-  // })
-
-  bus.$emit('contactSessionEmit')
+  authRequest(to, from, next)
 
   // Set Title
   var vueTitle = to.meta.title

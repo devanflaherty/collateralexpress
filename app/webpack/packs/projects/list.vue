@@ -204,7 +204,6 @@
           bus.$emit('authEmit', response.data.user.id)
         } else if (response.data.contact.id) {
           vm.login = false
-          bus.$emit('contactSessionEmit', response.data.contact.id)
         } else {
           vm.login = true
         }

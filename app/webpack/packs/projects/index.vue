@@ -69,8 +69,10 @@ export default {
     getContactSession() {
       var cid = this.getCookie('current_contact_id')
       if (cid) {
+        console.log('get contact ' + cid)
         return parseInt(cid)
       } else {
+        console.log('get contact ' + "null")
         return null
       }
     },
@@ -86,6 +88,7 @@ export default {
     }
   },
   beforeCreate() {
+    // When hitting vue app outside of Vue Router
     if(window.location.hash == '#new') {
       this.$router.push({name: 'new'})
     }
@@ -94,15 +97,18 @@ export default {
     }
   },
   mounted() {
-    this.contactSession = this.getContactSession()
+    // We mount foundation after the app and DOM has mounted
     $(document).foundation();
+
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
     })
+
     bus.$on('flashEmit', (title, text) => {
       this.updateFlash(title,text)
     })
+
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
       this.reveal.title = title
@@ -110,6 +116,7 @@ export default {
       this.reveal.project_id = pid
       $('#reveal').foundation('open');
     });
+
     bus.$on('closeReveal', () => {
       if(this.reveal.type != null) {
         this.reveal.type = null
@@ -119,16 +126,25 @@ export default {
         $('#reveal').foundation('close');
       }
     });
+
     bus.$on('authEmit', (id) => {
       this.auth = id
     })
+
     bus.$on('contactSessionEmit', (id) => {
       if(id != null) {
         this.contactSession = id
       } else {
+        // If no id is passed we will look to browser cookies
         this.contactSession = this.getContactSession()
       }
     })
+
+    // If we come from external source and the router is not invoked
+    // We need to set a contactSession on mount
+    if(!this.contactSession) {
+      this.contactSession = this.getContactSession()
+    }
   }
 }
 </script>
