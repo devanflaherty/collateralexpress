@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section id="projectForm" v-if="$route.name == 'new' || $route.params.id != null && validUser == true">
+    <section id="projectForm" v-if="$route.name == 'new' || $route.params.id != null && validUser">
       <hr class="no-margin">
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-else v-on:submit.prevent="onSubmit" id="form">
@@ -225,7 +225,7 @@
       <hr class="no-margin">
     </section><!-- close projectForm -->
 
-    <div id="login" v-if="!loading && validUser == false && $route.name == 'edit'">
+    <div id="login" v-if="!loading && !validUser && $route.name == 'edit'">
       <ContactLogin :project-user="project.contact_id"></ContactLogin>
     </div>
   </div>
@@ -296,13 +296,15 @@ export default {
   },
   computed: {
     token() {
+      // Get csrf-token from meta tag in head
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
     page_title() {
+      // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title
     },
     EmptyProject() {
-      // we first want to create a object that is equal to our empty project
+      // An empty object
       var empty = {
         id: null,
         title: null,
@@ -327,27 +329,51 @@ export default {
   },
   watch: {
     '$route': function() {
+      // Watch if route changers
+      // If it does we are going to re-fetch the data
       this.fetchData
+      // Then set the the page title to the new route.meta.title
       this.page_title = this.$route.meta.title
     },
     tactic_other(other) {
+      // When the other_input field has been updated
+      // Run the setTactics Method passing in the other_input's value
       this.setTactics(other)
     },
     'project.contact_id': function(id) {
-      this.validateUser(this.contactSession)
+      // When the project.contact_id is updated
+      // (for example when we fetch data)
+      // We will run the validateUser Method
+      // checking the projects ID against the session ID
+      // If validation fails we don't show them the page
+      if(!this.auth) {
+        this.validateUser(this.contactSession)
+      }
     },
     contactSession(id) {
+      // When the contactSession value updates from index.vue
+      // we run validateUser Method arguing against
+      // the new contactSession ID
       this.validateUser(id)
+      // Generally will only run on a few instances
+      // First time vue instance is being loaded & First time a contactUser is logging in
       this.contactQuery = id
+    },
+    auth(id) {
+      // When the auth value updates from index.vue set validUser to true
+      this.validUser = true
     },
     validUser(status) {
       if(this.validUser == true) {
+        // If the we have a validUser we then fetch the data
         this.fetchData()
       }
     }
   },
   methods: {
     validateUser(id) {
+      // if the ID passed is equal to the projects.contact_id
+      // Then we have a validUser
       if(id == this.project.contact_id && id != null) {
         this.validUser = true
       }
@@ -358,20 +384,25 @@ export default {
     },
     getProject() {
       var vm = this
+      // if we have an ID param
       if (vm.$route.params.id) {
-        // Project exists
+        // Then the project exists
         if(this.auth || this.contactSession) {
           // if there is an admin user authorized or if we find a contact Session
-          // Let's make a request
+          // We make a request with the ID Param
           Axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json').then( response => {
             if(vm.contactSession != response.data.project.contact_id && vm.auth == null) {
+              // If the contactSession is not equal to what is returned & we aren't authorized
               bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
             } else {
+              // If contactSession is valid or is authorized
               vm.loading = false
               vm.validUser = true
               vm.project = response.data.project
-              vm.contactQuery = response.data.project.contact_id
               vm.project_media = response.data.project_media.medias
+              // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
+              // That way we are getting the project.contact rather than contactSession
+              vm.contactQuery = response.data.project.contact_id
 
               document.title = "Edit " + vm.project.title + " | Collateral Express"
             }
@@ -382,8 +413,8 @@ export default {
             console.log(error)
           })
         } else {
-          // if no valid session is found
-          // We will just grab some Ids so we can validate
+          // if no contactSession or Auth is present
+          // We will just grab some info so we can validate when the user goes to login
           Axios.get('/api/v1/projects/' + vm.$route.params.id + '.json').then( response => {
             vm.loading = false
             vm.$set(vm.project, 'id', response.data.project.id)
@@ -398,18 +429,22 @@ export default {
           })
         } // close statement that check if authorized to any degree
       } else {
-        //new project
+        // New Project
+        // Authorization does not matter for new requests
         vm.loading = false
         bus.$emit('updateMessage', 'New Project')
         bus.$emit('emptyFloats')
         bus.$emit('projectEmit', vm.EmptyProject)
       }
     },
-    updateProject(project) {
-      this.project = project
-    },
     updateContact(contact) {
+      // Called from contactEmit
+      // When the contact component finds an existing contact, or
+      // There is a new contact we will update the project with that contact
+      // Will either be null or the contacts ID
       this.project.contact_id = contact.id
+      // This would be the last time(s) the contactQuery is set in it's life span
+      // It inherits the ID found in the contact Component
       this.contactQuery = contact.id
     },
     setTactics(tactic) {
@@ -434,47 +469,57 @@ export default {
     }
   },
   mounted() {
-    // When we first mount lets see if there is an admin
-    // If so the user is valid and everything is great
     if(this.auth != null) {
+      // When we first mount lets see if there is an admin
+      // If so the user is valid and everything is great
       this.validUser = true
+    } else {
+      // If auth is null We will run the validate User method
+      this.validateUser(this.contactSession)
     }
-    this.validateUser(this.contactSession)
-    this.contactQuery = this.contactSession
-
+    // We set contactQuery to contactSession
+    // This will set contactQuery first before any other method
+    // Allowing our contact component to default load the contactSession
+    if(this.contactSession) {
+      this.contactQuery = this.contactSession
+    }
+    // We grab the tactics
     this.getTactics()
 
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('projectEmit', (project) => {
-      this.updateProject(project)
+      // Updates project with new project object
+      this.project = project
     })
 
     bus.$on('projectPropSet', (key, val) => {
+      // updates individual property of the project object
       this.$set(this.project, key, val)
-      //this.$validator.validateAll();
     })
 
     bus.$on('readyDZ', (bool) => {
-      console.log('ready')
+      // Sets wether Dropzone should upload files or not
       this.dzUpload = bool
     })
 
     bus.$on('mediaEmit', (media) => {
-      console.log('media emit')
+      // Updates the prohect_media aray with new media records
       this.project_media = media
     })
   },
   beforeRouteEnter (to,from,next) {
+    // Before we hit the page we will fetch Data
     next(vm => {
       vm.fetchData()
     })
   },
   beforeRouteUpdate (to, from, next) {
+    // Once the route has updated we will fetch Data
+    // Will run if route ID changes but we stay on this page
     this.fetchData()
     next()
   },
   beforeRouteLeave (to, from, next) {
-    // Before we leave the current view
+    // Before we leave the current page
     bus.$emit('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
