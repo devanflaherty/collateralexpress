@@ -204,6 +204,7 @@
                     :contact-query="contactQuery"
                     :project-id="project.id"
                     :contact-session="contactSession"
+                    :token="token"
                     @contactEmit="updateContact"
                   ></contact>
                 </div>
@@ -249,13 +250,9 @@ import MediaUploader from "./components/form/mediaUploader.vue"
 import Contact from "./components/form/contact.vue"
 import UserFields from "./components/form/user.vue"
 
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
-
 export default {
   name: 'NewForm',
-  props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
+  props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth', 'token'],
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     ContactLogin,
@@ -297,10 +294,6 @@ export default {
     }
   },
   computed: {
-    token() {
-      // Get csrf-token from meta tag in head
-      return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    },
     page_title() {
       // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title

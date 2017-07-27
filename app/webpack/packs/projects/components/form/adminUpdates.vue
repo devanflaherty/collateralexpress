@@ -20,7 +20,7 @@
 import Axios from "axios"
 import bus from "../../../bus.js"
 import Status from "./status.vue"
-import ProjectSubmission from "../mixins/ProjectSubmission.js"
+import ProjectSubmission from "../../mixins/projectSubmission.js"
 
 export default {
   name: 'AdminUpdates',

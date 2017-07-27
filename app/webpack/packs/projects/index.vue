@@ -2,6 +2,7 @@
   <main id="projectApp">
     <!-- <transition name="fade" appear> -->
       <router-view
+        :token="token"
         :auth="auth"
         :contactSession="contactSession"
         :reveal-type="reveal.type"
@@ -22,6 +23,10 @@
 import axios from "axios"
 import bus from "../bus"
 import Reveal from "../shared/reveal.vue"
+
+let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
+axios.defaults.headers.common['X-CSRF-Token'] = token
+axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'Project_App',
@@ -45,6 +50,11 @@ export default {
       auth: null,
       contactSession: null
     }
+  },
+  computed: {
+    token() {
+      return document.getElementsByName('csrf-token')[0].getAttribute('content')
+    },
   },
   watch: {
     'flash.title': function(){
@@ -82,13 +92,13 @@ export default {
             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
         }
         return null;
-    }
+    },
   },
   beforeCreate() {
     // When hitting vue app outside of Vue Router
-    if(window.location.hash == '#new') {
-      this.$router.push({name: 'new'})
-    }
+    // if(window.location.hash == '#new') {
+    //   window.location.href = '/projects/new'
+    // }
     if(window.location.hash == '#all') {
       this.$router.push({name: 'list'})
     }

@@ -1,4 +1,4 @@
-import bus from '../../../bus'
+import bus from '../../bus'
 import Axios from "axios"
 
 const ProjectSubmission = {
@@ -76,6 +76,7 @@ const ProjectSubmission = {
       }
       if (!this.project.id) {
         // if this is a new project
+        console.log(this.project)
         Axios.post('/projects/', axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
