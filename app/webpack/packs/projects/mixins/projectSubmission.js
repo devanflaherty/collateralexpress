@@ -1,7 +1,7 @@
 import bus from '../../../bus'
 import Axios from "axios"
 
-const FormMethods = {
+const ProjectSubmission = {
   methods: {
     //
     // Form submission handling
@@ -125,4 +125,4 @@ const FormMethods = {
   }
 }
 
-export default FormMethods
+export default ProjectSubmission

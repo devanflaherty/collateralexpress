@@ -232,16 +232,17 @@
 </template>
 
 <script>
-import Axios from "axios"
+import axios from "axios"
 import bus from '../bus'
 
 // App Mixins
+import ProjectSubmission from "./mixins/projectSubmission.js"
+import DeleteProject from "./mixins/deleteProject.js"
+import ProgressMixin from "./mixins/progressMixin.js"
 import { onValidation } from "../shared/validation"
-import FormMethods from "./components/form/formMethods.js"
-import DeleteProject from "./components/deleteProject.js"
-import ProgressMixin from "./components/form/progressMixin.js"
-import ContactLogin from "../shared/contactLogin.vue"
+
 //Form Components
+import ContactLogin from "../shared/contactLogin.vue"
 import FloatLabel from "../shared/floatLabel.vue"
 import Status from "./components/form/status.vue"
 import MediaUploader from "./components/form/mediaUploader.vue"
@@ -249,13 +250,13 @@ import Contact from "./components/form/contact.vue"
 import UserFields from "./components/form/user.vue"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-Axios.defaults.headers.common['X-CSRF-Token'] = token
-Axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.common['X-CSRF-Token'] = token
+axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'NewForm',
   props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth'],
-  mixins: [FormMethods, DeleteProject, ProgressMixin, onValidation],
+  mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     ContactLogin,
     FloatLabel,
@@ -391,7 +392,7 @@ export default {
         if(this.auth || this.contactSession) {
           // if there is an admin user authorized or if we find a contact Session
           // We make a request with the ID Param
-          Axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json').then( response => {
+          axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json').then( response => {
             if(vm.contactSession != response.data.project.contact_id && vm.auth == null) {
               // If the contactSession is not equal to what is returned & we aren't authorized
               bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
@@ -416,7 +417,7 @@ export default {
         } else {
           // if no contactSession or Auth is present
           // We will just grab some info so we can validate when the user goes to login
-          Axios.get('/api/v1/projects/' + vm.$route.params.id + '.json').then( response => {
+          axios.get('/api/v1/projects/' + vm.$route.params.id + '.json').then( response => {
             vm.loading = false
             vm.$set(vm.project, 'id', response.data.project.id)
             vm.$set(vm.project, 'title', response.data.project.title)
@@ -461,7 +462,7 @@ export default {
       // Get Available tactics
       var vm = this
       console.log('get')
-      Axios.get('/api/v1/projects/new.json')
+      axios.get('/api/v1/projects/new.json')
         .then( response => {
           vm.available_tactics = response.data.tactics
         }).catch(error => {

@@ -158,7 +158,7 @@
   import bus from "../bus.js"
 
   // Mixins
-  import DeleteProject from "./components/deleteProject.js"
+  import DeleteProject from "./mixins/deleteProject.js"
 
   // Components
   import ContactLogin from "../shared/contactLogin.vue"

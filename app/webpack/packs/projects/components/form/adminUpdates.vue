@@ -20,11 +20,11 @@
 import Axios from "axios"
 import bus from "../../../bus.js"
 import Status from "./status.vue"
-import FormMethods from "./formMethods.js"
+import ProjectSubmission from "../mixins/ProjectSubmission.js"
 
 export default {
   name: 'AdminUpdates',
-  mixins: [FormMethods],
+  mixins: [ProjectSubmission],
   props: ['project'],
   components: {
     Status
