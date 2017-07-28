@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'pages#index'
+  root 'app#index'
 
   devise_for :users,
     path: 'account',
@@ -12,19 +12,12 @@ Rails.application.routes.draw do
     }
 
   resources :projects, :except => [:index, :new, :edit, :show]
-  resources :contacts, :except => [:new, :show]
-  post 'contacts/clear', to: 'contacts#clear', method: :post
-  post 'contacts/login', to: 'contacts#login', method: :post
-  get 'authenticate', to: 'authenticates#index'
-
+  resources :contacts, :except => [:index, :new, :edit, :show]
   resources :media, only: [:create, :delete, :destroy]
 
-  # Static Page routes
-  get '/how-it-works', to: 'pages#howItWorks'
-  get '/faq', to: 'pages#faq'
-  get '/gallery', to: 'pages#gallery'
-
-  # API
+  ##-------------------------------------------------------##
+  ## API Resources                                         ##
+  ##-------------------------------------------------------##
   namespace :api do
     namespace :v1 do
       resources :application
@@ -34,7 +27,17 @@ Rails.application.routes.draw do
     end
   end
 
-  get '*path', to: 'projects#index', constraints: ->(request) do
+  ##-------------------------------------------------------##
+  ## Custom Routes                                         ##
+  ##-------------------------------------------------------##
+  post 'contacts/clear', to: 'contacts#clear', method: :post
+  post 'contacts/login', to: 'contacts#login', method: :post
+  get 'authenticate', to: 'authenticates#index'
+
+  ##-------------------------------------------------------##
+  ## Route to enable Vue Routes                            ##
+  ##-------------------------------------------------------##
+  get '*path', to: 'app#index', constraints: ->(request) do
     !request.xhr? && request.format.html?
   end
 

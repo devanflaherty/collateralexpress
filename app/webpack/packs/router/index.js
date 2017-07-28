@@ -6,9 +6,15 @@ Vue.use(VueRouter)
 
 // Import Components
 
-import ProjectIndex from '../projects/list.vue'
-import ProjectForm from '../projects/form.vue'
-import ProjectShow from '../projects/show.vue'
+import Home from '../views/pages/home.vue'
+import How from '../views/pages/how-it-works.vue'
+import Faq from '../views/pages/faq.vue'
+import Gallery from '../views/pages/gallery.vue'
+import FourOhFour from '../views/pages/404.vue'
+import ProjectIndex from '../views/projects/list.vue'
+import ProjectForm from '../views/projects/form.vue'
+import ProjectShow from '../views/projects/show.vue'
+import ContactEdit from '../views/contacts/index.vue'
 
 const authRequest = function(to, from, next) {
   Axios.get('/authenticate.json')
@@ -32,6 +38,36 @@ const router = new VueRouter ({
   mode: 'history',
   routes: [
   {
+    name: 'home',
+    path:'/',
+    component: Home,
+    meta: {title: 'Home'}
+  },
+  {
+    name: 'how',
+    path:'/how-it-works',
+    component: How,
+    meta: {title: 'How It Works'}
+  },
+  {
+    name: 'faq',
+    path:'/faq',
+    component: Faq,
+    meta: {title: 'FAQ'}
+  },
+  {
+    name: 'gallery',
+    path:'/gallery',
+    component: Gallery,
+    meta: {title: 'Gallery'}
+  },
+  {
+    name: 'contact',
+    path:'/contact',
+    component: Home,
+    meta: {title: 'Home'}
+  },
+  {
     name: 'list',
     path:'/projects/',
     component: ProjectIndex,
@@ -53,6 +89,29 @@ const router = new VueRouter ({
     name: 'show',
     path:'/project/:id',
     component: ProjectShow
+  },
+  {
+    name: 'edit-contact',
+    path:'/contacts/:id/edit',
+    component: ContactEdit,
+    meta: {title: 'Edit Contact'}
+  },
+  {
+    name: 'account',
+    path:'/account',
+    component: ContactEdit,
+    meta: {title: 'Account'}
+  },
+  {
+    name: 'admin-account',
+    path:'/account/edit',
+    meta: {title: 'Account'}
+  },
+  {
+    name: '404',
+    path:'*',
+    component: FourOhFour,
+    meta: {title: '404'}
   }]
 })
 

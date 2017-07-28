@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
     @links = [
       {
         name: "Create Project Request",
-        url: "/projects/new#new"
+        url: "/projects/new"
       },
       {
         name: "How It Works",
@@ -39,14 +39,14 @@ class ApplicationController < ActionController::Base
     if user_signed_in? == false && cookies[:current_contact_id]
       @links << {
         name: "Profile",
-        url: "/contacts/#{cookies[:current_contact_id]}/edit"
+        url: "/account"
       }
     end
 
     if user_signed_in? || cookies[:current_contact_id]
       @links.insert(1, {
         name: "All Projects",
-        url: "/projects#all"
+        url: "/projects"
       })
     end
   end

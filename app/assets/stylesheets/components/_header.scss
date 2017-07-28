@@ -1,4 +1,4 @@
-body > header#header {
+header#header {
   height: 6rem;
   @include flex;
   @include flex-align(center, middle);
