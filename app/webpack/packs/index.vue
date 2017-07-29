@@ -1,18 +1,18 @@
 <template>
   <main id="app">
-    <NavHeader :auth="auth" :contactSession="contactSession"></NavHeader>
+    <NavHeader :auth-user="auth_user"></NavHeader>
 
   <!-- <transition name="fade" appear> -->
     <router-view
       :token="token"
-      :auth="auth"
+      :auth-user="auth_user"
       :contactSession="contactSession"
       :reveal-type="reveal.type"
       :flash="flash">
     </router-view>
   <!-- </transition> -->
 
-    <Footer></Footer>
+    <AppFooter></AppFooter>
 
     <notifications />
     <Reveal
@@ -28,7 +28,7 @@ import axios from "axios"
 import bus from "./bus"
 
 import NavHeader from "./views/shared/header/index.vue"
-import Footer from "./views/shared/footer.vue"
+import AppFooter from "./views/shared/footer.vue"
 import Reveal from "./views/shared/reveal.vue"
 import ContactReveal from "./views/shared/contact.vue"
 
@@ -41,7 +41,7 @@ export default {
   props: ['links'],
   components: {
     NavHeader,
-    Footer,
+    AppFooter,
     Reveal,
     ContactReveal
   },
@@ -59,7 +59,10 @@ export default {
         msg: null,
         project_id: null
       },
-      auth: null,
+      auth_user: {
+        id: null,
+        role: null
+      },
       contactSession: null
     }
   },
@@ -144,8 +147,9 @@ export default {
       }
     });
 
-    bus.$on('authEmit', (id) => {
-      this.auth = id
+    bus.$on('authEmit', (id, role) => {
+      this.auth_user.id = id
+      this.auth_user.role = role
     })
 
     bus.$on('contactSessionEmit', (id) => {

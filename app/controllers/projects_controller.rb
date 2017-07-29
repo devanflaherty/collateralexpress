@@ -59,7 +59,6 @@ class ProjectsController < ApplicationController
     @project.destroy
     flash.now[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
-      format.html { render 'index'}
       format.json { render json: {project: @project, flash: flash} }
     end
   end

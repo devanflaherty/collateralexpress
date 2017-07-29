@@ -50,6 +50,7 @@
           .then( response => {
             this.contact_id = response.data.contact.id
             this.contact_name = response.data.contact.first_name + " " + response.data.contact.last_name
+            bus.$emit('authEmit', response.data.contact.id, response.data.role)
             bus.$emit('contactSessionEmit', response.data.contact.id)
 
             bus.$emit('flashEmit', 'Login Status', response.data.flash[0][1])

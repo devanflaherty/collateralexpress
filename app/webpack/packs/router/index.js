@@ -15,16 +15,28 @@ import ProjectIndex from '../views/projects/list.vue'
 import ProjectForm from '../views/projects/form.vue'
 import ProjectShow from '../views/projects/show.vue'
 import ContactEdit from '../views/contacts/index.vue'
+import AdminLogin from '../views/admin/index.vue'
+import AdminAccount from '../views/admin/edit.vue'
+import AdminCreate from '../views/admin/new.vue'
+import AdminList from '../views/admin/list.vue'
 
 const authRequest = function(to, from, next) {
-  Axios.get('/authenticate.json')
+  Axios.get('/api/v1/authenticate.json')
   .then(function (response) {
     if (response.data.user.id) {
-      bus.$emit('authEmit', response.data.user.id)
-      next()
-    } else if(response.data.contact.id) {
-      bus.$emit('contactSessionEmit', response.data.contact.id)
-      next()
+      bus.$emit('authEmit', response.data.user.id, response.data.role)
+      if(response.data.role == 'contact') {
+        bus.$emit('contactSessionEmit', response.data.user.id)
+      }
+
+      // Redirects
+      if(response.data.role == 'admin' && to.name == 'login') {
+        router.push({name: 'list'})
+      } else if(response.data.role != 'admin' && to.name == 'admin-edit') {
+        router.push({name: 'login'})
+      } else {
+        next()
+      }
     } else {
       next()
     }
@@ -103,9 +115,28 @@ const router = new VueRouter ({
     meta: {title: 'Account'}
   },
   {
-    name: 'admin-account',
+    name: 'login',
+    component: AdminLogin,
+    path:'/account/login',
+    meta: {title: 'Login'}
+  },
+  {
+    name: 'admin-edit',
+    component: AdminAccount,
     path:'/account/edit',
-    meta: {title: 'Account'}
+    meta: {title: 'Edit User'}
+  },
+  {
+    name: 'admin-new',
+    component: AdminCreate,
+    path:'/account/new',
+    meta: {title: 'Add an Admin'}
+  },
+  {
+    name: 'admin-list',
+    component: AdminList,
+    path:'/accounts',
+    meta: {title: 'All Users'}
   },
   {
     name: '404',

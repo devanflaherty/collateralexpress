@@ -168,16 +168,16 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="project.id || contactSession || auth" id="infoPanel" class="small-12 medium-3 columns show-for-medium">
+          <div v-if="project.id || authUser.id" id="infoPanel" class="small-12 medium-3 columns show-for-medium">
             <aside>
               <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
                 <router-link class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
               </nav>
-              <nav v-if="contactSession || auth">
+              <nav v-if="authUser.id">
                 <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
                 <router-link v-if="project.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
-                <a v-if="auth" href="/account/edit">Edit User Profile</a>
-                <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
+                <a v-if="authUser.role == 'admin'" href="/account/edit">Edit User Profile</a>
+                <a v-else="authUser.role == 'contact'" :href="'/contacts/' + authUser.id + '/edit'">Edit Contact Profile</a>
               </nav>
             </aside>
             <a v-if="project.id"
@@ -203,7 +203,6 @@
                   <contact
                     :contact-query="contactQuery"
                     :project-id="project.id"
-                    :contact-session="contactSession"
                     :token="token"
                     @contactEmit="updateContact"
                   ></contact>
@@ -252,7 +251,7 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
-  props: ['message', 'reveal-type', 'flash', 'contact-session', 'auth', 'token'],
+  props: ['message', 'reveal-type', 'flash', 'contact-session', 'authUser', 'token'],
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     ContactLogin,
@@ -341,22 +340,22 @@ export default {
       // We will run the validateUser Method
       // checking the projects ID against the session ID
       // If validation fails we don't show them the page
-      if(!this.auth) {
-        this.validateUser(this.contactSession)
+      if(this.authUser.role == 'contact') {
+        this.validateUser(this.authUser.id)
       }
     },
     contactSession(id) {
-      // When the contactSession value updates from index.vue
-      // we run validateUser Method arguing against
-      // the new contactSession ID
-      this.validateUser(id)
       // Generally will only run on a few instances
       // First time vue instance is being loaded & First time a contactUser is logging in
       this.contactQuery = id
     },
-    auth(id) {
+    'authUser.id': function() {
       // When the auth value updates from index.vue set validUser to true
-      this.validUser = true
+      if(this.authUser.role == 'admin') {
+        this.validUser = true
+      } else if (this.authUser.role == 'contact') {
+        this.validateUser(this.authUser.id)
+      }
     },
     validUser(status) {
       if(this.validUser == true) {
@@ -382,12 +381,12 @@ export default {
       // if we have an ID param
       if (vm.$route.params.id) {
         // Then the project exists
-        if(this.auth || this.contactSession) {
-          // if there is an admin user authorized or if we find a contact Session
+        if(this.authUser.id) {
+          // if there is an authUser
           // We make a request with the ID Param
           axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json').then( response => {
-            if(vm.contactSession != response.data.project.contact_id && vm.auth == null) {
-              // If the contactSession is not equal to what is returned & we aren't authorized
+            if(vm.authUser.role == 'contact' && vm.authUser.id != response.data.project.contact_id) {
+              // If the contact id is not equal to what is returned
               bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
             } else {
               // If contactSession is valid or is authorized
@@ -408,7 +407,7 @@ export default {
             console.log(error)
           })
         } else {
-          // if no contactSession or Auth is present
+          // if no one is authorized
           // We will just grab some info so we can validate when the user goes to login
           axios.get('/api/v1/projects/' + vm.$route.params.id + '.json').then( response => {
             vm.loading = false
@@ -424,6 +423,7 @@ export default {
           })
         } // close statement that check if authorized to any degree
       } else {
+        // If no params
         // New Project
         // Authorization does not matter for new requests
         vm.loading = false
@@ -464,13 +464,13 @@ export default {
     }
   },
   mounted() {
-    if(this.auth != null) {
+    if(this.authUser.role == 'admin') {
       // When we first mount lets see if there is an admin
       // If so the user is valid and everything is great
       this.validUser = true
     } else {
       // If auth is null We will run the validate User method
-      this.validateUser(this.contactSession)
+      this.validateUser(this.authUser.id)
     }
     // We set contactQuery to contactSession
     // This will set contactQuery first before any other method

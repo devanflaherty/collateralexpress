@@ -1,4 +1,4 @@
-class AuthenticatesController < ApplicationController
+class Api::V1::AuthenticatesController < ApplicationController
   #before_action :authenticate_user!
 
   def index
@@ -7,11 +7,12 @@ class AuthenticatesController < ApplicationController
     else
       @user = {}
     end
-    
+
     if cookies[:current_contact_id]
       @contact = Contact.find(cookies[:current_contact_id])
     else
       @contact = {}
     end
   end
+  
 end

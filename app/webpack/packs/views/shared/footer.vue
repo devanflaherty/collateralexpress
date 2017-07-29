@@ -22,7 +22,7 @@
   import bus from '../../bus'
 
   export default {
-    name: 'Footer',
+    name: 'AppFooter',
     data() {
       return {}
     },

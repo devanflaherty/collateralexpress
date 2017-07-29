@@ -2,13 +2,9 @@ Rails.application.routes.draw do
   root 'app#index'
 
   devise_for :users,
-    path: 'account',
-    path_names: {
-      sign_in: 'login',
-      sign_out: 'logout',
-      password: 'password',
-      confirmation: 'confirm',
-      sign_up: 'signup'
+    controllers: {
+      sessions: 'users/sessions',
+      registrations: 'users/registrations'
     }
 
   resources :projects, :except => [:index, :new, :edit, :show]
@@ -20,8 +16,7 @@ Rails.application.routes.draw do
   ##-------------------------------------------------------##
   namespace :api do
     namespace :v1 do
-      resources :application
-      resources :users
+      resources :users, :except => [:new, :edit, :create, :update, :destroy]
       resources :contacts
       resources :projects
     end
@@ -32,7 +27,7 @@ Rails.application.routes.draw do
   ##-------------------------------------------------------##
   post 'contacts/clear', to: 'contacts#clear', method: :post
   post 'contacts/login', to: 'contacts#login', method: :post
-  get 'authenticate', to: 'authenticates#index'
+  get 'api/v1/authenticate', to: 'api/v1/authenticates#index'
 
   ##-------------------------------------------------------##
   ## Route to enable Vue Routes                            ##

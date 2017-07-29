@@ -6,8 +6,8 @@
 
 import Vue from 'vue'
 import router from './router'
-import VeeValidate from 'vee-validate';
 
+import VeeValidate from 'vee-validate';
 const veeConfig = {
   errorBagName: 'veeErrors',
 }

@@ -151,7 +151,7 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['contactQuery', 'projectId', 'contactSession', 'token'],
+  props: ['contactQuery', 'projectId', 'token'],
   data() {
     return {
       message: "",

@@ -12,7 +12,16 @@
       @blur="floatLabel(false); focusLabel(false); emitInput()">
     </textarea>
 
-    <input v-else
+    <input
+      v-else-if="inputType == 'password'"
+      :id="propKey"
+      v-model="model"
+      :name="label"
+      @focus="floatLabel(true); focusLabel(true);"
+      @blur="floatLabel(false); focusLabel(false);"
+      type="password">
+
+    <input v-else-if="!inputType"
       :id="propKey"
       v-model.lazy="model"
       @focus="floatLabel(true); focusLabel(true)"
@@ -48,6 +57,9 @@ export default {
       if(m && m.length > 0 && m != null || m != 'undefined') {
         this.floatLabel()
         this.setParentData()
+        if(this.inputType == 'password') {
+          this.emitInput()
+        }
       }
     }
   },
@@ -58,6 +70,8 @@ export default {
           this.$emit('updateOther', this.model)
         } else if(this.obj == "contact") {
           bus.$emit('contactPropSet', this.key, this.model)
+        } else if(this.obj == "user") {
+          bus.$emit('userPropSet', this.key, this.model)
         } else {
           bus.$emit('projectPropSet', this.key, this.model)
         }

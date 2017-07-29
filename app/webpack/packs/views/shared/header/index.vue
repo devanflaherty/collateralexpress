@@ -27,7 +27,7 @@ export default {
     Toggle,
     MobileNav
   },
-  props: ['auth', 'contactSession'],
+  props: ['authUser'],
   data() {
     return {
       nav_visible: false,
@@ -56,10 +56,7 @@ export default {
     }
   },
   watch: {
-    auth(){
-      this.updateLinks()
-    },
-    contactSession(){
+    'authUser.id': function(){
       this.updateLinks()
     }
   },
@@ -71,10 +68,10 @@ export default {
       this.nav_visible = !this.nav_visible
     },
     updateLinks() {
-      if(this.auth == null) {
+      if(this.authUser.role == 'admin') {
         this.links.splice(2, 0, { name: "All Projects", url: "list" })
-        this.links.push( { name: "Profile", url: "admin-account"})
-      } else {
+        this.links.push( { name: "Profile", url: "admin-edit"})
+      } else if (this.authUser.role == 'contact') {
         this.links.splice(2, 0, { name: "All Projects", url: "list" })
         this.links.push( { name: "Profile", url: "account"})
       }

@@ -12,7 +12,7 @@
 
           <hr class="no-margin">
 
-          <AdminUpdates v-if="auth" :project="project"></AdminUpdates>
+          <AdminUpdates v-if="authUser.role == 'admin'" :project="project"></AdminUpdates>
 
           <div id="projectInfo" class="pad-small pad-in-small">
             <h2 class="banner" :class="{'black-banner':project.archive}">{{project.title}}</h2><br>
@@ -105,10 +105,10 @@
             <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
               <router-link v-if="project.id" class="button expanded" :class="{'disabled' : project.archive}" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
             </nav>
-            <nav v-if="contactSession || auth">
+            <nav v-if="authUser.id">
               <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
-              <a v-if="auth" href="/account/edit">Edit User Profile</a>
-              <a v-else="!auth && contactSession" :href="'/contacts/' + contactSession + '/edit'">Edit Contact Profile</a>
+              <a v-if="authUser.role == 'admin'" href="/account/edit">Edit User Profile</a>
+              <a v-else="authUser.role == 'contact'" :href="'/contacts/' + authUser.id + '/edit'">Edit Contact Profile</a>
               <a v-if="project.id"
                 id="deleteProject"
                 style="float: right"
@@ -171,7 +171,7 @@
       ContactLogin
     },
     mixins: [DeleteProject],
-    props: ['contactSession', 'auth'],
+    props: ['authUser'],
     data() {
       return {
         loading: false,
@@ -187,11 +187,17 @@
     },
     watch: {
       '$route': 'fetchData',
-      contactSession(id) {
-        this.validateUser(id)
+      'authUser.id': function(id) {
+        if(this.authUser.role == 'admin') {
+          this.validUser = true
+        } else if (this.authUser.role == 'contact') {
+          this.validateUser(id)
+        }
       },
       'contact.id': function(id) {
-        this.validateUser(this.contactSession)
+        if (this.authUser.role == 'contact') {
+          this.validateUser(this.authUser.id)
+        }
       },
       validUser(status) {
         if(this.validUser == true) {
@@ -217,14 +223,14 @@
         if (vm.$route.params.id) {
           var pid = vm.$route.params.id
 
-          if(this.auth || this.contactSession) {
+          if(this.authUser.id) {
             // if there is an admin user authorized or if we find a contact Session
             // Let's make a request
             Axios.get('/api/v1/projects/' + pid + '.json')
             .then( response => {
               // Before we update our DOM we want to make sure
               // if we have a contact session but no admin user the contact has access
-              if(vm.contactSession != response.data.contact.id && vm.auth == null) {
+              if(vm.authUser.role == 'contact' && vm.authUser.id != response.data.contact.id) {
                 vm.$notify({
                   title: "Please Log In",
                   text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
@@ -269,10 +275,12 @@
     mounted() {
       // When we first mount lets see if there is an admin
       // If so the user is valid and everything is great
-      if(this.auth != null) {
+      if(this.authUser.role == 'admin') {
         this.validUser = true
+      } else if (this.authUser.role == 'contact') {
+        this.validateUser(this.authUser.id)
       }
-      this.validateUser(this.contactSession)
+
       bus.$on('projectPropSet', (key, val) => {
         this.$set(this.project, key, val)
       })

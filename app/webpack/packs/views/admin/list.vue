@@ -6,13 +6,8 @@
     <section id="projectList" class="pad-small" v-if="validUser">
       <div class="row">
         <div class="columns">
-          <h2>Project Requests</h2>
+          <h2>Users</h2>
 
-          <nav class="project-scope-nav">
-            <a href="#all" @click.prevent="setScope()" :class="{'active': scope == null}">All</a>
-            <a href="#open" @click.prevent="setScope('complete')" :class="{'active': scope == 'complete'}">Complete</a>
-            <a href="#falgged" @click.prevent="setScope('flagged')" :class="{'active': scope == 'flagged'}">Flagged</a>
-          </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
         </div>
       </div>
@@ -22,14 +17,13 @@
           <table>
             <thead>
               <tr>
-                <td>Title</td>
-                <td>Description</td>
-                <td>Status</td>
-                <td>Contact</td>
+                <td>Name</td>
+                <td>Email</td>
+                <td>Phone Number</td>
                 <td>Actions</td>
               </tr>
             </thead>
-            <tbody v-if="!loading && projects.length < 1">
+            <tbody v-if="!loading && users.length < 1">
               <tr>
                 <td width="100%">
                   <h3>{{message}}</h3>
@@ -39,24 +33,22 @@
               </tr>
             </tbody>
             <tbody>
-              <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
-                <td>{{project.title}}</td>
-                <td>{{project.description}}</td>
-                <td>{{project.status}}</td>
-                <td>{{project.contact ? project.contact.name : ""}}</td>
+              <tr v-if="users.length > 0" v-for="user in users" v-bind:key="project">
+                <td>{{user.full_name}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.phone}}</td>
                 <td>
-                  <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-                  <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
-                  <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
+                  <router-link :to="{ name: 'admin-edit', params: { id: user.id} }">Edit</router-link>
+                  <button id="deleteUser" @click="deleteUser(user)" v-if="user.id">Delete</button>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <nav id="pagination" v-if="pagination.next || pagination.prev">
+          <!-- <nav id="pagination" v-if="pagination.next || pagination.prev">
             <button @click="previousPage" class="button" :class="{'disabled': !pagination.prev}">Previous Page</button>
             <button @click="nextPage" class="button" :class="{'disabled': !pagination.next}">Next Page</button>
-          </nav>
+          </nav> -->
         </div>
       </div>
     </section>
@@ -73,24 +65,24 @@
   import ContactLogin from '../shared/contactLogin.vue'
 
   export default {
-    name: 'ProjectList',
+    name: 'AdminList',
     components: {
       ContactLogin
     },
-    props: ['contact-session', 'authUser'],
+    props: ['authUser'],
     data() {
       return {
         loading: false,
         validUser: false,
         login: false,
         message: '',
-        projects: [],
+        users: [],
         pagination: {
           current: null,
           next: null,
           prev: null,
         },
-        resource_url: '/api/v1/projects.json',
+        resource_url: '/api/v1/users.json',
         scope: null
       }
     },
@@ -101,8 +93,8 @@
         }
       },
       validUser(status) {
-        if(this.validUser == true && this.projects.length == 0) {
-          this.getProjects(this.resource_url)
+        if(this.validUser == true && this.users.length == 0) {
+          this.getUsers(this.resource_url)
         }
       }
     },
@@ -111,20 +103,20 @@
         if(scope) {
           this.scope = scope
           var url = this.resource_url + "?q=" + this.scope
-          this.getProjects(url)
+          this.getUsers(url)
         } else {
           this.scope = null
-          this.getProjects()
+          this.getUsers()
         }
       },
       nextPage() {
         if(this.pagination.next != null) {
           if (this.scope != null) {
             var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getProjects(url)
+            this.getUsers(url)
           } else {
             var url = this.resource_url + "?page=" + this.pagination.next
-            this.getProjects(url)
+            this.getUsers(url)
           }
         }
       },
@@ -132,45 +124,42 @@
         if(this.pagination.prev != null){
           if (this.scope != null) {
             var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getProjects(url)
+            this.getUsers(url)
           } else {
             var url = this.resource_url + "?page=" + this.pagination.prev
-            this.getProjects(url)
+            this.getUsers(url)
           }
         }
       },
-      getProjects(url) {
+      getUsers(url) {
         var vm = this
         if(!url) { url = this.resource_url }
         this.loading = true
         Axios.get(url)
           .then( response => {
             vm.loading = false
-            vm.projects = response.data.projects
-            vm.message = "Succesfully found all projects."
-            vm.pagination.next = response.data.next_page
-            vm.pagination.prev = response.data.prev_page
-            vm.pagination.current = response.data.current_page
-            if(response.data.projects.length < 1) {
-              if(this.scope) {
-                vm.message = "You have no '" + vm.scope + "' projects."
-              } else {
-                vm.message = "You have no saved projects."
-              }
-            }
+            vm.users = response.data.users
+            vm.message = "Succesfully found all users."
+            // vm.pagination.next = response.data.next_page
+            // vm.pagination.prev = response.data.prev_page
+            // vm.pagination.current = response.data.current_page
+            // if(response.data.projects.length < 1) {
+            //   if(this.scope) {
+            //     vm.message = "You have no '" + vm.scope + "' projects."
+            //   } else {
+            //     vm.message = "You have no saved projects."
+            //   }
+            // }
           }).catch(error => {
             console.log(error)
           })
       },
-      deleteProject(project) {
+      deleteProject(user) {
         var vm = this
-        Axios.delete('/projects/' + project.id, {
-          project : project,
+        Axios.delete('/users/' + user.id, {
+          user : user,
         })
         .then(function (response) {
-          // var filteredProjects = vm.projects.filter(p => p.id !== project.id)
-          // vm.projects = filteredProjects
-
           bus.$emit('flashEmit', response.data.flash[0][1])
 
           var url = ""
@@ -179,7 +168,7 @@
           } else {
             url = vm.resource_url + "?page=" + vm.pagination.current
           }
-          vm.getProjects(url)
+          vm.getUsers(url)
           // vm.$router.push({ name: 'list'})
         })
         .catch(function (error) {

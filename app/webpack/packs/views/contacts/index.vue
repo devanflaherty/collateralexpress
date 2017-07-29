@@ -103,15 +103,15 @@
 
 <script>
 import bus from "../../bus"
-import Axios from "axios"
+import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 import ContactLogin from "../shared/contactLogin.vue"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-Axios.defaults.headers.common['X-CSRF-Token'] = token
-Axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.common['X-CSRF-Token'] = token
+axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'Contact_Form',
@@ -120,7 +120,7 @@ export default {
     ContactLogin,
     FloatLabel
   },
-  props: ['contactSession', 'auth'],
+  props: ['authUser'],
   data() {
     return {
       loading: false,
@@ -142,7 +142,7 @@ export default {
   },
   watch: {
     '$route': 'fetchData',
-    contactSession(id) {
+    'authUser.id': function(id) {
       this.fetchData()
     },
     validUser(status) {
@@ -153,7 +153,7 @@ export default {
   },
   methods: {
     clearCookie() {
-      Axios.post('/contacts/clear')
+      axios.post('/contacts/clear')
         .then( response => {
           console.log("cleared contact")
           window.location.href = "/"
@@ -167,11 +167,26 @@ export default {
       var vm = this
 
       //If we have route params
-      if (this.$route.params.id && this.contactSession && this.contactSession == this.$route.params.id) {
-        var cid = this.$route.params.id
-        console.log(this.$route.params.id)
+      if(this.authUser.role == 'contact') {
+        if (this.$route.params.id && this.authUser.id == this.$route.params.id) {
+          var cid = this.$route.params.id
 
-          Axios.get('/api/v1/contacts/' + cid + '.json')
+            axios.get('/api/v1/contacts/' + cid + '.json')
+            .then( response => {
+                vm.loading = false
+                vm.validUser = true
+                vm.contact = response.data
+
+              }).catch(error => {
+              // Push to 404
+              vm.$router.push({ name: 'list' })
+              console.log(error)
+            })
+        } else if (this.$route.params.id && this.authUser.id != this.$route.params.id) {
+          vm.loading = false
+          bus.$emit('flashEmit', 'You do not have access to this user')
+        } else if(!this.$route.params.id){
+          axios.get('/api/v1/contacts/' + this.authUser.id + '.json')
           .then( response => {
               vm.loading = false
               vm.validUser = true
@@ -182,24 +197,8 @@ export default {
             vm.$router.push({ name: 'list' })
             console.log(error)
           })
-      } else if (this.$route.params.id && this.contactSession && this.contactSession != this.$route.params.id) {
-        vm.loading = false
-        bus.$emit('flashEmit', 'You do not have access to this user')
-      } else if(this.contactSession && !this.$route.params.id){
-        Axios.get('/api/v1/contacts/' + this.contactSession + '.json')
-        .then( response => {
-            vm.loading = false
-            vm.validUser = true
-            vm.contact = response.data
-
-          }).catch(error => {
-          // Push to 404
-          vm.$router.push({ name: 'list' })
-          console.log(error)
-        })
-      } else {
-        // do nothing
-      }
+        }
+      } // close if contact role
     },
     onSubmit() {
       // bus.$emit('validate'); // Validate child components
@@ -221,7 +220,7 @@ export default {
           // ** if this is a new contact
           console.log('submitted')
           //** if is a new project but contact exist
-          Axios.post('/contacts/', axiosConfig)
+          axios.post('/contacts/', axiosConfig)
           .then(function (response) {
             // IF SUCCESFUll
             bus.$emit('messageEmit', vm.contact.full_name + " has been saved!")
@@ -235,7 +234,7 @@ export default {
           });
         } else {
           // ** If the project does exist let's update it
-          Axios.patch('/contacts/' + this.contact.id, axiosConfig)
+          axios.patch('/contacts/' + this.contact.id, axiosConfig)
           .then(function (response) {
             bus.$emit('messageEmit', vm.contact.full_name + " has been updated!")
             // And then we will launch the Foundation Reveal
