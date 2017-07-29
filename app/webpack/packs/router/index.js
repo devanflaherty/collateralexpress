@@ -63,19 +63,19 @@ const router = new VueRouter ({
     name: 'how',
     path:'/how-it-works',
     component: How,
-    meta: {title: 'How It Works'}
+    meta: {title: 'How It Works', header:true}
   },
   {
     name: 'faq',
     path:'/faq',
     component: Faq,
-    meta: {title: 'FAQ'}
+    meta: {title: 'FAQ', header:true}
   },
   {
     name: 'gallery',
     path:'/gallery',
     component: Gallery,
-    meta: {title: 'Gallery'}
+    meta: {title: 'Gallery', header:true}
   },
   {
     name: 'contact',

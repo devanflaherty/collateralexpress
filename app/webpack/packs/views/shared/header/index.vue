@@ -1,8 +1,11 @@
 <template>
-  <header id="header">
+  <header id="header" :class="{'overlaid':overlay}">
     <div class="row expanded">
       <div class="columns flex align-middle">
-        <a href="/" id="logo"><img src="/assets/logo.png"></a>
+        <router-link :to="{ name: 'home' }" id="logo">
+          <img v-if="!overlay" src="/assets/logo.png">
+          <img v-else src="/assets/white-logo.png">
+        </router-link>
       </div>
       <div class="small-3 medium-9 columns" id="navBar">
         <nav id="links" class="show-for-navbreak">
@@ -30,6 +33,7 @@ export default {
   props: ['authUser'],
   data() {
     return {
+      overlay: false,
       nav_visible: false,
       default_links: [
         {
@@ -57,11 +61,21 @@ export default {
     }
   },
   watch: {
+    '$route': function() {
+      this.overlayHeader()
+    },
     'authUser.id': function(){
       this.updateLinks()
     }
   },
   methods: {
+    overlayHeader() {
+      if(this.$route.meta.header == true) {
+        this.overlay = true
+      } else {
+        this.overlay = false
+      }
+    },
     launchContact() {
       bus.$emit('contactReveal')
     },
@@ -86,6 +100,7 @@ export default {
     bus.$on('updateLinks', () => {
       this.updateLinks()
     })
+    this.overlayHeader()
   }
 }
 </script>

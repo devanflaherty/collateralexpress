@@ -21,7 +21,7 @@
 
       <div class="row">
         <div class="column">
-          <table v-if="!loading && projects.length > 0">
+          <table v-if="projects.length > 0">
             <thead>
               <tr>
                 <td width="20%">Title</td>
@@ -32,7 +32,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
+              <tr v-for="project in projects" v-bind:key="project">
                 <td width="20%">{{project.title}}</td>
                 <td width="30%">{{project.description}}</td>
                 <td width="10%">{{project.status}}</td>
@@ -47,8 +47,9 @@
           </table>
 
           <nav id="pagination" v-if="pagination.next || pagination.prev">
-            <button @click="previousPage" class="button" :class="{'disabled': !pagination.prev}">Previous Page</button>
-            <button @click="nextPage" class="button" :class="{'disabled': !pagination.next}">Next Page</button>
+            <button @click="previousPage"  :class="{'disabled': !pagination.prev}"><icon name="chevron-left"></icon></button>
+            <div><span>{{pagination.current}} of {{pagination.total}}</span></div>
+            <button @click="nextPage" :class="{'disabled': !pagination.next}"><icon name="chevron-right"></icon></button>
           </nav>
         </div>
       </div>
@@ -82,6 +83,7 @@
           current: null,
           next: null,
           prev: null,
+          total: null
         },
         resource_url: '/api/v1/projects.json',
         scope: null
@@ -144,6 +146,7 @@
             vm.pagination.next = response.data.next_page
             vm.pagination.prev = response.data.prev_page
             vm.pagination.current = response.data.current_page
+            vm.pagination.total = response.data.last_page
             if(response.data.projects.length < 1) {
               if(this.scope) {
                 vm.message = "You have no '" + vm.scope + "' projects."
@@ -189,6 +192,9 @@
 </script>
 
 <style scoped lang="scss">
+@import '../../../../assets/stylesheets/util/colors';
+
+// Scope Nav
 .project-scope-nav {
   padding-top: 2rem;
   a {
@@ -219,6 +225,43 @@
     }
   }
 }
+
+// Pagination
+#pagination {
+  height:38px;
+  background: #fff;
+  border-radius: 100px;
+  margin: 2rem auto;
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.20);
+  overflow: hidden;
+  span {
+    font-family: Tele-Fet;
+  }
+  button {
+    height: 38px;
+    width: 48px;
+    color: $primaryColor;
+    cursor: pointer;
+    &.disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+    &:hover {
+      background: #EEF3F3;
+    }
+    &:first-of-type {
+      border-right: 1px solid #EEEFF3;
+    }
+    &:last-of-type {
+      border-left: 1px solid #EEEFF3;
+    }
+  }
+}
+// Transitions
 .list-move {
   transition: opacity .5s;
 }

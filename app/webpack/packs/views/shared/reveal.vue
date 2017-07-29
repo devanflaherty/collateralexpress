@@ -1,5 +1,5 @@
 <template>
-  <div class="reveal" :class="reveal.type" id="reveal" data-reveal data-close-on-click="false">
+  <div class="reveal" :class="reveal.type" id="reveal" data-reveal data-close-on-click="false" data-animation-in="fade-in" data-animation-out="fade-out">
     <h1 v-if="reveal.type == 'new'">Project '{{reveal.title}}' saved!</h1>
     <h1 v-else-if="reveal.type == 'update'">Project '{{reveal.title}}' Updated!</h1>
     <h1 v-else-if="reveal.type == 'notice'">{{reveal.title}}</h1>
