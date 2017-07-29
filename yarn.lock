@@ -709,7 +709,7 @@ babel-register@^6.24.1:
     mkdirp "^0.5.1"
     source-map-support "^0.4.2"
 
-babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0:
+babel-runtime@^6.0.0, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.23.0.tgz#0a9489f144de70efb3ce4300accdb329e2fc543b"
   dependencies:
@@ -4908,6 +4908,12 @@ vue2-dropzone@^2.0.0:
 vue@^2.0.0, vue@^2.2.4, vue@^2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.3.4.tgz#5ec3b87a191da8090bbef56b7cfabd4158038171"
+
+vuejs-datepicker@^0.9.4:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/vuejs-datepicker/-/vuejs-datepicker-0.9.4.tgz#a3e853093ac00edb979d6ea1ecc0606de0595bf7"
+  dependencies:
+    babel-runtime "^6.0.0"
 
 vuejs-paginator@^2.0.1:
   version "2.0.1"

@@ -1,8 +1,6 @@
 <template>
   <div>
-    <transition name="fade">
-      <LoadScreen v-if="loading"></LoadScreen>
-    </transition>
+    <LoadScreen v-if="loading"></LoadScreen>
     <section id="projectList" class="pad-small" v-if="validUser">
       <div class="row">
         <div class="columns">
@@ -14,37 +12,32 @@
             <a href="#falgged" @click.prevent="setScope('flagged')" :class="{'active': scope == 'flagged'}">Flagged</a>
           </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
+          <div v-if="projects.length < 1">
+            <h3>{{message}}</h3>
+            <p>Please try a different filter.</p>
+          </div>
         </div>
       </div>
 
       <div class="row">
         <div class="column">
-          <table>
+          <table v-if="!loading && projects.length > 0">
             <thead>
               <tr>
-                <td>Title</td>
-                <td>Description</td>
-                <td>Status</td>
-                <td>Contact</td>
-                <td>Actions</td>
+                <td width="20%">Title</td>
+                <td width="30%">Description</td>
+                <td width="10%">Status</td>
+                <td width="20%">Contact</td>
+                <td width="20%">Actions</td>
               </tr>
             </thead>
-            <tbody v-if="!loading && projects.length < 1">
-              <tr>
-                <td width="100%">
-                  <h3>{{message}}</h3>
-                  <p>Please try a different filter.</p>
-                </td>
-                <td></td><td></td><td></td><td></td>
-              </tr>
-            </tbody>
             <tbody>
               <tr v-if="projects.length > 0" v-for="project in projects" v-bind:key="project">
-                <td>{{project.title}}</td>
-                <td>{{project.description}}</td>
-                <td>{{project.status}}</td>
-                <td>{{project.contact ? project.contact.name : ""}}</td>
-                <td>
+                <td width="20%">{{project.title}}</td>
+                <td width="30%">{{project.description}}</td>
+                <td width="10%">{{project.status}}</td>
+                <td width="20%">{{project.contact ? project.contact.name : ""}}</td>
+                <td width="20%">
                   <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
                   <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
                   <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
@@ -62,7 +55,7 @@
     </section>
 
     <div id="login" v-if="!loading && login">
-      <ContactLogin></ContactLogin>
+      <Login></Login>
     </div>
   </div>
 </template>
@@ -70,12 +63,12 @@
 <script>
   import Axios from 'axios'
   import bus from '../../bus'
-  import ContactLogin from '../shared/contactLogin.vue'
+  import Login from '../shared/login/index.vue'
 
   export default {
     name: 'ProjectList',
     components: {
-      ContactLogin
+      Login
     },
     props: ['contact-session', 'authUser'],
     data() {
@@ -187,23 +180,6 @@
         });
       },
     },
-    beforeCreate(){
-      // Because we hit this page from outside of vue router we have to do some secondary checks.
-      // We will run this get request to set our authentication
-      // And set wether login is visible or not
-      var vm = this
-      Axios.get('/api/v1/authenticate.json')
-      .then(function (response) {
-        if (response.data.user.id) {
-          vm.login = false
-          bus.$emit('authEmit', response.data.user.id, response.data.role)
-        } else {
-          vm.login = true
-        }
-      }).catch(function (error) {
-        console.log('Trouble authenticating user.')
-      })
-    },
     mounted(){
       if(this.authUser.id) {
         this.validUser = true
@@ -250,12 +226,6 @@
   transition: all .5s;
 }
 .list-enter, .list-leave-to /* .list-leave-active for <2.1.8 */ {
-  opacity: 0;
-}
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .125s ease;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0;
 }
 </style>

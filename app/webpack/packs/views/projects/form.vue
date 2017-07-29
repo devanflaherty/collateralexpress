@@ -3,9 +3,9 @@
     <section id="projectForm" v-if="$route.name == 'new' || $route.params.id != null && validUser">
       <hr class="no-margin">
       <LoadScreen v-if="loading"></LoadScreen>
-      <form v-else v-on:submit.prevent="onSubmit" id="form">
+      <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-10 large-7': project.id, 'medium-12 large-10': !validUser, 'medium-10 large-7': validUser }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project.id, 'medium-12 large-10': !validUser, 'medium-8 large-7': validUser }">
 
             <header>
               <div class="row">
@@ -48,22 +48,45 @@
                   </div>
 
                   <h3 style="margin-top:2rem;">Project Details</h3>
-                  <div class="float-input">
-                    <FloatLabel
-                      v-validate="'required'"
-                      data-vv-value-path="model"
-                      data-vv-name="Due Date"
-                      :has-error="veeErrors.has('Due Date')"
-                      :error-text="veeErrors.first('Due Date')"
-                      :attr="project.due_date"
-                      label="Due Date"
-                      propKey="due_date"></FloatLabel>
+                  <div class="row">
+                    <div class="columns small-12 medium-9 large-6">
+                      <div class="float-input">
+                        <label>Due Date</label>
+                          <Datepicker
+                            :calendar-button="true"
+                            :calendar-button-icon="'fa fa-calendar'"
+                            :monday-first="true"
+                            placeholder="04 July, 2017"
+                            v-model="project.due_date"
+                            name="Due Date"
+                            v-validate="'required'">
+                          </Datepicker>
+                      </div>
+                    </div>
+                    <div class="columns">
+                      <div class="float-input">
+                        <label>Deliverables</label>
+                        <select v-model="project.deliverables">
+                          <option disabled value="">Select the amount</option>
+                          <option v-for="n in 10">{{n}}</option>
+                        </select>
+                        <!-- <FloatLabel
+                          v-validate="'numeric'"
+                          data-vv-value-path="model"
+                          data-vv-name="Deliverables"
+                          :has-error="veeErrors.has('Deliverables')"
+                          :error-text="veeErrors.first('Deliverables')"
+                          :attr="project.deliverables"
+                          label="Deliverables"
+                          propKey="deliverables"></FloatLabel> -->
+                      </div>
+                    </div>
                   </div>
 
                   <div class="tactics">
                     <h5 style="margin-top: 1rem">Tactics</h5>
 
-                    <div class="row small-up-2 medium-up-3">
+                    <div class="row small-up-2 large-up-3">
                       <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
                         <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
                         <label :for="tactic">
@@ -114,18 +137,6 @@
 
                   <div class="float-input">
                     <FloatLabel
-                      v-validate="'numeric'"
-                      data-vv-value-path="model"
-                      data-vv-name="Deliverables"
-                      :has-error="veeErrors.has('Deliverables')"
-                      :error-text="veeErrors.first('Deliverables')"
-                      :attr="project.deliverables"
-                      label="Deliverables"
-                      propKey="deliverables"></FloatLabel>
-                  </div>
-
-                  <div class="float-input">
-                    <FloatLabel
                       v-validate="'url'"
                       data-vv-value-path="model"
                       data-vv-name="Asset Reference"
@@ -168,7 +179,7 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="project.id || authUser.id" id="infoPanel" class="small-12 medium-3 columns show-for-medium">
+          <div v-if="project.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
             <aside>
               <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
                 <router-link class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
@@ -226,7 +237,7 @@
     </section><!-- close projectForm -->
 
     <div id="login" v-if="!loading && !validUser && $route.name == 'edit'">
-      <ContactLogin :project-user="project.contact_id"></ContactLogin>
+      <Login :project-user="project.contact_id"></Login>
     </div>
   </div>
 </template>
@@ -235,6 +246,8 @@
 import axios from "axios"
 import bus from '../../bus'
 
+import Datepicker from 'vuejs-datepicker';
+
 // App Mixins
 import ProjectSubmission from "./mixins/projectSubmission.js"
 import DeleteProject from "./mixins/deleteProject.js"
@@ -242,7 +255,7 @@ import ProgressMixin from "./mixins/progressMixin.js"
 import { onValidation } from "../shared/validation"
 
 //Form Components
-import ContactLogin from "../shared/contactLogin.vue"
+import Login from "../shared/login/index.vue"
 import FloatLabel from "../shared/floatLabel.vue"
 import Status from "./components/form/status.vue"
 import MediaUploader from "./components/form/mediaUploader.vue"
@@ -251,11 +264,12 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
-  props: ['message', 'reveal-type', 'flash', 'contact-session', 'authUser', 'token'],
+  props: ['message', 'contact-session', 'authUser', 'token'],
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
-    ContactLogin,
+    Login,
     FloatLabel,
+    Datepicker,
     MediaUploader,
     Status,
     Contact,
@@ -280,7 +294,7 @@ export default {
         existing: false,
         translation: false,
         business_unit: null,
-        deliverables: null,
+        deliverables: "",
         target: null,
         flag: false,
         archive: false
@@ -313,7 +327,7 @@ export default {
         existing: false,
         translation: false,
         business_unit: null,
-        deliverables: null,
+        deliverables: "",
         target: null,
         flag: false,
         archive: false
@@ -522,14 +536,46 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import '../../../../assets/stylesheets/util/colors';
 #progressBar {
   position: fixed;
   top: 0;
 }
+.vdp-datepicker {
+  .vdp-datepicker__calendar {
+    min-width: 300px;
+    width: 100%!important;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
+    padding: 1rem 1rem 1rem;
+  }
+  .vdp-datepicker__calendar-button {
+    position: absolute;
+    right: 0;
+    bottom: .5rem;
+  }
+  header {
+    .up, .prev, .next {
+      border-radius: 3px;
+      transition: all 0.25s ease;
+    }
+  }
+  .cell {
+    border-radius: 3px;
+    transition: all 0.25s ease;
+    &:hover {
+      border-color: $primaryColor!important;
+    }
+    &.selected {
+      background: $primaryColor;
+      color: #fff;
+      font-family: Tele-Ult;
+    }
+  }
+}
 #formContainer {
-  aside {
+  & > aside {
     margin-top: 2rem;
     padding: 2rem;
     background: white;

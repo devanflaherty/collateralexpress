@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       nav_visible: false,
-      links: [
+      default_links: [
         {
           name: "Home",
           url: "home"
@@ -52,7 +52,8 @@ export default {
           name: "FAQ",
           url: "faq"
         }
-      ]
+      ],
+      links: []
     }
   },
   watch: {
@@ -69,14 +70,23 @@ export default {
     },
     updateLinks() {
       if(this.authUser.role == 'admin') {
-        this.links.splice(2, 0, { name: "All Projects", url: "list" })
-        this.links.push( { name: "Profile", url: "admin-edit"})
+        var admin_links = [...this.default_links]
+        admin_links.splice(2, 0, { name: "All Projects", url: "list" })
+        admin_links.push( { name: "Profile", url: "account"})
+        this.links = admin_links
       } else if (this.authUser.role == 'contact') {
-        this.links.splice(2, 0, { name: "All Projects", url: "list" })
-        this.links.push( { name: "Profile", url: "account"})
+        var contact_links = [...this.default_links]
+        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
+        contact_links.push( { name: "Profile", url: "contact-profile"})
+        this.links = contact_links
       }
     }
   },
+  mounted() {
+    bus.$on('updateLinks', () => {
+      this.updateLinks()
+    })
+  }
 }
 </script>
 

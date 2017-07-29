@@ -3,7 +3,7 @@
     <transition name="fade">
       <LoadScreen v-if="loading"></LoadScreen>
     </transition>
-    <section id="projectList" class="pad-small" v-if="validUser">
+    <div id="accountList" v-if="validUser">
       <div class="row">
         <div class="columns">
           <h2>Users</h2>
@@ -38,7 +38,7 @@
                 <td>{{user.email}}</td>
                 <td>{{user.phone}}</td>
                 <td>
-                  <router-link :to="{ name: 'admin-edit', params: { id: user.id} }">Edit</router-link>
+                  <router-link :to="{ name: 'edit-admin', params: { id: user.id} }">Edit</router-link>
                   <button id="deleteUser" @click="deleteUser(user)" v-if="user.id">Delete</button>
                 </td>
               </tr>
@@ -51,10 +51,10 @@
           </nav> -->
         </div>
       </div>
-    </section>
+    </div>
 
     <div id="login" v-if="!loading && login">
-      <ContactLogin></ContactLogin>
+      <Login></Login>
     </div>
   </div>
 </template>
@@ -62,12 +62,12 @@
 <script>
   import Axios from 'axios'
   import bus from '../../bus'
-  import ContactLogin from '../shared/contactLogin.vue'
+  import Login from '../shared/login/index.vue'
 
   export default {
     name: 'AdminList',
     components: {
-      ContactLogin
+      Login
     },
     props: ['authUser'],
     data() {

@@ -1,22 +1,41 @@
 <template>
-  <section id="admin" class="pad">
-    <div class="row align-center">
-      <div class="columns small-11 medium-9 large-6">
-        <router-view
-          :auth-user="authUser">
-        </router-view>
+  <div id="accountLogin">
+    <div class="flex space-between">
+      <div>
+        <h2 class="banner">Login</h2>
       </div>
-      <aside class="columns small-11 medium-3 large-4">
-        <nav>
-          <a href="#logout" @click.prevent="logoutUser">Logout</a>
-          <router-link :to="{name: 'account'}">Edit Account</router-link>
-
-          <router-link :to="{name: 'list-admin'}">All Admin</router-link>
-          <router-link :to="{name: 'new-admin'}">Add Admin</router-link>
-        </nav>
-      </aside>
     </div>
-  </section>
+    <form v-on:submit.prevent="onSubmit" id="form" class="callout">
+      <div class="float-input">
+        <FloatLabel
+          v-validate="'required|email'"
+          data-vv-value-path="model"
+          data-vv-name="User Email"
+          :has-error="veeErrors.has('User Email')"
+          :error-text="veeErrors.first('User Email')"
+          :attr="user.email"
+          obj="user"
+          label="User Email"
+          propKey="email"></FloatLabel>
+      </div>
+
+      <div class="float-input">
+        <FloatLabel
+          v-validate="'required'"
+          data-vv-value-path="model"
+          data-vv-name="User Password"
+          :has-error="veeErrors.has('User Password')"
+          :error-text="veeErrors.first('User Password')"
+          :attr="user.password"
+          obj="user"
+          label="User Password"
+          propKey="password"></FloatLabel>
+      </div>
+
+      <input type="submit" value="submit" class="button gradient">
+
+    </form>
+  </div>
 </template>
 
 <script>

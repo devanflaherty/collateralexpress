@@ -3,7 +3,7 @@
     <hr class="no-margin">
     <section id="projectShow" v-if="validUser == true">
       <LoadScreen v-if="loading"></LoadScreen>
-      <div class="row expanded small-collapse" v-else>
+      <div class="row expanded small-collapse">
         <!-- Project Info -->
         <div class="columns small-12 medium-8 large-9 pad-small">
           <div class="pad-in-small">
@@ -148,7 +148,7 @@
     </section><!-- close projectShow -->
 
     <div id="login" v-if="!loading && !validUser">
-      <ContactLogin :project-user="contact.id"></ContactLogin>
+      <Login :project-user="contact.id"></Login>
     </div>
   </div>
 </template>
@@ -161,14 +161,14 @@
   import DeleteProject from "./mixins/deleteProject.js"
 
   // Components
-  import ContactLogin from "../shared/contactLogin.vue"
+  import Login from "../shared/login/index.vue"
   import AdminUpdates from "./components/form/adminUpdates.vue"
 
   export default {
     name: 'Show',
     components: {
       AdminUpdates,
-      ContactLogin
+      Login
     },
     mixins: [DeleteProject],
     props: ['authUser'],

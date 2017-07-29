@@ -11,11 +11,13 @@ import How from '../views/pages/how-it-works.vue'
 import Faq from '../views/pages/faq.vue'
 import Gallery from '../views/pages/gallery.vue'
 import FourOhFour from '../views/pages/404.vue'
-import ProjectIndex from '../views/projects/list.vue'
+import Projects from '../views/projects/index.vue'
+import ProjectList from '../views/projects/list.vue'
 import ProjectForm from '../views/projects/form.vue'
 import ProjectShow from '../views/projects/show.vue'
 import ContactEdit from '../views/contacts/index.vue'
-import AdminLogin from '../views/admin/index.vue'
+import Admin from '../views/admin/index.vue'
+import AdminLogin from '../views/admin/login.vue'
 import AdminAccount from '../views/admin/edit.vue'
 import AdminCreate from '../views/admin/new.vue'
 import AdminList from '../views/admin/list.vue'
@@ -23,12 +25,13 @@ import AdminList from '../views/admin/list.vue'
 const authRequest = function(to, from, next) {
   Axios.get('/api/v1/authenticate.json')
   .then(function (response) {
-    if (response.data.user.id) {
+    if (response.data.user) {
       bus.$emit('authEmit', response.data.user.id, response.data.role)
       if(response.data.role == 'contact') {
         bus.$emit('contactSessionEmit', response.data.user.id)
       }
 
+      bus.$emit('updateLinks')
       // Redirects
       if(response.data.role == 'admin' && to.name == 'login') {
         router.push({name: 'list'})
@@ -48,6 +51,7 @@ const authRequest = function(to, from, next) {
 
 const router = new VueRouter ({
   mode: 'history',
+  linkExactActiveClass: 'is-active',
   routes: [
   {
     name: 'home',
@@ -80,63 +84,83 @@ const router = new VueRouter ({
     meta: {title: 'Home'}
   },
   {
-    name: 'list',
     path:'/projects/',
-    component: ProjectIndex,
-    meta: {title: 'Projects'}
+    component: Projects,
+    meta: {title: 'Projects'},
+    children: [
+      {
+        name: 'list',
+        path:'',
+        component: ProjectList,
+        meta: {title: 'Projects'}
+      },
+      {
+        name: 'new',
+        path:'new',
+        component: ProjectForm,
+        meta: {title: 'New Project'}
+      },
+      {
+        name: 'show',
+        path:':id',
+        component: ProjectShow,
+      },
+      {
+        name: 'edit',
+        path:':id/edit',
+        component: ProjectForm,
+        meta: {title: 'Edit Project'}
+      }
+    ]
   },
   {
-    name: 'edit',
-    path:'/projects/:id/edit',
-    component: ProjectForm,
-    meta: {title: 'Edit Project'}
-  },
-  {
-    name: 'new',
-    path:'/projects/new',
-    component: ProjectForm,
-    meta: {title: 'New Project'}
-  },
-  {
-    name: 'show',
-    path:'/project/:id',
-    component: ProjectShow
-  },
-  {
-    name: 'edit-contact',
+    name: 'contact-edit',
     path:'/contacts/:id/edit',
     component: ContactEdit,
     meta: {title: 'Edit Contact'}
   },
   {
-    name: 'account',
-    path:'/account',
+    name: 'contact-profile',
+    path:'/profile',
     component: ContactEdit,
-    meta: {title: 'Account'}
+    meta: {title: 'Profile'}
   },
   {
-    name: 'login',
-    component: AdminLogin,
-    path:'/account/login',
-    meta: {title: 'Login'}
-  },
-  {
-    name: 'admin-edit',
-    component: AdminAccount,
-    path:'/account/edit',
-    meta: {title: 'Edit User'}
-  },
-  {
-    name: 'admin-new',
-    component: AdminCreate,
-    path:'/account/new',
-    meta: {title: 'Add an Admin'}
-  },
-  {
-    name: 'admin-list',
-    component: AdminList,
-    path:'/accounts',
-    meta: {title: 'All Users'}
+    component: Admin,
+    path:'/account/',
+    meta: {title: 'Login'},
+    children: [
+      {
+        name: 'account',
+        component: AdminAccount,
+        path:'',
+        meta: {title: 'Update Account'}
+      },
+      {
+        name: 'login',
+        component: AdminLogin,
+        path:'login',
+        meta: {title: 'Login'}
+      },
+      {
+        name: 'edit-admin',
+        component: AdminAccount,
+        path:':id/edit',
+        meta: {title: 'Edit User'}
+      },
+      {
+        name: 'new-admin',
+        component: AdminCreate,
+        path:'new',
+        meta: {title: 'Add an Admin'}
+      },
+      {
+        name: 'list-admin',
+        component: AdminList,
+        path:'list',
+        meta: {title: 'All Users'}
+      }
+    ]
   },
   {
     name: '404',

@@ -2,8 +2,8 @@
   background: white;
   padding: 4rem 1rem;
   margin: 2rem 0;
-  @include breakpoint(medium) {
-    padding: 4rem 4rem;
+  @include breakpoint(large) {
+    padding: 4rem 3rem;
     margin: 2rem 0;
   }
 }

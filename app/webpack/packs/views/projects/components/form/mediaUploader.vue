@@ -50,7 +50,7 @@
 
   export default {
     name: 'MediaUploader',
-    props: ['mediaFiles','token', 'project-id', 'flash'],
+    props: ['mediaFiles','token', 'project-id'],
     components: {
       Dropzone
     },

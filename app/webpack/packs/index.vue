@@ -1,14 +1,13 @@
 <template>
-  <main id="app">
+  <div id="app">
     <NavHeader :auth-user="auth_user"></NavHeader>
 
   <!-- <transition name="fade" appear> -->
     <router-view
+      id="main"
       :token="token"
       :auth-user="auth_user"
-      :contactSession="contactSession"
-      :reveal-type="reveal.type"
-      :flash="flash">
+      :contactSession="contactSession">
     </router-view>
   <!-- </transition> -->
 
@@ -20,7 +19,7 @@
       :flash="flash">
     </Reveal>
     <ContactReveal></ContactReveal>
-  </main>
+  </div>
 </template>
 
 <script>

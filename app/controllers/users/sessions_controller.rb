@@ -13,7 +13,8 @@ class Users::SessionsController < Devise::SessionsController
 
     if resource.valid_password?(params[:user][:password])
       sign_in :user, resource
-      render json: {user: current_user}
+      flash[:notice] = "Succesfully signed in."
+      render json: {user: current_user, role: 'admin', flash: flash}
     end
 
     # invalid_login_attempt

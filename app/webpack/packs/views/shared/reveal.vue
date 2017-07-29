@@ -36,7 +36,7 @@
     data() {
       return {}
     },
-    props: ['reveal', 'flash'],
+    props: ['reveal'],
     methods: {
       deleteEmit() {
         bus.$emit('deleteRequest')

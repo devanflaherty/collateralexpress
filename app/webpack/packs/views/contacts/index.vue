@@ -1,7 +1,7 @@
 <template>
   <section id="contactApp" class="pad">
     <div id="login" v-if="!loading && !validUser">
-      <ContactLogin :project-user="contact.id"></ContactLogin>
+      <Login :project-user="contact.id"></Login>
     </div>
     <transition v-else name="fade" appear>
       <div class="row align-center">
@@ -107,7 +107,7 @@ import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
-import ContactLogin from "../shared/contactLogin.vue"
+import Login from "../shared/login/index.vue"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
 axios.defaults.headers.common['X-CSRF-Token'] = token
@@ -117,7 +117,7 @@ export default {
   name: 'Contact_Form',
   mixins: [onValidation],
   components: {
-    ContactLogin,
+    Login,
     FloatLabel
   },
   props: ['authUser'],
