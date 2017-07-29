@@ -179,16 +179,14 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="project.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
-            <aside>
-              <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
-                <router-link class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
-              </nav>
+          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
+            <aside id="projectSidebar">
               <nav v-if="authUser.id">
+                <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
                 <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
-                <router-link v-if="project.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
-                <a v-if="authUser.role == 'admin'" href="/account/edit">Edit User Profile</a>
-                <a v-else="authUser.role == 'contact'" :href="'/contacts/' + authUser.id + '/edit'">Edit Contact Profile</a>
+                <router-link v-if="$route.params.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
+                <router-link v-if="authUser.role == 'admin'" :to="{name: 'account'}">Update your Account</router-link>
+                <router-link v-if="authUser.role == 'contact'" :to="{name: 'contact-profile'}">Update your Profile</router-link>
               </nav>
             </aside>
             <a v-if="project.id"
@@ -575,7 +573,7 @@ export default {
   }
 }
 #formContainer {
-  & > aside {
+  #projectSidebar {
     margin-top: 2rem;
     padding: 2rem;
     background: white;
