@@ -2,7 +2,7 @@
   <header class="row">
     <hr>
     <!-- Title & Flag -->
-    <div class="small-12 columns">
+    <div class="small-12">
       <label>Status: {{status}}</label>
 
       <select v-model="status" @change="setStatus">
@@ -11,16 +11,31 @@
       </select>
     </div>
     <div class="columns">
-      <div id="flag">
-        <icon name="flag"></icon>
-        <input id="projectFlag" type="checkbox" v-model="flag" name="project[flag]" @change="setFlag">
-        <label for="checkbox">{{ flag ? "Flagged" : "Not Flagged" }}</label>
+      <div class="check-input">
+        <label for="projectFlag">
+          <input style="display:none" id="projectFlag" type="checkbox" v-model="flag" @change="setFlag">
+          <div v-if="flag" class="checked checked-true">
+            <icon name="flag"></icon>
+          </div>
+          <div v-else class="checked">
+            <icon name="circle-thin"></icon>
+          </div>
+          <span>{{ flag ? "Flagged" : "Not Flagged" }}</span>
+        </label>
       </div>
     </div>
     <div class="columns">
-      <div id="archive">
-        <icon name="check"></icon><input id="projectArchive" type="checkbox" v-model="archive" @change="setArchive">
-        <label for="checkbox">{{ archive ? "Archived" : "Archive" }}</label>
+      <div class="check-input">
+        <label for="projectArchive">
+          <input style="display:none" id="projectArchive" type="checkbox" v-model="archive" @change="setArchive">
+          <div v-if="archive" class="checked checked-true">
+            <icon name="check"></icon>
+          </div>
+          <div v-else class="checked">
+            <icon name="circle-thin"></icon>
+          </div>
+          <span>{{ archive ? "Archived" : "Archive" }}</span>
+        </label>
       </div>
     </div>
   </header>
@@ -81,3 +96,12 @@
     },
   }
 </script>
+
+<style scoped lang="scss">
+  .columns {
+    padding-left: 0;
+  }
+  input[type='checkbox'] {
+    margin-left: .5rem;
+  }
+</style>

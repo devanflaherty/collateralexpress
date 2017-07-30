@@ -15,8 +15,8 @@
     </div>
 
     <div v-if="reveal.type == 'new' || reveal.type == 'update'">
-      <router-link :to="{name: 'show', params: { id: reveal.project_id}}" class="button">View Project</router-link>
-      <router-link :to="{name: 'list'}" class="button">All Projects</router-link>
+      <router-link :to="{name: 'show', params: { id: reveal.project_id}}" class="button" data-close>View Project</router-link>
+      <router-link :to="{name: 'list'}" class="button" data-close>All Projects</router-link>
     </div>
 
     <button v-if="reveal.type == 'delete'" @click="deleteEmit" class="button alert">Delete</button>

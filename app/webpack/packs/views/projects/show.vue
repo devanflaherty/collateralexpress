@@ -5,31 +5,26 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <div class="row expanded small-collapse">
         <!-- Project Info -->
-        <div class="columns small-12 medium-8 large-9 pad-small">
-          <div class="pad-in-small">
-            <router-link v-if="project.id" class="" :to="{name: 'new'}">Add New Project</router-link>
-          </div>
+        <div class="columns small-12 medium-8 large-9" :class="{'pad-small': authUser.role == 'contact'}">
 
-          <hr class="no-margin">
-
-          <AdminUpdates v-if="authUser.role == 'admin'" :project="project"></AdminUpdates>
+          <AdminUpdates v-if="authUser.role == 'admin'" :project="project" :contact="contact"></AdminUpdates>
 
           <div id="projectInfo" class="pad-small pad-in-small">
             <h2 class="banner" :class="{'black-banner':project.archive}">{{project.title}}</h2><br>
-            <span class="tag flagged" v-if="project.flagged">Flagged</span>
+            <span class="tag flagged" v-if="project.flag">Flagged</span>
             <span class="tag" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}" v-if="project.status">{{project.status}}</span>
             <span v-if="project.existing" class="tag exists-tag-true">
               Existing Project
             </span>
-            <span v-else class="exists-tag-false">
-              new Project
+            <span v-else class="tag exists-tag-false">
+              New Project
             </span>
 
             <div class="dates" style="margin-top: 2rem;">
               <icon name="calendar"></icon>
-              <span class="created-date">{{project.created_at}}</span>
-              <icon name="arrow-right"></icon>
-              <span class="due-date">{{project.due_date}}</span>
+              <span class="created-date">{{createDate}}</span>
+              <icon name="arrow-right" v-if="dueDate"></icon>
+              <span class="due-date" v-if="dueDate">{{dueDate}}</span>
             </div>
           </div>
 
@@ -43,7 +38,7 @@
             {{project.legal}}
           </div>
 
-          <div class="files pad-small pad-in-small white-bg" v-if="project_media">
+          <div class="files pad-small pad-in-small white-bg" v-if="project_media != ''">
             <div class="row">
               <div class="columns">
                 <h3>Files</h3>
@@ -67,7 +62,7 @@
 
           <div id="deliveryInfo" class="pad-in-small">
             <!-- add comma breaker -->
-            <div class="tactics pad-small" v-if="project.tactic">
+            <div class="tactics pad-small" v-if="project.tactic != ''">
               <h3>Tactics</h3>
               <span v-for="tactic in project.tactic" class="tag">{{tactic}}</span>
             </div>
@@ -89,11 +84,10 @@
                 <h4>Translation</h4>
                 <h6>{{project.translation ? 'Needs Translation' : "No Translation needed"}}</h6>
               </div>
-            </div>
-
-            <div class="reference" v-if="project.reference">
-              <h4>Link to reference</h4>
-              <a class="button hollow expanded" :href="project.reference" target="_blank">View Link</a>
+              <div class="columns small-6 medium-4 large-3" v-if="project.translation">
+                <h4>Link to reference</h4>
+                <a class="button hollow expanded" :href="project.reference" target="_blank">View Link</a>
+              </div>
             </div>
           </div>
 
@@ -155,6 +149,7 @@
 
 <script>
   import Axios from "axios"
+  import moment from "moment"
   import bus from "../../bus.js"
 
   // Mixins
@@ -177,8 +172,26 @@
         loading: false,
         validUser: false,
         project: {
-          id: null
+          id: null,
+          title: null,
+          slug: null,
+          user_id: 1,
+          contact_id: null,
+          status: "",
+          description: null,
+          reference: null,
+          tactic: [],
+          due_date: null,
+          existing: false,
+          translation: false,
+          business_unit: null,
+          deliverables: "",
+          target: null,
+          flag: false,
+          archive: false
         },
+        createDate: "",
+        dueDate: "",
         project_media: [],
         contact: {},
         dzUpload: false,
@@ -241,6 +254,11 @@
                 vm.project = response.data.project
                 vm.project_media = response.data.project_media.medias
                 vm.contact = response.data.contact
+
+                vm.createDate = moment(response.data.project.created_at).format("MMM Do YYYY")
+                if(response.data.project.due_date != null) {
+                  vm.dueDate = moment(response.data.project.due_date).format("MMM Do YYYY")
+                }
 
                 document.title = vm.project.title + " | Collateral Express"
               }
@@ -337,9 +355,10 @@
     }
   }
   #contact {
-    height: 100vh;
+    min-height: 100vh;
     position: relative;
     background: #181818;
+    display: flex;
     .aside-container {
       position: absolute;
       top: 0;

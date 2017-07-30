@@ -11,22 +11,26 @@ const ProjectSubmission = {
       this.$validator.validateAll(); // Validate self
 
       if (!this.veeErrors.any()) {
-        // If there are no errors we continue
-        if(this.contactQuery || this.project.contact_id || this.contactSession) {
-          // Let set what Contact ID we send to contact Submission
-          var cid = null
-          if (this.contactQuery != null) {
-            cid = this.contactQuery
-          } else if (this.project.contact_id != null) {
-            cid = this.project.contact_id
-          } else if (this.contactSession) {
-            cid = this.contactSession
-          }
-          // Since we found an ID we send it on and will patch that contact
-          bus.$emit('postContact', cid)
+        if(this.$route.name == "show") {
+          bus.$emit('submitProjectForm')
         } else {
-          // Else we will send nothing and create a new contact
-          bus.$emit('postContact')
+          // If there are no errors we continue
+          if(this.contactQuery || this.project.contact_id || this.contactSession) {
+            // Let set what Contact ID we send to contact Submission
+            var cid = null
+            if (this.contactQuery != null) {
+              cid = this.contactQuery
+            } else if (this.project.contact_id != null) {
+              cid = this.project.contact_id
+            } else if (this.contactSession) {
+              cid = this.contactSession
+            }
+            // Since we found an ID we send it on and will patch that contact
+            bus.$emit('postContact', cid)
+          } else {
+            // Else we will send nothing and create a new contact
+            bus.$emit('postContact')
+          }
         }
       } // validate end
     },
@@ -67,7 +71,7 @@ const ProjectSubmission = {
 
     // Once a contact has been updated/saved THEN we post the form
     // A project has to have a contact
-    bus.$on('submitProjectForm', (cid) => {
+    bus.$on('submitProjectForm', () => {
       var vm = this
       var axiosConfig = {
         utf8 : "✓",

@@ -7,9 +7,9 @@
           <h2>Project Requests</h2>
 
           <nav class="project-scope-nav">
-            <a href="#all" @click.prevent="setScope()" :class="{'active': scope == null}">All</a>
-            <a href="#open" @click.prevent="setScope('complete')" :class="{'active': scope == 'complete'}">Complete</a>
-            <a href="#falgged" @click.prevent="setScope('flagged')" :class="{'active': scope == 'flagged'}">Flagged</a>
+            <router-link :to="{ name: 'list'}" exact>All</router-link>
+            <router-link :to="{ name: 'list', query:{filter: 'complete'} }" exact>Complete</router-link>
+            <router-link :to="{ name: 'list', query:{filter: 'flagged'} }" exact>Flagged</router-link>
           </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
           <div v-if="projects.length < 1">
@@ -36,8 +36,8 @@
                 <td width="20%">{{project.title}}</td>
                 <td width="30%">{{project.description}}</td>
                 <td width="10%">
-                  <span class="tag flagged" v-if="project.flagged">Flagged</span>
-                  <span class="tag" v-if="project.status" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}">{{project.status}}</span>
+                  <span class="tag flagged expanded" v-if="project.flagged">Flagged</span>
+                  <span class="tag expanded" v-if="project.status" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}">{{project.status}}</span>
                 </td>
                 <td width="20%">{{project.contact ? project.contact.name : ""}}</td>
                 <td width="20%">
@@ -49,10 +49,12 @@
             </tbody>
           </table>
 
-          <nav id="pagination" v-if="pagination.next || pagination.prev">
-            <button @click="previousPage"  :class="{'disabled': !pagination.prev}"><icon name="chevron-left"></icon></button>
+          <nav id="pagination" v-if="pagination.prev || pagination.next">
+            <router-link v-if="pagination.prev" tag="button" :to="{ name: 'list', query:queryPrev}" :class="{'disabled': !pagination.prev}" exact append><icon name="chevron-left"></icon></router-link>
+            <router-link v-else tag="button" :to="{name: 'list'}" class="disabled" exact><icon name="chevron-left"></icon></router-link>
             <div><span>{{pagination.current}} of {{pagination.total}}</span></div>
-            <button @click="nextPage" :class="{'disabled': !pagination.next}"><icon name="chevron-right"></icon></button>
+            <router-link v-if="pagination.next" tag="button" :to="{ name: 'list', query:queryNext}" :class="{'disabled': !pagination.next}" exact append><icon name="chevron-right"></icon></router-link>
+            <router-link v-else tag="button" :to="{name: 'list', query:{page: pagination.total}}" class="disabled" exact><icon name="chevron-right"></icon></router-link>
           </nav>
         </div>
       </div>
@@ -89,10 +91,40 @@
           total: null
         },
         resource_url: '/api/v1/projects.json',
+        page: '',
         scope: null
       }
     },
+    computed: {
+      queryNext() {
+        if(this.scope) {
+          return {
+            filter: this.scope,
+            page: this.pagination.next
+          }
+        } else {
+          return {
+            page: this.pagination.next
+          }
+        }
+      },
+      queryPrev() {
+        if(this.scope) {
+          return {
+            filter: this.scope,
+            page: this.pagination.prev
+          }
+        } else {
+          return {
+            page: this.pagination.prev
+          }
+        }
+      }
+    },
     watch: {
+      '$route': function() {
+        this.queryProjects()
+      },
       'authUser.id': function(id) {
         if(id != null) {
           this.validUser = true
@@ -100,41 +132,33 @@
       },
       validUser(status) {
         if(this.validUser == true && this.projects.length == 0) {
-          this.getProjects(this.resource_url)
+          this.queryProjects()
         }
       }
     },
     methods: {
-      setScope(scope) {
-        if(scope) {
-          this.scope = scope
-          var url = this.resource_url + "?q=" + this.scope
+      queryProjects() {
+        if(this.$route.query) {
+          var url = this.resource_url + "?"
+          var filter = null
+          var page = null
+
+          if(this.$route.query.filter && this.$route.query.filter != '') {
+            this.scope = this.$route.query.filter
+            filter = "q=" + this.scope
+            url = url + filter
+          }
+          if(this.$route.query.page && this.$route.query.page != '') {
+            this.page = this.$route.query.page
+            page = "page=" + this.page
+            url = url + page
+          }
+          if(filter != '' && page != '') {
+            url = url + page + "&" + filter
+          } else {
+            url = url
+          }
           this.getProjects(url)
-        } else {
-          this.scope = null
-          this.getProjects()
-        }
-      },
-      nextPage() {
-        if(this.pagination.next != null) {
-          if (this.scope != null) {
-            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getProjects(url)
-          } else {
-            var url = this.resource_url + "?page=" + this.pagination.next
-            this.getProjects(url)
-          }
-        }
-      },
-      previousPage() {
-        if(this.pagination.prev != null){
-          if (this.scope != null) {
-            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getProjects(url)
-          } else {
-            var url = this.resource_url + "?page=" + this.pagination.prev
-            this.getProjects(url)
-          }
         }
       },
       getProjects(url) {
@@ -172,14 +196,7 @@
 
           bus.$emit('flashEmit', response.data.flash[0][1])
 
-          var url = ""
-          if(vm.scope != null) {
-            url = vm.resource_url + "?q=" + vm.scope + "&page=" + vm.pagination.current
-          } else {
-            url = vm.resource_url + "?page=" + vm.pagination.current
-          }
-          vm.getProjects(url)
-          // vm.$router.push({ name: 'list'})
+          this.queryProjects()
         })
         .catch(function (error) {
           console.log(error)
@@ -187,10 +204,12 @@
       },
     },
     mounted(){
+      this.queryProjects()
+
       if(this.authUser.id) {
         this.validUser = true
       }
-    },
+    }
   }
 </script>
 
@@ -220,7 +239,7 @@
       transition: all 0.5s ease;
     }
   }
-  .active {
+  .is-active {
     color: black;
     font-family: tele-Ult;
     &:after {
