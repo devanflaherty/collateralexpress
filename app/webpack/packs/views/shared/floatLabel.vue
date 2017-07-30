@@ -6,7 +6,7 @@
       v-if="inputType == 'textarea'"
       rows="4"
       :id="propKey"
-      v-model.lazy="model"
+      v-model="model"
       :name="label"
       @focus="floatLabel(true); focusLabel(true)"
       @blur="floatLabel(false); focusLabel(false); emitInput()">
@@ -23,7 +23,7 @@
 
     <input v-else-if="!inputType"
       :id="propKey"
-      v-model.lazy="model"
+      v-model="model"
       @focus="floatLabel(true); focusLabel(true)"
       @blur="floatLabel(false); focusLabel(false); emitInput()"
       :name="label"
@@ -57,9 +57,7 @@ export default {
       if(m && m.length > 0 && m != null || m != 'undefined') {
         this.floatLabel()
         this.setParentData()
-        if(this.inputType == 'password') {
-          this.emitInput()
-        }
+        this.emitInput()
       }
     }
   },

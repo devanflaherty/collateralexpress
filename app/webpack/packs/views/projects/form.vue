@@ -61,6 +61,7 @@
                             name="Due Date"
                             v-validate="'required'">
                           </Datepicker>
+                          <span v-show="veeErrors.has('Due Date')" class="error-message">{{veeErrors.first('Due Date')}}</span>
                       </div>
                     </div>
                     <div class="columns">
@@ -213,7 +214,7 @@
             <div class="row align-center">
               <div class="small-12 large-10 columns">
                 <div class="fieldset">
-                  <span v-show="veeErrors.any()">Make sure all required fields have filled out.</span>
+                  <div class="callout" v-show="veeErrors.any()"><span>Make sure all required fields have been filled out and there are no errors.</span></div>
                   <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
                 </div>
               </div>

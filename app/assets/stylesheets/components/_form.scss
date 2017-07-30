@@ -92,3 +92,9 @@ form {
     border: none;
   }
 }
+.error-message {
+  display: block;
+  background: $primary-color;
+  color: white;
+  padding: .25rem .75rem;
+}
