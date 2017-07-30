@@ -5,13 +5,13 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project.id, 'medium-12 large-10': !validUser, 'medium-8 large-7': validUser }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id, 'medium-12 large-10': !validUser, 'medium-8 large-7': validUser }">
 
             <header>
               <div class="row">
                 <div class="columns">
                   <h2>{{page_title}}</h2>
-                  <h5 v-if="project.id">{{project.title}}</h5>
+                  <h5 v-if="project && project.id">{{project.title}}</h5>
                 </div>
               </div>
             </header>
@@ -173,14 +173,14 @@
           <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
             <aside id="projectSidebar">
               <nav v-if="authUser.id">
-                <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: project.id} }">View Project</router-link>
+                <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: $route.params.id} }">View Project</router-link>
                 <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
                 <router-link v-if="$route.params.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
                 <router-link v-if="authUser.role == 'admin'" :to="{name: 'account'}">Update your Account</router-link>
                 <router-link v-if="authUser.role == 'contact'" :to="{name: 'contact-profile'}">Update your Profile</router-link>
               </nav>
             </aside>
-            <a v-if="project.id"
+            <a v-if="project && project.id"
               id="deleteProject"
               style="float: right"
               class="delete-project"
@@ -270,7 +270,7 @@ export default {
       validUser: false,
       formError: true,
       project: {
-        id: null,
+        id: "null",
         title: null,
         slug: null,
         user_id: 1,
@@ -411,8 +411,10 @@ export default {
         bus.$emit('emptyFloats')
         document.title = "New Project | Collateral Express"
         axios.get('/api/v1/projects/new.json').then( response => {
+
           vm.loading = false
-          bus.$emit('projectEmit', response.data.project)
+          console.log(response.data.project)
+          vm.project = response.data.project
         }).catch(error => {
           // Push to 404
           vm.$router.push({ name: 'fourohfour' })
@@ -471,6 +473,7 @@ export default {
 
     bus.$on('projectEmit', (project) => {
       // Updates project with new project object
+      alert(project)
       this.project = project
     })
 

@@ -1,7 +1,7 @@
 <template>
   <nav id="mobileNav" :class="{'show' : toggleState, 'hidden' : !toggleState}" :style="{height: topSet}">
-    <a href="/">Home</a>
-    <a :href="link.url" v-for="link in links">{{link.name}}</a>
+    <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
+    <a href="#launchContact" @click.prevent="launchContact">Contact</a>
   </nav>
 </template>
 

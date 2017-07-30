@@ -1,4 +1,4 @@
-json.(@project,
+json.project(@project,
   :id,
   :title,
   :slug,
