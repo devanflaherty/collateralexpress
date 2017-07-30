@@ -14,6 +14,8 @@ class Api::V1::ProjectsController < ApplicationController
 
   def new
     @project = Project.new
+    @project[:status] = "open"
+    @project[:deliverables] = "0"
   end
 
   def edit

@@ -35,7 +35,10 @@
               <tr v-for="project in projects" v-bind:key="project">
                 <td width="20%">{{project.title}}</td>
                 <td width="30%">{{project.description}}</td>
-                <td width="10%">{{project.status}}</td>
+                <td width="10%">
+                  <span class="tag flagged" v-if="project.flagged">Flagged</span>
+                  <span class="tag" v-if="project.status" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}">{{project.status}}</span>
+                </td>
                 <td width="20%">{{project.contact ? project.contact.name : ""}}</td>
                 <td width="20%">
                   <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>

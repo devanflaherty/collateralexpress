@@ -67,18 +67,9 @@
                       <div class="float-input">
                         <label>Deliverables</label>
                         <select v-model="project.deliverables">
-                          <option disabled value="">Select the amount</option>
+                          <option disabled value="0">Select the amount</option>
                           <option v-for="n in 10">{{n}}</option>
                         </select>
-                        <!-- <FloatLabel
-                          v-validate="'numeric'"
-                          data-vv-value-path="model"
-                          data-vv-name="Deliverables"
-                          :has-error="veeErrors.has('Deliverables')"
-                          :error-text="veeErrors.first('Deliverables')"
-                          :attr="project.deliverables"
-                          label="Deliverables"
-                          propKey="deliverables"></FloatLabel> -->
                       </div>
                     </div>
                   </div>
@@ -308,30 +299,7 @@ export default {
     page_title() {
       // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title
-    },
-    EmptyProject() {
-      // An empty object
-      var empty = {
-        id: null,
-        title: null,
-        slug: null,
-        user_id: 1,
-        contact_id: null,
-        status: "",
-        description: null,
-        reference: null,
-        tactic: [],
-        due_date: null,
-        existing: false,
-        translation: false,
-        business_unit: null,
-        deliverables: "",
-        target: null,
-        flag: false,
-        archive: false
-      };
-      return empty
-    },
+    }
   },
   watch: {
     '$route': function() {
@@ -430,18 +398,26 @@ export default {
             document.title = vm.project.title + " | Collateral Express"
           }).catch(error => {
             // Push to 404
+            bus.$emit('flashEmit', "We couldn/'t get your project.")
             vm.$router.push({ name: 'new' })
             console.log(error)
           })
         } // close statement that check if authorized to any degree
-      } else {
+      } else if(this.$route.name == 'new'){
         // If no params
         // New Project
         // Authorization does not matter for new requests
-        vm.loading = false
         bus.$emit('updateMessage', 'New Project')
         bus.$emit('emptyFloats')
-        bus.$emit('projectEmit', vm.EmptyProject)
+        document.title = "New Project | Collateral Express"
+        axios.get('/api/v1/projects/new.json').then( response => {
+          vm.loading = false
+          bus.$emit('projectEmit', response.data.project)
+        }).catch(error => {
+          // Push to 404
+          vm.$router.push({ name: 'fourohfour' })
+          console.log(error)
+        })
       }
     },
     updateContact(contact) {

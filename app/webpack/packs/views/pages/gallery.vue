@@ -86,6 +86,9 @@ export default {
       this.modalImage = image
       $('#galleryReveal').foundation('open');
     }
+  },
+  mounted() {
+    $('#galleryReveal').foundation();
   }
 }
 
