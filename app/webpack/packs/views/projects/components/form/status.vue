@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import Axios from "axios"
+  import axios from "axios"
   import bus from "../../../../bus.js"
 
   export default {
@@ -87,7 +87,7 @@
       var vm = this
       this.setInitProject()
       // Get Available tactics
-      Axios.get('/api/v1/projects/new.json')
+      axios.get('/api/v1/projects/new.json')
         .then( response => {
           vm.available_states = response.data.states
         }).catch(error => {

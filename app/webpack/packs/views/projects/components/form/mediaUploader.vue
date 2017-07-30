@@ -42,7 +42,7 @@
 
 
 <script>
-  import Axios from "axios"
+  import axios from "axios"
   import Dropzone from 'vue2-dropzone'
 
   // App Components
@@ -78,7 +78,7 @@
         //add transition to state
         var vm = this
         this.$notify({title: 'File Succesfully added'})
-        Axios.get('/api/v1/projects/' + this.projectId  + '.json')
+        axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
             console.log('media updated')
             bus.$emit("mediaEmit", response.data.project_media.medias)
@@ -94,7 +94,7 @@
         var vm = this
         var filteredMedia = vm.mediaFiles.filter(m => m.id !== id)
 
-        Axios.delete('/media/' + id,{
+        axios.delete('/media/' + id,{
           utf8 : "✓",
           authenticity_token: vm.token,
           project : vm.project_id

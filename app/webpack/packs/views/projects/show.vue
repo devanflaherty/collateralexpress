@@ -148,7 +148,7 @@
 </template>
 
 <script>
-  import Axios from "axios"
+  import axios from "axios"
   import moment from "moment"
   import bus from "../../bus.js"
 
@@ -239,7 +239,7 @@
           if(this.authUser.id) {
             // if there is an admin user authorized or if we find a contact Session
             // Let's make a request
-            Axios.get('/api/v1/projects/' + pid + '.json')
+            axios.get('/api/v1/projects/' + pid + '.json')
             .then( response => {
               // Before we update our DOM we want to make sure
               // if we have a contact session but no admin user the contact has access
@@ -270,7 +270,7 @@
           } else {
             // if no valid session is found
             // We will just grab some Ids so we can validate
-            Axios.get('/api/v1/projects/' + pid + '.json')
+            axios.get('/api/v1/projects/' + pid + '.json')
             .then( response => {
                 vm.loading = false
                 vm.$set(vm.project, 'id', response.data.project.id)

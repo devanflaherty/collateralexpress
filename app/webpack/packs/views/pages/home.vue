@@ -19,7 +19,7 @@
               </div>
 
               <div class="hero-actions">
-                <a href="/projects/new#new" class="button hollow primaryAlt">Fill out a project request</a>
+                <router-link :to="{name: 'new'}" class="button hollow primaryAlt">Fill out a project request</router-link>
               </div>
             </div>
           </div><!-- close card container -->
@@ -36,8 +36,8 @@
               </div>
 
               <div class="hero-actions">
-                <a href="/how-it-works" class="button hollow primaryAlt">How It Works</a>
-                <a href="/faq" class="button hollow primaryAlt">FAQs</a>
+                <router-link :to="{name: 'how'}" class="button hollow primaryAlt">How It Works</router-link>
+                <router-link :to="{name: 'faq'}" class="button hollow primaryAlt">FAQs</router-link>
               </div>
             </div>
           </div><!-- close card container -->
@@ -62,7 +62,7 @@
               <p>Learn what Collateral Express is and how it can it
                 make your life easier.</p>
               <div class="card-buttons">
-                <a href="/how-it-works" class="button hollow">How it works</a>
+                <router-link :to="{name: 'how'}" class="button hollow">How it works</router-link>
               </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
                 this request form and let's get started. </p>
 
               <div class="card-buttons">
-                <a href="/projects/new" class="button hollow">Send Requests</a>
+                <router-link :to="{name: 'new'}" class="button hollow">Send Requests</router-link>
               </div>
           </div>
         </div>
@@ -108,8 +108,8 @@
               </div>
 
               <div class="hero-actions">
-                <a href="/how-it-works" class="button hollow primaryAlt">How It Works</a>
-                <a href="/faq" class="button hollow primaryAlt">FAQs</a>
+                <router-link :to="{name: 'how'}" class="button hollow primaryAlt">How It Works</router-link>
+                <router-link :to="{name: 'faq'}" class="button hollow primaryAlt">FAQs</router-link>
               </div>
             </div>
           </div><!-- close card container -->

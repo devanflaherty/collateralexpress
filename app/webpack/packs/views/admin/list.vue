@@ -60,7 +60,7 @@
 </template>
 
 <script>
-  import Axios from 'axios'
+  import axios from 'axios'
   import bus from '../../bus'
   import Login from '../shared/login/index.vue'
 
@@ -135,7 +135,7 @@
         var vm = this
         if(!url) { url = this.resource_url }
         this.loading = true
-        Axios.get(url)
+        axios.get(url)
           .then( response => {
             vm.loading = false
             vm.users = response.data.users
@@ -156,7 +156,7 @@
       },
       deleteProject(user) {
         var vm = this
-        Axios.delete('/users/' + user.id, {
+        axios.delete('/users/' + user.id, {
           user : user,
         })
         .then(function (response) {
@@ -181,7 +181,7 @@
       // We will run this get request to set our authentication
       // And set wether login is visible or not
       var vm = this
-      Axios.get('/api/v1/authenticate.json')
+      axios.get('/api/v1/authenticate.json')
       .then(function (response) {
         if (response.data.user.id) {
           vm.login = false

@@ -23,17 +23,12 @@
 </template>
 
 <script>
-import axios from "axios"
 import bus from "./bus"
 
 import NavHeader from "./views/shared/header/index.vue"
 import AppFooter from "./views/shared/footer.vue"
 import Reveal from "./views/shared/reveal.vue"
 import ContactReveal from "./views/shared/contact.vue"
-
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'Project_App',
@@ -111,19 +106,23 @@ export default {
   mounted() {
     // We mount foundation after the app and DOM has mounted
     $(document).foundation();
-    if(this.$route.name == 'contact') {
+
+    // Open contact modal if route name is equal to contact
+    if(this.$route.name == 'contact' || this.$route.query.contact == 'true') {
       $('#contactReveal').foundation('open');
     }
 
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
+    // Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('messageEmit', (msg) => {
       this.updateMessage(msg)
     })
 
+    // Update flash and show notify-cation
     bus.$on('flashEmit', (title, text) => {
       this.updateFlash(title,text)
     })
 
+    // Show reveal on emit
     bus.$on('showReveal', (type, title, msg, pid) => {
       this.reveal.type = type
       this.reveal.title = title
@@ -132,10 +131,12 @@ export default {
       $('#reveal').foundation('open');
     });
 
+    // Open contact Modal on emit
     bus.$on('contactReveal', () => {
       $('#contactReveal').foundation('open');
     });
 
+    // Close reveal on emit
     bus.$on('closeReveal', () => {
       if(this.reveal.type != null) {
         this.reveal.type = null
@@ -146,11 +147,14 @@ export default {
       }
     });
 
+    // Update our authUser from router
+    // Check against authenticate.json
     bus.$on('authEmit', (id, role) => {
       this.auth_user.id = id
       this.auth_user.role = role
     })
 
+    // Updates our contactSession from emit
     bus.$on('contactSessionEmit', (id) => {
       if(id != null) {
         this.contactSession = id

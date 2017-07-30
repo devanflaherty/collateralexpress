@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import Axios from "axios"
+import axios from "axios"
 
 export default {
   name: 'UserFields',
@@ -32,13 +32,13 @@ export default {
   },
   created() {
     var vm = this;
-    Axios.get('/api/v1/users.json')
+    axios.get('/api/v1/users.json')
       .then( response => {
         vm.users = response.data.user;
       })
 
     if (this.user.id) {
-      Axios.get('/api/v1/users/' + this.user.id + '.json')
+      axios.get('/api/v1/users/' + this.user.id + '.json')
         .then( response => {
           vm.user.email = response.data.email;
         })
@@ -65,7 +65,7 @@ export default {
           }
         })
         // this.$Progress.start()
-        Axios.get('/api/v1/users/' + this.user.id + '.json')
+        axios.get('/api/v1/users/' + this.user.id + '.json')
           .then( response => {
             // this.$Progress.finish()
             this.user.email = response.data.email

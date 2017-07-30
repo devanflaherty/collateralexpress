@@ -139,11 +139,11 @@
 import bus from '../../../../bus'
 import {emitValidationErrors} from '../../../shared/validation.js'
 import FloatLabel from '../../../shared/floatLabel.vue'
-import Axios from "axios"
+import axios from "axios"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-Axios.defaults.headers.common['X-CSRF-Token'] = token
-Axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.common['X-CSRF-Token'] = token
+axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'contact',
@@ -196,7 +196,7 @@ export default {
       }
       if(!id || id == null || id == undefined) {
         // If contact doesn't exist
-        Axios.post('/contacts/', axiosConfig)
+        axios.post('/contacts/', axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
           vm.$emit("contactEmit", response.data.contact)
@@ -207,7 +207,7 @@ export default {
         })
       } else if (id) {
         //If contact exists
-        Axios.patch('/contacts/' + id, axiosConfig)
+        axios.patch('/contacts/' + id, axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
           vm.$emit("contactEmit", response.data.contact)
@@ -221,7 +221,7 @@ export default {
     mountContact() {
       var vm = this
       if(this.contactQuery != null) {
-        Axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
+        axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
         .then( response => {
           vm.contact = response.data
           vm.makeContactEditable(false)
@@ -274,7 +274,7 @@ export default {
   created() {
     var vm = this;
     // Form contacts array with all contacts on creation
-    Axios.get('/api/v1/contacts.json')
+    axios.get('/api/v1/contacts.json')
       .then( response => {
         vm.contacts = response.data.contact;
       })

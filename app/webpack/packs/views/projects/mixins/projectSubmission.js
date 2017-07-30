@@ -1,5 +1,5 @@
 import bus from '../../../bus'
-import Axios from "axios"
+import axios from "axios"
 
 const ProjectSubmission = {
   methods: {
@@ -81,7 +81,7 @@ const ProjectSubmission = {
       if (!this.project.id) {
         // if this is a new project
         console.log(this.project)
-        Axios.post('/projects/', axiosConfig)
+        axios.post('/projects/', axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll
           if(vm.dzUpload) {
@@ -100,7 +100,7 @@ const ProjectSubmission = {
         });
       } else {
         // If the project does exist let's update it
-        Axios.patch('/projects/' + this.project.id, axiosConfig)
+        axios.patch('/projects/' + this.project.id, axiosConfig)
         .then(function (response) {
           // Successful
 

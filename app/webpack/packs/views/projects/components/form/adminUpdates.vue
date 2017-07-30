@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import Axios from "axios"
+import axios from "axios"
 import bus from "../../../../bus.js"
 import Status from "./status.vue"
 import ProjectSubmission from "../../mixins/projectSubmission.js"
