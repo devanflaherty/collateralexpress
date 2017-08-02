@@ -33,15 +33,30 @@ const authRequest = function(to, from, next) {
 
       bus.$emit('updateLinks')
       // Redirects
+
       if(response.data.role == 'admin' && to.name == 'login') {
-        router.push({name: 'list'})
-      } else if(response.data.role != 'admin' && to.name == 'admin-edit') {
-        router.push({name: 'login'})
+        router.push({name: 'account'})
+      } else if(response.data.role != 'admin') {
+        if(
+          to.name == 'account' ||
+          to.name == 'edit-admin' ||
+          to.name == 'list-admin' ||
+          to.name == 'new-admin'
+        ) {
+          router.push({name: 'login'})
+        }
       } else {
         next()
       }
     } else {
-      next()
+      if(
+        to.name == 'account' ||
+        to.name == 'edit-admin' ||
+        to.name == 'list-admin' ||
+        to.name == 'new-admin'
+      ) {
+        router.push({name: 'login'})
+      }
     }
   }).catch(function (error) {
     console.log('Trouble authentication user.')

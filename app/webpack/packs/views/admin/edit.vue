@@ -5,7 +5,6 @@
         <h4>Account Info</h4>
         <h2 class="banner">{{user.full_name}}</h2>
       </div>
-      <button @click="deleteSession" class="self-align-bottom">Logout</button>
     </div>
     <form v-on:submit.prevent="onSubmit" id="form" class="callout">
       <div class="row">
@@ -177,49 +176,39 @@ export default {
         })
       }
     },
-    deleteSession() {
-      axios.delete('/users/sign_out', {
-        utf8 : "✓",
-        authenticity_token: token
-      })
-      .then(response => {
-        alert('success')
-        this.$router.push({name: 'home'})
-        bus.$emit('flashEmit', "Succefully deleted user")
-      })
-      .catch(error => {
-        alert('error')
-      })
-    },
     fetchData() {
       this.error = this.post = null
       this.loading = true
       var vm = this
+      var userId = null
 
-      if(this.authUser.role == 'admin') {
-        axios.get('/api/v1/users/' + vm.authUser.id + '.json').then( response => {
-          vm.loading = false
-          vm.validUser = true
-          vm.user = response.data
-          document.title = "Edit " + this.user.full_name + " | Collateral Express"
-
-        }).catch(error => {
-          // Push to 404
-          // vm.$router.push({ name: 'list' })
-          console.log(error)
-        })
+      if(this.$route.params.id) {
+        userId = this.$route.params.id
+      } else if (this.$route.name == 'account'){
+        userId = this.authUser.id
       }
+
+      axios.get('/api/v1/users/' + userId + '.json').then( response => {
+        vm.loading = false
+        vm.validUser = true
+        console.log(response.data)
+        vm.user = response.data
+        document.title = "Edit " + this.user.full_name + " | Collateral Express"
+
+      }).catch(error => {
+        // Push to 404
+        vm.$router.push({ name: 'login' })
+        console.log(error)
+      })
     }
+  },
+  created() {
+    this.fetchData()
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('userPropSet', (key, val) => {
       this.$set(this.user, key, val)
-    })
-  },
-  beforeRouteEnter (to,from,next) {
-    next(vm => {
-      vm.fetchData()
     })
   }
 }

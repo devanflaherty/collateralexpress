@@ -6,7 +6,7 @@
           :auth-user="authUser">
         </router-view>
       </div>
-      <aside class="columns small-11 medium-3 large-4">
+      <aside class="columns small-11 medium-3 large-4" v-if="authUser.role == 'admin'">
         <nav>
           <a href="#logout" @click.prevent="logoutUser">Logout</a>
           <router-link :to="{name: 'account'}">Edit Account</router-link>
@@ -39,47 +39,24 @@ export default {
   props: ['authUser'],
   data() {
     return {
-      loading: false,
-      validUser: false,
-      user: {
-        email: null,
-        password: null
-      }
-    }
-  },
-  computed: {
-    token() {
-      return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    },
-  },
-  watch: {
-    validUser(status) {
-      if(this.validUser == true) {
-      }
     }
   },
   methods: {
-    onSubmit: function () {
-      axios.post('/users/sign_in', {
+    logoutUser() {
+      axios.delete('/users/sign_out', {
         utf8 : "✓",
-        authenticity_token: token,
-        user: this.user
+        authenticity_token: token
       })
       .then(response => {
         alert('success')
-        this.$router.push({name: 'list'})
+        this.$router.push({name: 'home'})
+        bus.$emit('flashEmit', "Succefully signed out.")
       })
       .catch(error => {
-        alert('error')
+        console.log(error)
       })
     }
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('userPropSet', (key, val) => {
-      this.$set(this.user, key, val)
-    })
-  },
+  }
 }
 </script>
 

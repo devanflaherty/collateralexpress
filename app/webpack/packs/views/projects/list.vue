@@ -171,7 +171,7 @@
         axios.get(url).then( response => {
           vm.setData(response.data)
         }).catch(error => {
-          vm.$router.push({name: 'fourohfour'})
+          vm.$router.push({name: '404'})
         })
       },
 
@@ -234,7 +234,7 @@
       axios.get(url).then( response => {
         next(vm => vm.setData(response.data))
       }).catch(error => {
-        next({name: 'fourohfour'})
+        next({name: '404'})
       })
     },
     beforeRouteUpdate (to, from, next) {

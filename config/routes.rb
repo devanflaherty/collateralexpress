@@ -7,6 +7,10 @@ Rails.application.routes.draw do
       registrations: 'users/registrations'
     }
 
+  devise_scope :user do
+    delete 'users/:id', to: 'users/registrations#destroy_user', method: :delete
+  end
+
   resources :projects, :except => [:index, :new, :edit, :show]
   resources :contacts, :except => [:index, :new, :edit, :show]
   resources :media, only: [:create, :delete, :destroy]

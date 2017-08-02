@@ -71,12 +71,6 @@ export default {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
   },
-  watch: {
-    validUser(status) {
-      if(this.validUser == true) {
-      }
-    }
-  },
   methods: {
     onSubmit: function () {
       axios.post('/users/sign_in', {

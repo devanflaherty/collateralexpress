@@ -8,10 +8,11 @@
         <div class="columns small-11 medium-9 large-6">
           <div class="flex space-between">
             <div>
-              <h4>Account Info</h4>
+              <h4 v-if="authUser.role == 'contact'">Account Info</h4>
+              <h4 v-else-if="authUser.role == 'admin'">Edit Contact</h4>
               <h2 class="banner">{{contact.full_name}}</h2>
             </div>
-            <button @click="clearCookie" class="self-align-bottom">Logout</button>
+            <button @click="clearCookie" class="self-align-bottom" v-if="authUser.role == 'contact'">Logout</button>
           </div>
 
           <form v-on:submit.prevent="onSubmit" id="form" class="callout">
@@ -144,11 +145,6 @@ export default {
     '$route': 'fetchData',
     'authUser.id': function(id) {
       this.fetchData()
-    },
-    validUser(status) {
-      if(this.validUser == true) {
-        this.fetchData()
-      }
     }
   },
   methods: {
@@ -166,39 +162,51 @@ export default {
       this.loading = true
       var vm = this
 
-      //If we have route params
-      if(this.authUser.role == 'contact') {
-        if (this.$route.params.id && this.authUser.id == this.$route.params.id) {
-          var cid = this.$route.params.id
+      if(this.$route.name == 'contact-profile') {
+        if(this.authUser.role == 'contact') {
+          // If they are contact show them their info
+          axios.get('/api/v1/contacts/' + this.authUser.id + '.json').then( response => {
+            vm.loading = false
+            vm.contact = response.data
 
-            axios.get('/api/v1/contacts/' + cid + '.json')
-            .then( response => {
-                vm.loading = false
-                vm.validUser = true
-                vm.contact = response.data
-
-              }).catch(error => {
-              // Push to 404
-              vm.$router.push({ name: 'list' })
-              console.log(error)
-            })
-        } else if (this.$route.params.id && this.authUser.id != this.$route.params.id) {
-          vm.loading = false
-          bus.$emit('flashEmit', 'You do not have access to this user')
-        } else if(!this.$route.params.id){
-          axios.get('/api/v1/contacts/' + this.authUser.id + '.json')
-          .then( response => {
-              vm.loading = false
-              vm.validUser = true
-              vm.contact = response.data
-
-            }).catch(error => {
+            document.title = data.contact.full_name + " | Collateral Express"
+          }).catch(error => {
             // Push to 404
             vm.$router.push({ name: 'list' })
             console.log(error)
           })
+
+        } else if (this.authUser.role == 'admin') {
+          // if admin direct to their account
+          this.$router.push({name: 'account'})
+        } else {
+          vm.loading = false
+          // show login form
         }
-      } // close if contact role
+      } else if(this.$route.name == 'contact-edit' && this.$route.params.id) {
+        var cid = this.$route.params.id
+
+        if(this.authUser.role == 'contact') {
+          // If they are a contact redirect to their profile
+          this.$router.push({name: 'contact-profile'})
+        } else if (this.authUser.role == 'admin') {
+          // If admin give them the ability to edit the contact
+          axios.get('/api/v1/contacts/' + cid + '.json').then( response => {
+            vm.loading = false
+            vm.contact = response.data
+
+            document.title = "Edit " + data.contact.full_name + " | Collateral Express"
+          }).catch(error => {
+            // Push to 404
+            vm.$router.push({ name: 'list' })
+            console.log(error)
+          })
+        } else {
+          vm.loading = false
+        }
+      } else {
+        vm.loading = false
+      }
     },
     onSubmit() {
       // bus.$emit('validate'); // Validate child components
@@ -244,7 +252,6 @@ export default {
           })
           .catch(function (error) {
             // If there is an error we show the Foundation Reveal
-            console.log(vm.contact)
             bus.$emit('showReveal','error', vm.contact.full_name, error.message);
             // and run our error function
           });
@@ -253,23 +260,14 @@ export default {
     },
   },
   created() {
-    document.title = "Edit " + this.contact.full_name + " | Collateral Express"
+    this.fetchData()
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
     bus.$on('contactPropSet', (key, val) => {
       this.$set(this.contact, key, val)
     })
-  },
-  beforeRouteEnter (to,from,next) {
-    next(vm => {
-      vm.fetchData()
-    })
-  },
-  beforeRouteUpdate (to, from, next) {
-    this.fetchData()
-    next()
-  },
+  }
 }
 </script>
 

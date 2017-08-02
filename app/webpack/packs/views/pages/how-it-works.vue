@@ -146,9 +146,6 @@
             </p>
             <div class="can-do-buttons">
               <a href="#" class="expanded button hollow">
-                TMAP
-              </a>
-              <a href="#" class="expanded button hollow">
                 Brand Muscle
               </a>
             </div>

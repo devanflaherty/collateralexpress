@@ -435,7 +435,7 @@ export default {
         this.project = data.project
         this.$validator.clean();
       } else {
-        this.$router.push({ name: 'fourohfour' })
+        this.$router.push({ name: '404' })
         console.log(err)
       }
     },

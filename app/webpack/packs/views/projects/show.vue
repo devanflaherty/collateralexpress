@@ -298,7 +298,7 @@
           next(vm => vm.setData(response.data, error))
         })
       } else {
-        next({name: 'fourohfour'})
+        next({name: '404'})
       }
     },
     beforeRouteUpdate (to, from, next) {

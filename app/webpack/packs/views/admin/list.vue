@@ -33,7 +33,7 @@
               </tr>
             </tbody>
             <tbody>
-              <tr v-if="users.length > 0" v-for="user in users" v-bind:key="project">
+              <tr v-if="users.length > 0" v-for="user in users" v-bind:key="user">
                 <td>{{user.full_name}}</td>
                 <td>{{user.email}}</td>
                 <td>{{user.phone}}</td>
@@ -64,6 +64,10 @@
   import bus from '../../bus'
   import Login from '../shared/login/index.vue'
 
+  let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
+  axios.defaults.headers.common['X-CSRF-Token'] = token
+  axios.defaults.headers.common['Accept'] = 'application/json'
+
   export default {
     name: 'AdminList',
     components: {
@@ -82,8 +86,7 @@
           next: null,
           prev: null,
         },
-        resource_url: '/api/v1/users.json',
-        scope: null
+        resource_url: '/api/v1/users.json'
       }
     },
     watch: {
@@ -94,144 +97,69 @@
       },
       validUser(status) {
         if(this.validUser == true && this.users.length == 0) {
-          this.getUsers(this.resource_url)
+          this.fetchData()
         }
       }
     },
     methods: {
-      setScope(scope) {
-        if(scope) {
-          this.scope = scope
-          var url = this.resource_url + "?q=" + this.scope
-          this.getUsers(url)
-        } else {
-          this.scope = null
-          this.getUsers()
+      fetchData() {
+        var url = this.resource_url
+
+        axios.get(url).then( response => {
+          this.setData(response.data)
+        }).catch(error => {
+          this.$router.push({name: '404'})
+        })
+      },
+      setData(data, err) {
+        if(!err) {
+          this.loading = false
+          this.users = data.users
+          this.message = "Succesfully found all users."
+          // this.pagination.next = data.next_page
+          // this.pagination.prev = data.prev_page
+          // this.pagination.current = data.current_page
         }
       },
-      nextPage() {
-        if(this.pagination.next != null) {
-          if (this.scope != null) {
-            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getUsers(url)
-          } else {
-            var url = this.resource_url + "?page=" + this.pagination.next
-            this.getUsers(url)
-          }
-        }
-      },
-      previousPage() {
-        if(this.pagination.prev != null){
-          if (this.scope != null) {
-            var url = this.resource_url + "?q=" + this.scope + "&page=" + this.pagination.prev
-            this.getUsers(url)
-          } else {
-            var url = this.resource_url + "?page=" + this.pagination.prev
-            this.getUsers(url)
-          }
-        }
-      },
-      getUsers(url) {
-        var vm = this
-        if(!url) { url = this.resource_url }
-        this.loading = true
-        axios.get(url)
-          .then( response => {
-            vm.loading = false
-            vm.users = response.data.users
-            vm.message = "Succesfully found all users."
-            // vm.pagination.next = response.data.next_page
-            // vm.pagination.prev = response.data.prev_page
-            // vm.pagination.current = response.data.current_page
-            // if(response.data.projects.length < 1) {
-            //   if(this.scope) {
-            //     vm.message = "You have no '" + vm.scope + "' projects."
-            //   } else {
-            //     vm.message = "You have no saved projects."
-            //   }
-            // }
-          }).catch(error => {
-            console.log(error)
-          })
-      },
-      deleteProject(user) {
+      deleteUser(user) {
         var vm = this
         axios.delete('/users/' + user.id, {
+          authenticity_token: token,
           user : user,
         })
         .then(function (response) {
           bus.$emit('flashEmit', response.data.flash[0][1])
-
-          var url = ""
-          if(vm.scope != null) {
-            url = vm.resource_url + "?q=" + vm.scope + "&page=" + vm.pagination.current
-          } else {
-            url = vm.resource_url + "?page=" + vm.pagination.current
-          }
-          vm.getUsers(url)
-          // vm.$router.push({ name: 'list'})
+          vm.fetchData()
         })
         .catch(function (error) {
           console.log(error)
         });
       },
     },
-    beforeCreate(){
-      // Because we hit this page from outside of vue router we have to do some secondary checks.
-      // We will run this get request to set our authentication
-      // And set wether login is visible or not
-      var vm = this
-      axios.get('/api/v1/authenticate.json')
-      .then(function (response) {
-        if (response.data.user.id) {
-          vm.login = false
-          bus.$emit('authEmit', response.data.user.id, response.data.role)
-        } else {
-          vm.login = true
-        }
-      }).catch(function (error) {
-        console.log('Trouble authenticating user.')
-      })
-    },
     mounted(){
       if(this.authUser.id) {
         this.validUser = true
       }
     },
+    beforeRouteEnter(to, from, next) {
+      // var page = to.query.page
+      // var filter = to.query.filter
+      var url = '/api/v1/users.json'
+
+      axios.get(url).then( response => {
+        next(vm => vm.setData(response.data))
+      }).catch(error => {
+        console.log('Not authenticated')
+      })
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.fetchData()
+      next()
+    }
   }
 </script>
 
 <style scoped lang="scss">
-.project-scope-nav {
-  padding-top: 2rem;
-  a {
-    color: #aaa;
-    position: relative;
-    padding-bottom: .5rem;
-    margin-right: 1.5rem;
-    font-size: 1.25rem;
-    font-family: tele-Fet;
-    &:hover {
-      color: black;
-    }
-    &:after {
-      content: '';
-      bottom: 4px;
-      left: 0;
-      position: absolute;
-      height: 2px;
-      width: 100%;
-      transition: all 0.5s ease;
-    }
-  }
-  .active {
-    color: black;
-    font-family: tele-Ult;
-    &:after {
-      background: magenta
-    }
-  }
-}
 .list-move {
   transition: opacity .5s;
 }
