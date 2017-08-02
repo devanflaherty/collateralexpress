@@ -224,71 +224,57 @@
           this.validUser = true
         }
       },
+
       fetchData() {
-        this.error = this.post = null
         this.loading = true
-        this.getProject()
+        axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.setData(response.data)
+        }).catch(error => {
+          this.setData(response.data, error)
+        })
       },
-      getProject() {
+
+      setData(data, err) {
         var vm = this
-
-        //If we have route params
-        if (vm.$route.params.id) {
-          var pid = vm.$route.params.id
-
-          if(this.authUser.id) {
-            // if there is an admin user authorized or if we find a contact Session
-            // Let's make a request
-            axios.get('/api/v1/projects/' + pid + '.json')
-            .then( response => {
-              // Before we update our DOM we want to make sure
-              // if we have a contact session but no admin user the contact has access
-              if(vm.authUser.role == 'contact' && vm.authUser.id != response.data.contact.id) {
-                vm.$notify({
-                  title: "Please Log In",
-                  text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
-                })
-              } else {
-                vm.loading = false
-                vm.validUser = true
-                vm.project = response.data.project
-                vm.project_media = response.data.project_media.medias
-                vm.contact = response.data.contact
-
-                vm.createDate = moment(response.data.project.created_at).format("MMM Do YYYY")
-                if(response.data.project.due_date != null) {
-                  vm.dueDate = moment(response.data.project.due_date).format("MMM Do YYYY")
-                }
-
-                document.title = vm.project.title + " | Collateral Express"
-              }
-            }).catch(error => {
-              // Push to 404
-              vm.$router.push({ name: 'list' })
-              console.log(error)
+        // if we have an ID param
+        if(this.authUser.id && !err) {
+          // if there is an authUser
+          // We make a request with the ID Param
+          if(this.authUser.role == 'contact' && this.authUser.id != data.contact.id) {
+            vm.$notify({
+              title: "Please Log In",
+              text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
             })
           } else {
-            // if no valid session is found
-            // We will just grab some Ids so we can validate
-            axios.get('/api/v1/projects/' + pid + '.json')
-            .then( response => {
-                vm.loading = false
-                vm.$set(vm.project, 'id', response.data.project.id)
-                vm.$set(vm.project, 'title', response.data.project.title)
-                vm.$set(vm.contact, 'id', response.data.contact.id)
+            this.loading = false
+            this.validUser = true
+            this.project = data.project
+            this.project_media = data.project_media.medias
+            this.contact = data.contact
 
-                document.title = vm.project.title + " | Collateral Express"
-            }).catch(error => {
-              // Push to 404
-              vm.$router.push({ name: 'list' })
-              console.log(error)
-            })
+            this.createDate = moment(data.project.created_at).format("MMM Do YYYY")
+            if(data.project.due_date != null) {
+              this.dueDate = moment(data.project.due_date).format("MMM Do YYYY")
+            }
+
+            document.title = this.project.title + " | Collateral Express"
           }
+        } else if (this.authUser.id && err) {
+          this.$router.push({ name: 'list' })
+          console.log(error)
+        } else if (!this.authUser.id && !err) {
+          this.loading = false
+          this.$set(vm.project, 'id', data.project.id)
+          this.$set(vm.project, 'title', data.project.title)
+          this.$set(vm.contact, 'id', data.contact.id)
+
+          document.title = this.project.title + " | Collateral Express"
         } else {
-          // if no route param
-          vm.$router.push({name: 'list'})
+          bus.$emit('flashEmit', "We couldn/'t get your project.")
+          this.$router.push({ name: 'list' })
+          console.log(error)
         }
-      },
+      }
     },
     mounted() {
       // When we first mount lets see if there is an admin
@@ -305,17 +291,18 @@
 
     },
     beforeRouteEnter (to,from,next) {
-      next(vm => {
-        vm.fetchData()
-      })
+      if(to.params.id) {
+        axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
+          next(vm => vm.setData(response.data))
+        }).catch(error => {
+          next(vm => vm.setData(response.data, error))
+        })
+      } else {
+        next({name: 'fourohfour'})
+      }
     },
     beforeRouteUpdate (to, from, next) {
       this.fetchData()
-      next()
-    },
-    beforeRouteLeave (to, from, next) {
-      // Before we leave the current view
-      //bus.$emit('projectEmit');
       next()
     }
   }

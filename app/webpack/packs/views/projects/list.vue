@@ -7,7 +7,7 @@
           <h2>Project Requests</h2>
 
           <nav class="project-scope-nav">
-            <router-link :to="{ name: 'list'}" exact>All</router-link>
+            <router-link :to="{ name: 'list'}" :class="{'is-active':!scope}">All</router-link>
             <router-link :to="{ name: 'list', query:{filter: 'complete'} }" exact>Complete</router-link>
             <router-link :to="{ name: 'list', query:{filter: 'flagged'} }" exact>Flagged</router-link>
           </nav>
@@ -124,6 +124,10 @@
     watch: {
       '$route': function() {
         this.queryProjects()
+        this.scope = this.$route.query.filter
+        if(!this.$route.query.filter) {
+          this.scope = ""
+        }
       },
       'authUser.id': function(id) {
         if(id != null) {
@@ -162,33 +166,33 @@
           } else {
             url = url
           }
-          this.getProjects(url)
+        }
+        var vm = this
+        axios.get(url).then( response => {
+          vm.setData(response.data)
+        }).catch(error => {
+          vm.$router.push({name: 'fourohfour'})
+        })
+      },
+
+      setData(data, err) {
+        this.loading = false
+        this.projects = data.projects
+        this.message = "Succesfully found all projects."
+
+        this.pagination.next = data.next_page
+        this.pagination.prev = data.prev_page
+        this.pagination.current = data.current_page
+        this.pagination.total = data.last_page
+        if(data.projects.length < 1) {
+          if(this.scope) {
+            this.message = "You have no '" + this.scope + "' projects."
+          } else {
+            this.message = "You have no saved projects."
+          }
         }
       },
-      getProjects(url) {
-        var vm = this
-        if(!url) { url = this.resource_url }
-        this.loading = true
-        axios.get(url)
-          .then( response => {
-            vm.loading = false
-            vm.projects = response.data.projects
-            vm.message = "Succesfully found all projects."
-            vm.pagination.next = response.data.next_page
-            vm.pagination.prev = response.data.prev_page
-            vm.pagination.current = response.data.current_page
-            vm.pagination.total = response.data.last_page
-            if(response.data.projects.length < 1) {
-              if(this.scope) {
-                vm.message = "You have no '" + vm.scope + "' projects."
-              } else {
-                vm.message = "You have no saved projects."
-              }
-            }
-          }).catch(error => {
-            console.log(error)
-          })
-      },
+
       deleteProject(project) {
         var vm = this
         axios.delete('/projects/' + project.id, {
@@ -208,13 +212,34 @@
       },
     },
     mounted(){
-      this.queryProjects()
-
       if(this.authUser.id) {
         this.validUser = true
       } else {
         this.login = true
       }
+    },
+    beforeRouteEnter(to, from, next) {
+      var page = to.query.page
+      var filter = to.query.filter
+      var url = '/api/v1/projects.json'
+      if(page && filter) {
+        url = url + '?page=' + page + "&q=" + filter
+      } else if (page && !filter) {
+        url = url + '?page=' + page
+      } else if (filter && !page) {
+        url = url + '?q=' + filter
+      } else {
+        url = url
+      }
+      axios.get(url).then( response => {
+        next(vm => vm.setData(response.data))
+      }).catch(error => {
+        next({name: 'fourohfour'})
+      })
+    },
+    beforeRouteUpdate (to, from, next) {
+      this.queryProjects()
+      next()
     }
   }
 </script>
