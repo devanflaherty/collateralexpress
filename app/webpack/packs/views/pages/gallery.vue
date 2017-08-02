@@ -1,5 +1,5 @@
 <template>
-  <section id="gallery" v-once>
+  <section id="gallery">
 
     <HeroHeader
       :title="'<p>See what\'s been made<br><strong>With collateral express</strong></p>'"
@@ -84,7 +84,9 @@ export default {
   methods: {
     openModal(image) {
       this.modalImage = image
-      $('#galleryReveal').foundation('open');
+      if(this.modalImage) {
+        $('#galleryReveal').foundation('open');
+      }
     }
   },
   mounted() {
