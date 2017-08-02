@@ -188,18 +188,20 @@ export default {
         userId = this.authUser.id
       }
 
-      axios.get('/api/v1/users/' + userId + '.json').then( response => {
-        vm.loading = false
-        vm.validUser = true
-        console.log(response.data)
-        vm.user = response.data
-        document.title = "Edit " + this.user.full_name + " | Collateral Express"
+      if(userId) {
+        axios.get('/api/v1/users/' + userId + '.json').then( response => {
+          vm.loading = false
+          vm.validUser = true
+          console.log(response.data)
+          vm.user = response.data
+          document.title = "Edit " + this.user.full_name + " | Collateral Express"
 
-      }).catch(error => {
-        // Push to 404
-        vm.$router.push({ name: 'login' })
-        console.log(error)
-      })
+        }).catch(error => {
+          // Push to 404
+          vm.$router.push({ name: 'login' })
+          console.log(error)
+        })
+      }
     }
   },
   created() {

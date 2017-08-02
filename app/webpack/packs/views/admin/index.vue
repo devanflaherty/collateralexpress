@@ -8,11 +8,12 @@
       </div>
       <aside class="columns small-11 medium-3 large-4" v-if="authUser.role == 'admin'">
         <nav>
-          <a href="#logout" @click.prevent="logoutUser">Logout</a>
-          <router-link :to="{name: 'account'}">Edit Account</router-link>
+          <router-link :to="{name: 'account'}" class="button expanded" v-if="$route.name != 'account'">Edit Account</router-link>
 
-          <router-link :to="{name: 'list-admin'}">All Admin</router-link>
-          <router-link :to="{name: 'new-admin'}">Add Admin</router-link>
+          <router-link :to="{name: 'list-admin'}" class="button expanded hollow">All Admin</router-link>
+          <router-link :to="{name: 'new-admin'}" class="button expanded">Add Admin</router-link>
+
+          <a href="#logout" @click.prevent="logoutUser" class="button expanded secondary">Logout</a>
         </nav>
       </aside>
     </div>
