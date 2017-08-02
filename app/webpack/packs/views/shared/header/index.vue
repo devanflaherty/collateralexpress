@@ -93,10 +93,13 @@ export default {
         contact_links.splice(2, 0, { name: "All Projects", url: "list" })
         contact_links.push( { name: "Profile", url: "contact-profile"})
         this.links = contact_links
+      } else {
+        this.links = [...this.default_links]
       }
     }
   },
   mounted() {
+    this.updateLinks()
     bus.$on('updateLinks', () => {
       this.updateLinks()
     })

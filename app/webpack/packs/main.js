@@ -35,11 +35,11 @@ Vue.component('LoadScreen', LoadScreen)
 import App from './index.vue'
 
 import AOS from "aos"
-import Rellax from "rellax"
+// import Rellax from "rellax"
 
 document.addEventListener('DOMContentLoaded', () => {
   AOS.init();
-  var rellax = new Rellax('.rellax');
+  // var rellax = new Rellax('.rellax');
 
   const element = document.getElementById("app")
   var props = ""

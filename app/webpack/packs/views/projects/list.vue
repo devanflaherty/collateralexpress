@@ -128,11 +128,15 @@
       'authUser.id': function(id) {
         if(id != null) {
           this.validUser = true
+        } else {
+          this.login = true
         }
       },
       validUser(status) {
         if(this.validUser == true && this.projects.length == 0) {
           this.queryProjects()
+        } else {
+          this.login = true
         }
       }
     },
@@ -208,6 +212,8 @@
 
       if(this.authUser.id) {
         this.validUser = true
+      } else {
+        this.login = true
       }
     }
   }
