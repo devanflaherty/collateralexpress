@@ -30,7 +30,7 @@
                       :has-error="veeErrors.has('Project Title')"
                       :error-text="veeErrors.first('Project Title')"
                       :attr="project.title"
-                      label="Project Title"
+                      label="*Project Title"
                       propKey="title"></FloatLabel>
                   </div>
 
@@ -42,7 +42,7 @@
                       :has-error="veeErrors.has('Project Description')"
                       :error-text="veeErrors.first('Project Description')"
                       :attr="project.description"
-                      label="Project Description"
+                      label="*Project Description"
                       propKey="description"
                       inputType='textarea'></FloatLabel>
                   </div>
@@ -51,17 +51,18 @@
                   <div class="row">
                     <div class="columns small-12 medium-9 large-6">
                       <div class="float-input">
-                        <label>Due Date</label>
+                        <label>*Due Date</label>
                           <Datepicker
                             :calendar-button="true"
                             :calendar-button-icon="'fa fa-calendar'"
                             :monday-first="true"
                             placeholder="04 July, 2017"
                             v-model="project.due_date"
-                            name="Due Date"
-                            v-validate="'required'">
+                            name="due_date"
+                            v-validate="'required'"
+                            data-vv-as="Due Date">
                           </Datepicker>
-                          <span v-show="veeErrors.has('Due Date')" class="error-message">{{veeErrors.first('Due Date')}}</span>
+                          <span v-show="veeErrors.has('due_date') && this.fields.due_date.touched" class="error-message">{{veeErrors.first('due_date')}}</span>
                       </div>
                     </div>
                     <div class="columns">
@@ -214,7 +215,15 @@
             <div class="row align-center">
               <div class="small-12 large-10 columns">
                 <div class="fieldset">
-                  <div class="callout" v-show="veeErrors.any()"><span>Make sure all required fields have been filled out and there are no errors.</span></div>
+                  <div class="callout" v-show="veeErrors.any()">
+                    <p>Please make sure all 'required' fields have been filled out and there are no errors.</p>
+                    <ul class="error-list">
+                      <li v-for="err in veeErrors.errors">
+                        <span class="error-message">{{veeErrors.first(err.field)}}</span>
+                      </li>
+                    </ul>
+
+                  </div>
                   <input type="submit" value="Submit" :disabled="veeErrors.any()" class="button gradient expanded">
                 </div>
               </div>
@@ -271,7 +280,7 @@ export default {
       validUser: false,
       formError: true,
       project: {
-        id: "null",
+        id: null,
         title: null,
         slug: null,
         user_id: 1,
@@ -300,13 +309,16 @@ export default {
     page_title() {
       // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title
+    },
+    formTouched() {
+      return Object.keys(this.fields).filter(key => this.fields[key].touched);
     }
   },
   watch: {
     '$route': function() {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      this.fetchData
+      this.fetchData()
       // Then set the the page title to the new route.meta.title
       this.page_title = this.$route.meta.title
     },
@@ -346,6 +358,9 @@ export default {
     }
   },
   methods: {
+    isTouched(key) {
+      return this.fields[key].touched ? true : false
+    },
     validateUser(id) {
       // if the ID passed is equal to the projects.contact_id
       // Then we have a validUser
@@ -355,74 +370,76 @@ export default {
     },
     fetchData() {
       this.loading = true
-      this.getProject()
-    },
-    getProject() {
-      var vm = this
-      // if we have an ID param
-      if (vm.$route.params.id) {
-        // Then the project exists
-        if(this.authUser.id) {
-          // if there is an authUser
-          // We make a request with the ID Param
-          axios.get('/api/v1/projects/' + vm.$route.params.id  + '.json').then( response => {
-            if(vm.authUser.role == 'contact' && vm.authUser.id != response.data.project.contact_id) {
-              // If the contact id is not equal to what is returned
-              bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
-            } else {
-              // If contactSession is valid or is authorized
-              vm.loading = false
-              vm.validUser = true
-              vm.project = response.data.project
-              vm.project_media = response.data.project_media.medias
-              // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
-              // That way we are getting the project.contact rather than contactSession
-              vm.contactQuery = response.data.project.contact_id
 
-              document.title = "Edit " + vm.project.title + " | Collateral Express"
-            }
-          }).catch(error => {
-            // project does not exist
-            // Create a new project or browse the project list
-            vm.$router.push({ name: 'new' })
-            console.log(error)
-          })
-        } else {
-          // if no one is authorized
-          // We will just grab some info so we can validate when the user goes to login
-          axios.get('/api/v1/projects/' + vm.$route.params.id + '.json').then( response => {
-            vm.loading = false
-            vm.$set(vm.project, 'id', response.data.project.id)
-            vm.$set(vm.project, 'title', response.data.project.title)
-            vm.$set(vm.project, 'contact_id', response.data.project.contact_id)
-
-            document.title = vm.project.title + " | Collateral Express"
-          }).catch(error => {
-            // Push to 404
-            bus.$emit('flashEmit', "We couldn/'t get your project.")
-            vm.$router.push({ name: 'new' })
-            console.log(error)
-          })
-        } // close statement that check if authorized to any degree
-      } else if(this.$route.name == 'new'){
-        // If no params
-        // New Project
-        // Authorization does not matter for new requests
-        bus.$emit('updateMessage', 'New Project')
-        bus.$emit('emptyFloats')
-        document.title = "New Project | Collateral Express"
-        axios.get('/api/v1/projects/new.json').then( response => {
-
-          vm.loading = false
-          console.log(response.data.project)
-          vm.project = response.data.project
+      if(this.$route.name == "edit") {
+        axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.setData(response.data)
         }).catch(error => {
-          // Push to 404
-          vm.$router.push({ name: 'fourohfour' })
-          console.log(error)
+          this.setData(response.data, error)
+        })
+      } else {
+        axios.get('/api/v1/projects/new.json').then( response => {
+          this.setNewData(response.data)
+        }).catch(error => {
+          this.setNewData(response.data, error)
         })
       }
     },
+
+    setData(data, err) {
+      var vm = this
+      // if we have an ID param
+      if(this.authUser.id && !err) {
+        // if there is an authUser
+        // We make a request with the ID Param
+        if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
+          // If the contact id is not equal to what is returned
+          bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
+        } else {
+          // If contactSession is valid or is authorized
+          this.loading = false
+          this.validUser = true
+          this.project = data.project
+          this.$validator.clean();
+          this.project_media = data.project_media.medias
+          // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
+          // That way we are getting the project.contact rather than contactSession
+          this.contactQuery = data.project.contact_id
+
+          document.title = "Edit " + this.project.title + " | Collateral Express"
+        }
+      } else if (this.authUser.id && err) {
+        this.$router.push({ name: 'new' })
+        console.log(err)
+      } else if (!this.authUser.id && !err) {
+        this.loading = false
+        this.$set(vm.project, 'id', data.project.id)
+        this.$set(vm.project, 'title', data.project.title)
+        this.$set(vm.project, 'contact_id', data.project.contact_id)
+
+        document.title = this.project.title + " | Collateral Express"
+      } else {
+        bus.$emit('flashEmit', "We couldn/'t get your project.")
+        this.$router.push({ name: 'new' })
+        console.log(err)
+      }
+    },
+
+    setNewData(data, err) {
+      if(!err) {
+        bus.$emit('updateMessage', 'New Project')
+        bus.$emit('emptyFloats')
+        document.title = "New Project | Collateral Express"
+
+        this.loading = false
+        this.project = data.project
+        this.$validator.clean();
+      } else {
+        this.$router.push({ name: 'fourohfour' })
+        console.log(err)
+      }
+    },
+
     updateContact(contact) {
       // Called from contactEmit
       // When the contact component finds an existing contact, or
@@ -474,7 +491,6 @@ export default {
 
     bus.$on('projectEmit', (project) => {
       // Updates project with new project object
-      alert(project)
       this.project = project
     })
 
@@ -495,9 +511,19 @@ export default {
   },
   beforeRouteEnter (to,from,next) {
     // Before we hit the page we will fetch Data
-    next(vm => {
-      vm.fetchData()
-    })
+    if(to.name == "edit") {
+      axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
+        next(vm => vm.setData(response.data))
+      }).catch(error => {
+        next(vm => vm.setData(response.data, error))
+      })
+    } else {
+      axios.get('/api/v1/projects/new.json').then( response => {
+        next(vm => vm.setNewData(response.data))
+      }).catch(error => {
+        next(vm => vm.setNewData(response.data, error))
+      })
+    }
   },
   beforeRouteUpdate (to, from, next) {
     // Once the route has updated we will fetch Data
@@ -510,7 +536,7 @@ export default {
     bus.$emit('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
-  }
+  },
 }
 </script>
 
@@ -564,6 +590,16 @@ export default {
     color: $alert;
     svg {
       padding-top: .25rem;
+    }
+  }
+
+  .error-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    .error-message {
+      border-radius: 3px;
+      margin-bottom: .25rem;
     }
   }
 }

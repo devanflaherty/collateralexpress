@@ -10,6 +10,10 @@ const onValidation = {
     })
 
     bus.$on('errors-changed', (newErrors, oldErrors) => {
+      this.veeErrors.clear();
+
+      console.log(newErrors)
+
       newErrors.forEach(error => {
         if (!this.veeErrors.has(error.field)) {
           this.veeErrors.errors = [...this.veeErrors.errors, {field: error.field, msg: error.msg, rule: error.rule, scope: error.scope}]
@@ -24,6 +28,8 @@ const onValidation = {
       }
     })
 
+  }, beforeDestroy() {
+    this.veeErrors.clear();
   }
 }
 
@@ -56,6 +62,7 @@ const emitValidationErrors = {
   beforeDestroy() {
    //When destroying the element remove the listeners on the bus.
    //Useful for dynaically adding and removing child components
+   this.veeErrors.clear()
    bus.$emit('errors-changed', [], this.veeErrors.errors)
    bus.$off('validate', this.onValidate)
   },

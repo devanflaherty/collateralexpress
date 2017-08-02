@@ -45,11 +45,14 @@ export default {
     return {
       float: false,
       focus: false,
-      model: '',
-      key: ''
+      model: this.attr,
+      key: this.propKey
     }
   },
   watch: {
+    '$route': function() {
+      this.veeErrors.clear();
+    },
     attr(a) {
       this.model = a
     },
@@ -95,14 +98,7 @@ export default {
     },
   },
   mounted() {
-    this.key = this.propKey
-    this.model = Number.isInteger(this.attr) ? this.attr.toString() : this.attr
-
-    bus.$on('emptyFloats', () => {
-      this.model = ""
-    })
-
-    // Validation listeners are in onValidation Mixin
+    this.veeErrors.clear()
   }
 }
 

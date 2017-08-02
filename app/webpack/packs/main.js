@@ -9,7 +9,7 @@ import router from './router'
 
 import VeeValidate from 'vee-validate';
 const veeConfig = {
-  errorBagName: 'veeErrors',
+  errorBagName: 'veeErrors'
 }
 
 Vue.use(VeeValidate, veeConfig);
