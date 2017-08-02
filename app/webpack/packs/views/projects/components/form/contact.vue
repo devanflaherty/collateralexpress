@@ -274,16 +274,13 @@ export default {
   created() {
     var vm = this;
     // Form contacts array with all contacts on creation
-    axios.get('/api/v1/contacts.json')
-      .then( response => {
-        vm.contacts = response.data.contact;
-      })
+    axios.get('/api/v1/contacts.json').then( response => {
+      vm.contacts = response.data.contact;
+    })
 
     this.mountContact()
   },
   mounted() {
-    // this.mountContact()
-
     bus.$on('contactPropSet', (key, val) => {
       this.$set(this.contact, key, val)
     })
@@ -291,15 +288,6 @@ export default {
     bus.$on('postContact', (id) => {
       this.manageContact(id)
     })
-  },
-  beforeRouteEnter(to,from,next) {
-    next(vm => {
-      vm.mountContact()
-    })
-  },
-  beforeRouteUpdate (to, from, next) {
-    this.mountContact()
-    next()
   },
   beforeDestroy() {
     bus.$off('contactPropSet')
