@@ -1,5 +1,5 @@
 <template>
-  <div id="faq">
+  <div id="faq" v-once>
     <HeroHeader :title="'<p>Need some help<br><strong>We\'ve got your back</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
 
     <section id="copy" class="pad">

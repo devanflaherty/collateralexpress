@@ -1,7 +1,25 @@
 <template>
-  <div id="how-it-works">
+  <div id="how-it-works" v-once>
 
     <HeroHeader :title="'<p>How<br><strong>It Works</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
+
+    <section id="whyVideo" class="white-bg">
+      <div class="row align-center align-middle">
+        <div class="small-11 medium-4 column">
+          <h3 class="banner add-tag">Why Collateral Express?</h3>
+          <p>
+            We want to make your lives easier, get your projects done quicker, and increase communication all around.
+            'Collateral Express' allows us to do just that. Watch this video to learn more about our vision.
+          </p>
+        </div>
+
+        <div class="small-11 medium-6 column">
+          <div class="responsive-embed widescreen" data-aos="fade-up">
+            <iframe src="https://player.vimeo.com/video/54658957" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section id="copy" class="pad">
       <div class="row align-center">

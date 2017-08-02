@@ -1,5 +1,5 @@
 <template>
-  <div id="404">
+  <div id="404" v-once>
     <HeroHeader :title="'<p>Page doesn\'t exist<br><strong>404</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
 
     <section id="copy" class="pad white-bg">

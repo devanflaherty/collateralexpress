@@ -1,5 +1,5 @@
 <template>
-  <section id="gallery">
+  <section id="gallery" v-once>
 
     <HeroHeader
       :title="'<p>See what\'s been made<br><strong>With collateral express</strong></p>'"
