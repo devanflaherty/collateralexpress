@@ -84,7 +84,7 @@
             bus.$emit("mediaEmit", response.data.project_media.medias)
         })
 
-        bus.$emit('closeReveal')
+        this.$store.dispatch('closeReveal')
         this.$refs.dropzoneUploader.removeAllFiles()
       },
       readyMedia() {

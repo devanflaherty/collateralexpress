@@ -87,15 +87,31 @@ const ProjectSubmission = {
           if(vm.dzUpload) {
             bus.$emit('uploadMedia', response.data.project.id)
           }
-          bus.$emit('messageEmit', vm.project.title + " has been created!")
-          bus.$emit('showReveal','new', response.data.project.title, 'congratulations, you just created your project.', response.data.project.id);
 
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          vm.$store.dispatch('setMessage', response.data.project.title + " has been created!")
 
+          vm.$store.dispatch({
+            type: 'setReveal',
+            reveal_type: 'new',
+            title: response.data.project.title,
+            msg: "Congratulations, you just created your project.",
+            pid: response.data.project.id
+          })
+
+          vm.$store.dispatch({
+            type: 'setFlash',
+            title:response.data.flash[0][1],
+            group: 'app'
+          })
         })
         .catch(function (error) {
           // IF THERE ARE ERRORS
-          bus.$emit('showReveal','error', vm.project.title, error.message);
+          vm.$store.dispatch({
+            type: 'setReveal',
+            reveal_type: 'error',
+            title: vm.project.title,
+            msg: error.message,
+          })
           vm.axErrors(error.response, error.request, error.message);
         });
       } else {
@@ -107,18 +123,37 @@ const ProjectSubmission = {
           if(vm.dzUpload) {
             bus.$emit('uploadMedia', response.data.project.id)
           }
-          bus.$emit('messageEmit', vm.project.title + " has been updated!")
+          vm.$store.dispatch('setMessage', response.data.project.title + " has been created!")
           // And then we will launch the Foundation Reveal
-          bus.$emit('showReveal','update', vm.project.title, 'congratulations, you just updated your project.', response.data.project.id);
+          vm.$store.dispatch({
+            type: 'setReveal',
+            reveal_type: 'update',
+            title: response.data.project.title,
+            msg: 'congratulations, you just updated your project.',
+            pid: response.data.project.id
+          })
 
           // We also want to grab the flash that was sent in the response
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          vm.$store.dispatch({
+            type: 'setFlash',
+            title:response.data.flash[0][1],
+            group: 'app'
+          })
         })
         .catch(function (error) {
           // If there is an error we show the Foundation Reveal
-          bus.$emit('showReveal','error', vm.project.title, error.message);
+          vm.$store.dispatch({
+            type: 'setReveal',
+            type: 'error',
+            title: response.data.project.title,
+            msg: error.message
+          })
           // Get the flash
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          vm.$store.dispatch({
+            type: 'setFlash',
+            title:response.data.flash[0][1],
+            group: 'app'
+          })
           // and run our error function
           vm.axErrors(error.response, error.request, error.message);
         });

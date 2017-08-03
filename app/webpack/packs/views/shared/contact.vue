@@ -13,9 +13,17 @@
 
   export default {
     name: 'ContactReveal',
-    data() {
-      return {}
-    },
+    mounted() {
+      // Open contact modal if route name is equal to contact
+      if(this.$route.name == 'contact' || this.$route.query.contact == 'true') {
+        $('#contactReveal').foundation('open');
+      }
+      
+      // Open contact Modal on emit
+      bus.$on('contactReveal', () => {
+        $('#contactReveal').foundation('open');
+      });
+    }
   }
 </script>
 

@@ -186,7 +186,7 @@
               id="deleteProject"
               style="float: right"
               class="delete-project"
-              @click="deletePrompt">
+              @click="deletePrompt(project.id)">
               <icon name="trash"></icon>
               Delete
             </a>
@@ -242,6 +242,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import axios from "axios"
 import bus from '../../bus'
 
@@ -263,7 +264,7 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
-  props: ['message', 'contact-session', 'authUser', 'token'],
+  props: ['token'],
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     Login,
@@ -306,6 +307,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser',
+      contactSession: 'contactSession'
+    }),
     page_title() {
       // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title
@@ -394,7 +399,12 @@ export default {
         // We make a request with the ID Param
         if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
           // If the contact id is not equal to what is returned
-          bus.$emit('showReveal', 'notice', "Not Authorized", "Sorry, you don't have access to this project. Please try logging in again.")
+          vm.$store.dispatch({
+            type: 'setReveal',
+            reveal_type: 'notice',
+            title: "Not Authorized",
+            msg: "Sorry, you don't have access to this project. Please try logging in again.",
+          })
         } else {
           // If contactSession is valid or is authorized
           this.loading = false
@@ -419,7 +429,11 @@ export default {
 
         document.title = this.project.title + " | Collateral Express"
       } else {
-        bus.$emit('flashEmit', "We couldn/'t get your project.")
+        this.$store.dispatch({
+          type: 'setFlash',
+          title: "We couldn/'t get your project.",
+          group: 'app'
+        })
         this.$router.push({ name: 'new' })
         console.log(err)
       }
@@ -427,7 +441,7 @@ export default {
 
     setNewData(data, err) {
       if(!err) {
-        bus.$emit('updateMessage', 'New Project')
+        this.$store.dispatch('setMessage','New Project')
         bus.$emit('emptyFloats')
         document.title = "New Project | Collateral Express"
 
@@ -533,7 +547,7 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
-    bus.$emit('closeReveal')
+    // this.$store.dispatch('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
   },

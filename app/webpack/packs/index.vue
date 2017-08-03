@@ -1,28 +1,27 @@
 <template>
   <div id="app">
-    <NavHeader :auth-user="auth_user"></NavHeader>
+    <NavHeader></NavHeader>
 
   <!-- <transition name="fade" appear> -->
     <router-view
       id="main"
       :token="token"
-      :auth-user="auth_user"
+      :auth-user="authUser"
       :contactSession="contactSession">
     </router-view>
   <!-- </transition> -->
 
     <AppFooter></AppFooter>
 
-    <notifications />
-    <Reveal
-      :reveal="reveal"
-      :flash="flash">
-    </Reveal>
+    <notifications group="auth" classes="auth-notice" position="top center"/>
+    <notifications group="app" classes="app-notice" position="bottom right"/>
+    <Reveal></Reveal>
     <ContactReveal></ContactReveal>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "./bus"
 
 import NavHeader from "./views/shared/header/index.vue"
@@ -32,7 +31,6 @@ import ContactReveal from "./views/shared/contact.vue"
 
 export default {
   name: 'Project_App',
-  props: ['links'],
   components: {
     NavHeader,
     AppFooter,
@@ -42,142 +40,97 @@ export default {
   data() {
     return {
       page_title: "Projects",
-      message: "Update Form",
-      flash: {
-        title: null,
-        text: null
-      },
-      reveal: {
-        type: null,
-        title: null,
-        msg: null,
-        project_id: null
-      },
-      auth_user: {
-        id: null,
-        role: null
-      },
-      contactSession: null
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser',
+      message: 'message',
+      reveal: 'reveal',
+      flash: 'flash',
+      contactSession: 'contactSession'
+    }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    },
+    }
   },
   watch: {
-    'flash.title': function(){
+    flash(flash){
+      var key = flash.length - 1
+      var f = flash[key]
+
       this.$notify({
-        title: this.flash.title,
-        text: this.flash.text
+        title: f.title,
+        text: f.text,
+        type: f.flash_type,
+        group: f.group
       })
     }
   },
   methods: {
-    updateMessage(message) {
-      this.message = message
-    },
     updatePageTite(title) {
       this.page_title = title
-    },
-    updateFlash(title, text) {
-      this.flash.title = title
-      this.flash.text = text
-    },
-    getContactSession() {
-      var cid = this.getCookie('current_contact_id')
-      if (cid) {
-        return parseInt(cid)
-      } else {
-        return null
-      }
-    },
-    getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
-    },
+    }
   },
   mounted() {
     // We mount foundation after the app and DOM has mounted
     $(document).foundation();
-
-    // Open contact modal if route name is equal to contact
-    if(this.$route.name == 'contact' || this.$route.query.contact == 'true') {
-      $('#contactReveal').foundation('open');
-    }
-
-    // Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('messageEmit', (msg) => {
-      this.updateMessage(msg)
-    })
-
-    // Update flash and show notify-cation
-    bus.$on('flashEmit', (title, text) => {
-      this.updateFlash(title,text)
-    })
-
-    // Show reveal on emit
-    bus.$on('showReveal', (type, title, msg, pid) => {
-      this.reveal.type = type
-      this.reveal.title = title
-      this.reveal.msg = msg
-      this.reveal.project_id = pid
-      $('#reveal').foundation('open');
-    });
-
-    // Open contact Modal on emit
-    bus.$on('contactReveal', () => {
-      $('#contactReveal').foundation('open');
-    });
-
-    // Close reveal on emit
-    bus.$on('closeReveal', () => {
-      if(this.reveal.type != null) {
-        this.reveal.type = null
-        this.reveal.title = null
-        this.reveal.msg = null
-        this.reveal.project_id = null
-        $('#reveal').foundation('close');
-      }
-    });
-
-    // Update our authUser from router
-    // Check against authenticate.json
-    bus.$on('authEmit', (id, role) => {
-      this.auth_user.id = id
-      this.auth_user.role = role
-    })
-
-    // Updates our contactSession from emit
-    bus.$on('contactSessionEmit', (id) => {
-      if(id != null) {
-        this.contactSession = id
-      } else {
-        // If no id is passed we will look to browser cookies
-        this.contactSession = this.getContactSession()
-      }
-    })
-
-    // If we come from external source and the router is not invoked
-    // We need to set a contactSession on mount
-    if(!this.contactSession) {
-      this.contactSession = this.getContactSession()
-    }
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .fade-enter-active, .fade-leave-active {
   transition: opacity .125s
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
+}
+.auth-notice {
+  border-radius: 6px;
+  padding: 10px;
+  margin: 5px 5px 5px;
+
+  font-size: 12px;
+
+  color: #ffffff;
+  background: rgba(0,0,0,0.9);
+
+  &.warn {
+    background: #ffb648;
+  }
+
+  &.error {
+    background: #E54D42;
+  }
+
+  &.success {
+    background: #68CD86;
+  }
+}
+.app-notice {
+  padding: 10px;
+  margin: 0 5px 5px;
+
+  font-size: 12px;
+
+  color: #ffffff;
+  background: rgba(0,0,0,0.9);
+  border-left: 5px solid #EB0183;
+
+  &.warn {
+    background: #ffb648;
+    border-left-color: #f48a06;
+  }
+
+  &.error {
+    background: #E54D42;
+    border-left-color: #B82E24;
+  }
+
+  &.success {
+    background: #68CD86;
+    border-left-color: #42A85F;
+  }
 }
 </style>

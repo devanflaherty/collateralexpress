@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../bus"
 import axios from "axios"
 
@@ -119,7 +120,6 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['authUser'],
   data() {
     return {
       loading: false,
@@ -137,6 +137,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser'
+    }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
@@ -152,6 +155,7 @@ export default {
   },
   methods: {
     onSubmit: function () {
+      var vm = this
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
       if (!this.veeErrors.any()) {
@@ -169,7 +173,11 @@ export default {
           }
         })
         .then(response => {
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: response.data.flash[0][1],
+            group: 'app'
+          })
         })
         .catch(error => {
           alert('error')
@@ -190,15 +198,14 @@ export default {
 
       if(userId) {
         axios.get('/api/v1/users/' + userId + '.json').then( response => {
-          vm.loading = false
-          vm.validUser = true
-          console.log(response.data)
-          vm.user = response.data
+          this.loading = false
+          this.validUser = true
+          this.user = response.data
           document.title = "Edit " + this.user.full_name + " | Collateral Express"
 
         }).catch(error => {
           // Push to 404
-          vm.$router.push({ name: 'login' })
+          this.$router.push({ name: 'login' })
           console.log(error)
         })
       }

@@ -6,6 +6,7 @@
 
 import Vue from 'vue'
 import router from './router'
+import {store} from './store'
 
 import VeeValidate from 'vee-validate';
 const veeConfig = {
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var VueApp = new Vue({
       el: '#app',
       router,
+      store,
       render: h => h(App, {props}),
     });
   }

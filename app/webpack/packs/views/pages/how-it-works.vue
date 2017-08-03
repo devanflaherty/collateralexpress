@@ -170,8 +170,6 @@
 </template>
 
 <script>
-import bus from "../../bus"
-
 import HeroHeader from "../shared/heroHeader.vue"
 
 import Swiper from 'swiper/dist/js/swiper.min.js'
@@ -179,9 +177,6 @@ export default {
   name: 'Home',
   components: {
     HeroHeader
-  },
-  data() {
-    return {}
   },
   mounted() {
     const element = document.getElementById("processSlides")

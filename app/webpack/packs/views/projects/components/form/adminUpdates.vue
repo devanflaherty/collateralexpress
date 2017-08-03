@@ -42,10 +42,6 @@ export default {
   components: {
     Status
   },
-  data() {
-    return {
-    }
-  },
   methods: {
     updateReveal() {
       $("#adminUpdateReveal").foundation('open')

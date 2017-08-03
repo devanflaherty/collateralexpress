@@ -24,10 +24,7 @@
 <script>
   export default {
     name: 'HeroHeader',
-    props: ['title','image'],
-    data() {
-      return {}
-    }
+    props: ['title','image']
   }
 </script>
 

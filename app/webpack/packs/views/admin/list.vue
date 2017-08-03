@@ -60,6 +60,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import axios from 'axios'
   import bus from '../../bus'
   import Login from '../shared/login/index.vue'
@@ -73,7 +74,6 @@
     components: {
       Login
     },
-    props: ['authUser'],
     data() {
       return {
         loading: false,
@@ -88,6 +88,11 @@
         },
         resource_url: '/api/v1/users.json'
       }
+    },
+    computed: {
+      ...mapGetters({
+        authUser: 'authUser'
+      }),
     },
     watch: {
       'authUser.id': function(id) {
@@ -127,9 +132,13 @@
           authenticity_token: token,
           user : user,
         })
-        .then(function (response) {
-          bus.$emit('flashEmit', response.data.flash[0][1])
-          vm.fetchData()
+        .then(response => {
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: response.data.flash[0][1],
+            group: 'app'
+          })
+          this.fetchData()
         })
         .catch(function (error) {
           console.log(error)

@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import bus from "../../bus"
 import HeroHeader from "../shared/heroHeader.vue"
 
 export default {

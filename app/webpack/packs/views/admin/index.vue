@@ -2,8 +2,7 @@
   <section id="admin" class="pad">
     <div class="row align-center">
       <div class="columns small-11 medium-9 large-6">
-        <router-view
-          :auth-user="authUser">
+        <router-view>
         </router-view>
       </div>
       <aside class="columns small-11 medium-3 large-4" v-if="authUser.role == 'admin'">
@@ -21,6 +20,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../bus"
 import axios from "axios"
 
@@ -37,10 +37,10 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['authUser'],
-  data() {
-    return {
-    }
+  computed: {
+    ...mapGetters({
+      authUser: 'authUser'
+    }),
   },
   methods: {
     logoutUser() {
@@ -49,11 +49,16 @@ export default {
         authenticity_token: token
       })
       .then(response => {
-        alert('success')
         this.$router.push({name: 'home'})
-        bus.$emit('authEmit')
-        bus.$emit('contactSessionEmit')
-        bus.$emit('flashEmit', "Succefully signed out.")
+
+        this.$store.dispatch('setAuth')
+        this.$store.dispatch('setContactSession')
+
+        this.$store.dispatch({
+          type: 'setFlash',
+          title: "Succefully signed out.",
+          group: 'auth'
+        })
       })
       .catch(error => {
         console.log(error)

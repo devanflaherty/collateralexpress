@@ -107,7 +107,7 @@
                 id="deleteProject"
                 style="float: right"
                 class="delete-project"
-                @click="deletePrompt">
+                @click="deletePrompt(project.id)">
                 <icon name="trash"></icon>
                 Delete
               </a>
@@ -148,6 +148,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import axios from "axios"
   import moment from "moment"
   import bus from "../../bus.js"
@@ -166,7 +167,6 @@
       Login
     },
     mixins: [DeleteProject],
-    props: ['authUser'],
     data() {
       return {
         loading: false,
@@ -197,6 +197,11 @@
         dzUpload: false,
         error: null
       }
+    },
+    computed: {
+      ...mapGetters({
+        authUser: 'authUser'
+      }),
     },
     watch: {
       '$route': 'fetchData',
@@ -243,7 +248,8 @@
           if(this.authUser.role == 'contact' && this.authUser.id != data.contact.id) {
             vm.$notify({
               title: "Please Log In",
-              text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again."
+              text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again.",
+              group: 'auth'
             })
           } else {
             this.loading = false
@@ -270,7 +276,12 @@
 
           document.title = this.project.title + " | Collateral Express"
         } else {
-          bus.$emit('flashEmit', "We couldn/'t get your project.")
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: "We couldn/'t get your project.",
+            group: 'app'
+          })
+
           this.$router.push({ name: 'list' })
           console.log(error)
         }

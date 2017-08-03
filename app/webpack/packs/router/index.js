@@ -1,5 +1,7 @@
 import Vue from 'vue'
-import Axios from 'axios'
+import axios from 'axios'
+import {store} from '../store'
+
 import bus from '../bus'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
@@ -34,12 +36,19 @@ const authRequest = function(to, from, next) {
     }
   }
 
-  Axios.get('/api/v1/authenticate.json')
+  axios.get('/api/v1/authenticate.json')
   .then(function (response) {
     if (response.data.user) {
-      bus.$emit('authEmit', response.data.user.id, response.data.role)
+      store.dispatch({
+        type: 'setAuth',
+        id: response.data.user.id,
+        role: response.data.role
+      })
+
       if(response.data.role == 'contact') {
-        bus.$emit('contactSessionEmit', response.data.user.id)
+        store.dispatch('setContactSession', response.data.user.id)
+      } else {
+        store.dispatch('setContactSession')
       }
 
       bus.$emit('updateLinks')
@@ -53,6 +62,7 @@ const authRequest = function(to, from, next) {
         next()
       }
     } else {
+      store.dispatch('setContactSession')
       directToLogin()
     }
   }).catch(function (error) {

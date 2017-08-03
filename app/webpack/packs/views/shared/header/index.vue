@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../../bus"
 import Toggle from './components/navToggle.vue'
 import MobileNav from './components/mobileNav.vue'
@@ -30,7 +31,6 @@ export default {
     Toggle,
     MobileNav
   },
-  props: ['authUser'],
   data() {
     return {
       overlay: false,
@@ -60,6 +60,7 @@ export default {
       links: []
     }
   },
+  computed: mapGetters(['authUser']),
   watch: {
     '$route': function() {
       this.overlayHeader()
@@ -83,12 +84,12 @@ export default {
       this.nav_visible = !this.nav_visible
     },
     updateLinks() {
-      if(this.authUser.role == 'admin') {
+      if(this.$store.state.authUser.role == 'admin') {
         var admin_links = [...this.default_links]
         admin_links.splice(2, 0, { name: "All Projects", url: "list" })
         admin_links.push( { name: "Profile", url: "account"})
         this.links = admin_links
-      } else if (this.authUser.role == 'contact') {
+      } else if (this.$store.state.authUser.role == 'contact') {
         var contact_links = [...this.default_links]
         contact_links.splice(2, 0, { name: "All Projects", url: "list" })
         contact_links.push( { name: "Profile", url: "contact-profile"})

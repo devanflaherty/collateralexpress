@@ -10,10 +10,7 @@
 
 <script>
   export default {
-    name: 'LoadScreen',
-    data() {
-      return {}
-    }
+    name: 'LoadScreen'
   }
 </script>
 

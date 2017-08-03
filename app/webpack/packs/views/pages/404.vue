@@ -15,17 +15,13 @@
 </template>
 
 <script>
-import bus from "../../bus"
 import HeroHeader from "../shared/heroHeader.vue"
 
 export default {
   name: 'fourohfour',
   components: {
     HeroHeader
-  },
-  data() {
-    return {}
-  },
+  }
 }
 
 </script>

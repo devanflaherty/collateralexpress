@@ -1,9 +1,9 @@
 <template>
-  <div class="reveal" :class="reveal.type" id="reveal" data-reveal data-close-on-click="false" data-animation-in="fade-in" data-animation-out="fade-out">
-    <h1 v-if="reveal.type == 'new'">Project '{{reveal.title}}' saved!</h1>
-    <h1 v-else-if="reveal.type == 'update'">Project '{{reveal.title}}' Updated!</h1>
-    <h1 v-else-if="reveal.type == 'notice'">{{reveal.title}}</h1>
-    <h1 v-else-if="reveal.type == 'delete'">Are you sure you want to delete {{reveal.title}}!</h1>
+  <div class="reveal" :class="reveal.reveal_type" id="reveal" data-reveal data-close-on-click="false" data-animation-in="fade-in" data-animation-out="fade-out">
+    <h1 v-if="reveal.reveal_type == 'new'">Project '{{reveal.title}}' saved!</h1>
+    <h1 v-else-if="reveal.reveal_type == 'update'">Project '{{reveal.title}}' Updated!</h1>
+    <h1 v-else-if="reveal.reveal_type == 'notice'">{{reveal.title}}</h1>
+    <h1 v-else-if="reveal.reveal_type == 'delete'">Are you sure you want to delete {{reveal.title}}!</h1>
     <h1 v-else>{{reveal.title}} Error</h1>
 
     <div v-if="reveal.msg">
@@ -14,12 +14,12 @@
       <p>We're sorry, looks like you found a bug we have yet to have squashed.</p>
     </div>
 
-    <div v-if="reveal.type == 'new' || reveal.type == 'update'">
+    <div v-if="reveal.reveal_type == 'new' || reveal.reveal_type == 'update'">
       <router-link :to="{name: 'show', params: { id: reveal.project_id}}" class="button" data-close>View Project</router-link>
       <router-link :to="{name: 'list'}" class="button" data-close>All Projects</router-link>
     </div>
 
-    <button v-if="reveal.type == 'delete'" @click="deleteEmit" class="button alert">Delete</button>
+    <button v-if="reveal.reveal_type == 'delete'" @click="deleteRequest(reveal.project_id)" class="button alert">Delete</button>
 
 
     <button v-if="!reveal.project_id" class="close-button" data-close aria-label="Close modal" type="button">
@@ -29,19 +29,20 @@
 </template>
 
 <script>
-  import bus from '../../bus'
-
+  import { mapGetters } from 'vuex'
+  
   export default {
     name: 'Reveal',
-    data() {
-      return {}
+    computed: {
+      ...mapGetters({
+        reveal: 'reveal'
+      })
     },
-    props: ['reveal'],
     methods: {
-      deleteEmit() {
-        bus.$emit('deleteRequest')
+      deleteRequest(id) {
+        this.$store.dispatch('deleteProject', id)
       }
-    },
+    }
   }
 </script>
 

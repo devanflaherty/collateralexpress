@@ -99,6 +99,9 @@ export default {
   },
   mounted() {
     this.veeErrors.clear()
+    if(this.model) {
+      this.floatLabel()
+    }
   }
 }
 

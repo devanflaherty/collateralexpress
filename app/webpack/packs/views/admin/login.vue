@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../bus"
 import axios from "axios"
 
@@ -55,7 +56,6 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['authUser'],
   data() {
     return {
       loading: false,
@@ -67,6 +67,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser'
+    }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },

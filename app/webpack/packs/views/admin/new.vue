@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../bus"
 import axios from "axios"
 
@@ -115,7 +116,6 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['authUser'],
   data() {
     return {
       loading: false,
@@ -132,6 +132,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser'
+    }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
@@ -162,7 +165,11 @@ export default {
           }
         })
         .then(response => {
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: response.data.flash[0][1],
+            group: 'app'
+          })
         })
         .catch(error => {
           alert('error')

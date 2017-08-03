@@ -13,7 +13,7 @@
           </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
           <div v-if="projects.length < 1">
-            <h3>{{message}}</h3>
+            <h3>{{query_message}}</h3>
             <p>Please try a different filter.</p>
           </div>
         </div>
@@ -67,6 +67,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import axios from 'axios'
   import bus from '../../bus'
   import Login from '../shared/login/index.vue'
@@ -76,13 +77,11 @@
     components: {
       Login
     },
-    props: ['contact-session', 'authUser'],
     data() {
       return {
         loading: false,
         validUser: false,
         login: false,
-        message: '',
         projects: [],
         pagination: {
           current: null,
@@ -90,12 +89,16 @@
           prev: null,
           total: null
         },
+        query_message: "",
         resource_url: '/api/v1/projects.json',
         page: '',
         scope: null
       }
     },
     computed: {
+      ...mapGetters({
+        authUser: 'authUser'
+      }),
       queryNext() {
         if(this.scope) {
           return {
@@ -178,7 +181,7 @@
       setData(data, err) {
         this.loading = false
         this.projects = data.projects
-        this.message = "Succesfully found all projects."
+        this.query_message = "Succesfully found all projects."
 
         this.pagination.next = data.next_page
         this.pagination.prev = data.prev_page
@@ -186,9 +189,9 @@
         this.pagination.total = data.last_page
         if(data.projects.length < 1) {
           if(this.scope) {
-            this.message = "You have no '" + this.scope + "' projects."
+            this.query_message = "You have no '" + this.scope + "' projects."
           } else {
-            this.message = "You have no saved projects."
+            this.query_message = "You have no saved projects."
           }
         }
       },
@@ -198,11 +201,15 @@
         axios.delete('/projects/' + project.id, {
           project : project,
         })
-        .then(function (response) {
+        .then(response => {
           // var filteredProjects = vm.projects.filter(p => p.id !== project.id)
           // vm.projects = filteredProjects
 
-          bus.$emit('flashEmit', response.data.flash[0][1])
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: response.data.flash[0][1],
+            group: 'app'
+          })
 
           this.queryProjects()
         })

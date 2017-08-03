@@ -75,9 +75,20 @@
           user: this.user
         })
         .then(response => {
-          console.log(response.data)
-          bus.$emit('authEmit', response.data.user.id, response.data.role)
-          bus.$emit('flashEmit', 'Login Status', response.data.flash[0][1])
+          vm.$store.dispatch({
+            type: 'setAuth',
+            id: response.data.user.id,
+            role: response.data.role
+          })
+
+          vm.$store.dispatch({
+            type: 'setFlash',
+            title: 'Login Status',
+            text: response.data.flash[0][1],
+            group: 'auth'
+          })
+
+          this.$store.dispatch('toggleLogin', false)
         })
         .catch(error => {
           alert('error')

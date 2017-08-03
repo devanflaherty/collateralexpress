@@ -1,10 +1,6 @@
 <template>
   <section id="contactApp" class="pad">
-    <div id="login" v-if="!loading && !validUser">
-      <Login :project-user="contact.id"></Login>
-    </div>
-    <transition v-else name="fade" appear>
-      <div class="row align-center">
+      <div v-if="!showLogin" class="row align-center" key="profile">
         <div class="columns small-11 medium-9 large-6">
           <div class="flex space-between">
             <div>
@@ -97,12 +93,15 @@
           </form>
         </div>
       </div>
-    </transition>
+      <div id="login" v-else-if="!loading && showLogin" key="login">
+        <Login :project-user="contact.id"></Login>
+      </div>
 
   </section>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from "../../bus"
 import axios from "axios"
 
@@ -121,11 +120,9 @@ export default {
     Login,
     FloatLabel
   },
-  props: ['authUser'],
   data() {
     return {
-      loading: false,
-      validUser: false,
+      loading: true,
       contact: {
         first_name: null,
         last_name: null,
@@ -137,6 +134,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      authUser: 'authUser',
+      showLogin: 'showLogin'
+    }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
@@ -166,13 +167,13 @@ export default {
         if(this.authUser.role == 'contact') {
           // If they are contact show them their info
           axios.get('/api/v1/contacts/' + this.authUser.id + '.json').then( response => {
-            vm.loading = false
-            vm.contact = response.data
+            this.loading = false
+            this.contact = response.data
 
-            document.title = data.contact.full_name + " | Collateral Express"
+            document.title = response.data.full_name + " | Collateral Express"
           }).catch(error => {
             // Push to 404
-            vm.$router.push({ name: 'list' })
+            this.$router.push({ name: 'list' })
             console.log(error)
           })
 
@@ -192,13 +193,13 @@ export default {
         } else if (this.authUser.role == 'admin') {
           // If admin give them the ability to edit the contact
           axios.get('/api/v1/contacts/' + cid + '.json').then( response => {
-            vm.loading = false
-            vm.contact = response.data
+            this.loading = false
+            this.contact = response.data
 
-            document.title = "Edit " + data.contact.full_name + " | Collateral Express"
+            document.title = "Edit " +  response.data.full_name + " | Collateral Express"
           }).catch(error => {
             // Push to 404
-            vm.$router.push({ name: 'list' })
+            this.$router.push({ name: 'list' })
             console.log(error)
           })
         } else {
@@ -229,38 +230,73 @@ export default {
           console.log('submitted')
           //** if is a new project but contact exist
           axios.post('/contacts/', axiosConfig)
-          .then(function (response) {
+          .then(response => {
             // IF SUCCESFUll
-            bus.$emit('messageEmit', vm.contact.full_name + " has been saved!")
-            bus.$emit('showReveal','contact', response.data.full_name, 'congratulations, you just created a contact.', vm.contact.id);
+            this.$store.dispatch('setMessage', response.data.full_name + " has been saved!")
+            this.$store.dispatch({
+              type: 'setReveal',
+              reveal_type: 'contact',
+              title: response.data.full_name,
+              msg: 'congratulations, you just created a contact.',
+              pid: response.data.id
+            })
 
-            bus.$emit('flashEmit', response.data.flash[0][1])
+            this.$store.dispatch({
+              type: 'setFlash',
+              title:response.data.flash[0][1],
+              group: 'app'
+            })
           })
-          .catch(function (error) {
+          .catch(error => {
             // IF THERE ARE ERRORS
-            bus.$emit('showReveal','error', vm.contact.full_name, 'error.message');
+            this.$store.dispatch({
+              type: 'setReveal',
+              reveal_type: 'error',
+              msg: vm.contact.full_name,
+              text: error.message
+            })
           });
         } else {
-          // ** If the project does exist let's update it
+          // ** If the contact does exist let's update it
           axios.patch('/contacts/' + this.contact.id, axiosConfig)
-          .then(function (response) {
-            bus.$emit('messageEmit', vm.contact.full_name + " has been updated!")
-            // And then we will launch the Foundation Reveal
-            bus.$emit('showReveal','update', vm.contact.full_name, 'congratulations, you just updated your contact.', vm.contact.id);
+          .then(response => {
+            this.$store.dispatch('setMessage', response.data.full_name + " has been saved!")
 
-            bus.$emit('flashEmit', response.data.flash[0][1])
+            // And then we will launch the Foundation Reveal
+            this.$store.dispatch({
+              type: 'setReveal',
+              reveal_type: 'update',
+              title: response.data.full_name,
+              msg: 'congratulations, you just updated your contact.',
+              pid: vm.contact.id
+            })
+
+            this.$store.dispatch({
+              type: 'setFlash',
+              title:response.data.flash[0][1],
+              group: 'app'
+            })
           })
-          .catch(function (error) {
+          .catch(error => {
             // If there is an error we show the Foundation Reveal
-            bus.$emit('showReveal','error', vm.contact.full_name, error.message);
-            // and run our error function
-          });
+            this.$store.dispatch({
+              type: 'setReveal',
+              reveal_type: 'error',
+              title: vm.contact.full_name,
+              msg: error.message,
+            })
+          })
         }
       } // validate end
     },
   },
   created() {
     this.fetchData()
+    if(this.authUser.id) {
+      this.$store.dispatch('toggleLogin', false)
+    } else {
+      this.$store.dispatch('toggleLogin', true)
+    }
   },
   mounted() {
     //Listen on the bus for changers to the child components error bag and merge in/remove errors
