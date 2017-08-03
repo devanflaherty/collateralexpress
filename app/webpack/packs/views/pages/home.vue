@@ -20,6 +20,18 @@
         <div class="step">
           <div class="card">
               <div class="step-image">
+                <img src="/assets/icons/search.png" height='70' width='80'>
+              </div>
+              <p>Browse existing assets and find exactly what you need.</p>
+
+              <div class="card-buttons">
+                <a href="#" class="button hollow">Go to Brand Muscle</a>
+              </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card">
+              <div class="step-image">
                 <img src="/assets/icons/steps.png" height='40' width='174'>
               </div>
               <p>Learn what Collateral Express is and how it can it
@@ -39,18 +51,6 @@
 
               <div class="card-buttons">
                 <router-link :to="{name: 'new'}" class="button hollow">Send Requests</router-link>
-              </div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="card">
-              <div class="step-image">
-                <img src="/assets/icons/search.png" height='70' width='80'>
-              </div>
-              <p>Browse existing assets and find exactly what you need.</p>
-
-              <div class="card-buttons">
-                <a href="#" class="button hollow">Go to Brand Muscle</a>
               </div>
           </div>
         </div>
