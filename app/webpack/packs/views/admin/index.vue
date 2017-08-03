@@ -51,6 +51,8 @@ export default {
       .then(response => {
         alert('success')
         this.$router.push({name: 'home'})
+        bus.$emit('authEmit')
+        bus.$emit('contactSessionEmit')
         bus.$emit('flashEmit', "Succefully signed out.")
       })
       .catch(error => {

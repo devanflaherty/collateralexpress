@@ -23,6 +23,17 @@ import AdminCreate from '../views/admin/new.vue'
 import AdminList from '../views/admin/list.vue'
 
 const authRequest = function(to, from, next) {
+  const directToLogin = function() {
+    if(
+      to.name == 'account' ||
+      to.name == 'edit-admin' ||
+      to.name == 'list-admin' ||
+      to.name == 'new-admin'
+    ) {
+      router.push({name: 'login'})
+    }
+  }
+
   Axios.get('/api/v1/authenticate.json')
   .then(function (response) {
     if (response.data.user) {
@@ -37,26 +48,12 @@ const authRequest = function(to, from, next) {
       if(response.data.role == 'admin' && to.name == 'login') {
         router.push({name: 'account'})
       } else if(response.data.role != 'admin') {
-        if(
-          to.name == 'account' ||
-          to.name == 'edit-admin' ||
-          to.name == 'list-admin' ||
-          to.name == 'new-admin'
-        ) {
-          router.push({name: 'login'})
-        }
+        directToLogin()
       } else {
         next()
       }
     } else {
-      if(
-        to.name == 'account' ||
-        to.name == 'edit-admin' ||
-        to.name == 'list-admin' ||
-        to.name == 'new-admin'
-      ) {
-        router.push({name: 'login'})
-      }
+      directToLogin()
     }
   }).catch(function (error) {
     console.log('Trouble authentication user.')
@@ -72,7 +69,7 @@ const router = new VueRouter ({
     name: 'home',
     path:'/',
     component: Home,
-    meta: {title: 'Home'}
+    meta: {title: 'Home', header:true}
   },
   {
     name: 'how',

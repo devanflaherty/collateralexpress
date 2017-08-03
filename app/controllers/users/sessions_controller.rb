@@ -23,6 +23,9 @@ class Users::SessionsController < Devise::SessionsController
   # DELETE /resource/sign_out
   def destroy
     signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
+    if cookies[:current_contact_id]
+      cookies.delete :current_contact_id
+    end
     respond_to do |format|
       format.json  { render json: {flash: "success"} }
     end

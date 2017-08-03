@@ -1,8 +1,11 @@
 <template>
-  <div id="home" v-once>
+  <div id="home">
 
     <HeroHeader>
-      <div class="rellax-image" style="background-image: url(http://collateralexpress.s3.amazonaws.com/img/welcome-hero.png)"></div>
+      <transition name="fade" in-out>
+        <div key="fade" class="rellax-image fade" v-if="fadeHero" :style="'background-image: url(' + fadeHero + ')'"></div>
+        <div key="hero" id="hero" class="rellax-image" v-else :style="'background-image: url(' + selectedHero + ')'"></div>
+      </transition>
     </HeroHeader>
 
     <section id="homeSteps">
@@ -86,8 +89,44 @@ export default {
     HeroHeader
   },
   data() {
-    return {}
+    return {
+      selectedHero: "",
+      fadeHero: "",
+      heroImages: [
+        "http://collateralexpress.s3.amazonaws.com/img/welcome-hero.png"
+      ]
+    }
   },
+  created() {
+    var vm = this
+    if(vm.heroImages.length > 1) {
+      var randomImage = Math.floor(Math.random() * vm.heroImages.length);
+      this.selectedHero = this.heroImages[randomImage]
+
+      setInterval(function() {
+        vm.fadeHero = vm.selectedHero
+
+        setTimeout(function(){
+          randomImage = Math.floor(Math.random() * vm.heroImages.length);
+          vm.selectedHero = vm.heroImages[randomImage]
+          vm.fadeHero = null
+        }, 1)
+
+      }, 30000)
+    } else {
+      vm.selectedHero = vm.heroImages[0]
+    }
+  }
 }
 
 </script>
+
+<style scoped lang="scss">
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s ease;
+}
+.fade-enter, .fade-leave-to
+/* .component-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>
