@@ -1,40 +1,42 @@
 Rails.application.routes.draw do
-  root 'pages#index'
+  root 'app#index'
 
   devise_for :users,
-    path: 'account',
-    path_names: {
-      sign_in: 'login',
-      sign_out: 'logout',
-      password: 'password',
-      confirmation: 'confirm',
-      sign_up: 'signup'
+    controllers: {
+      sessions: 'users/sessions',
+      registrations: 'users/registrations'
     }
 
-  resources :projects, :except => [:index, :new, :edit, :show]
-  resources :contacts, :except => [:new, :show]
-  post 'contacts/clear', to: 'contacts#clear', method: :post
-  post 'contacts/login', to: 'contacts#login', method: :post
-  get 'authenticate', to: 'authenticates#index'
+  devise_scope :user do
+    delete 'users/:id', to: 'users/registrations#destroy_user', method: :delete
+  end
 
+  resources :projects, :except => [:index, :new, :edit, :show]
+  resources :contacts, :except => [:index, :new, :edit, :show]
   resources :media, only: [:create, :delete, :destroy]
 
-  # Static Page routes
-  get '/how-it-works', to: 'pages#howItWorks'
-  get '/faq', to: 'pages#faq'
-  get '/gallery', to: 'pages#gallery'
-
-  # API
+  ##-------------------------------------------------------##
+  ## API Resources                                         ##
+  ##-------------------------------------------------------##
   namespace :api do
     namespace :v1 do
-      resources :application
-      resources :users
+      resources :users, :except => [:new, :edit, :create, :update, :destroy]
       resources :contacts
       resources :projects
     end
   end
 
-  get '*path', to: 'projects#index', constraints: ->(request) do
+  ##-------------------------------------------------------##
+  ## Custom Routes                                         ##
+  ##-------------------------------------------------------##
+  post 'contacts/clear', to: 'contacts#clear', method: :post
+  post 'contacts/login', to: 'contacts#login', method: :post
+  get 'api/v1/authenticate', to: 'api/v1/authenticates#index'
+
+  ##-------------------------------------------------------##
+  ## Route to enable Vue Routes                            ##
+  ##-------------------------------------------------------##
+  get '*path', to: 'app#index', constraints: ->(request) do
     !request.xhr? && request.format.html?
   end
 

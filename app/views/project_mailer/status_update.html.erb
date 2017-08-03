@@ -9,7 +9,7 @@
 <h3>There has been a status update</h3>
 <h1>'<%= @project.title %>' has been set to <strong><%= @project.status %></strong></h1>
 
-<p>The team assigned to your project has updated it's status. If you have any questions about the status of your project please get in contact with <a href="mailto:<%= @user.email %>"><%= @user.full_name %></a>.</p>
+<p>The team assigned to your project has updated it's status. If you have any questions about the status of your project please get in contact with <a href="mailto:<%= @project.user.email %>"><%= @project.user.full_name %></a>.</p>
 
 <a href="http://localhost:3000/project/<%= @project.slug %>"
   style="display:block; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; background: #EB0183; background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>

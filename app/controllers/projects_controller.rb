@@ -36,7 +36,6 @@ class ProjectsController < ApplicationController
     respond_to do |format|
       if @project.update_attributes(project_params)
         if @project.status != status
-          puts "changed"
           ProjectMailer.status_update(@project).deliver_later
         end
         session[:current_contact_id] = @project.contact_id
@@ -59,7 +58,6 @@ class ProjectsController < ApplicationController
     @project.destroy
     flash.now[:notice] = "Project '#{@project.title}' deleted succesfully."
     respond_to do |format|
-      format.html { render 'index'}
       format.json { render json: {project: @project, flash: flash} }
     end
   end

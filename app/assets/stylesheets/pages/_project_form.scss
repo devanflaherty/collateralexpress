@@ -2,8 +2,8 @@
   .form-panel {
     header {
       padding: 1.5rem 1rem 0;
-      @include breakpoint(medium) {
-        padding: 2rem 4rem 0;
+      @include breakpoint(large) {
+        padding: 2rem 3rem 0;
       }
       h2 {
         color: $white;
@@ -17,8 +17,8 @@
       border: none!important;
       padding: 2rem 1rem;
       margin: 0;
-      @include breakpoint(medium) {
-        padding: 2rem 4rem;
+      @include breakpoint(large) {
+        padding: 2rem 3rem;
       }
     }
 

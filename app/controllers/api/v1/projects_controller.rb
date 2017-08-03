@@ -14,6 +14,9 @@ class Api::V1::ProjectsController < ApplicationController
 
   def new
     @project = Project.new
+    @project[:status] = "open"
+    @project[:title] = nil
+    @project[:deliverables] = "0"
   end
 
   def edit
@@ -26,9 +29,7 @@ class Api::V1::ProjectsController < ApplicationController
   private
 
     def query_projects
-      if user_signed_in?
-        @authUser = current_user
-      elsif cookies[:current_contact_id]
+      if cookies[:current_contact_id]
         @authUser = Contact.find_by_id(cookies[:current_contact_id])
       end
 
@@ -41,16 +42,36 @@ class Api::V1::ProjectsController < ApplicationController
       end
       if query[:q]
         if query[:q] == "flagged"
-          @projects = @authUser.projects.flagged.page(page).per(10)
+          if @authUser
+            @projects = @authUser.projects.flagged.page(page).per(10)
+          else
+            @projects = Project.flagged.page(page).per(10)
+          end
         elsif query[:q] == "complete"
-          @projects = @authUser.projects.complete.page(page).per(10)
+          if @authUser
+            @projects = @authUser.projects.complete.page(page).per(10)
+          else
+            @projects = Project.complete.page(page).per(10)
+          end
         elsif query[:q] == "archived"
-          @projects = @authUser.projects.archived.page(page).per(10)
+          if @authUser
+            @projects = @authUser.projects.archived.page(page).per(10)
+          else
+            @projects = Project.archived.page(page).per(10)
+          end
         elsif query[:q] == "duefirst"
-          @projects = @authUser.projects.due_first.page(page).per(10)
+          if @authUser
+            @projects = @authUser.projects.due_first.page(page).per(10)
+          else
+            @projects = Project.due_first.page(page).per(10)
+          end
         end
       else
-        @projects = @authUser.projects.page(page).per(10)
+        if @authUser
+          @projects = @authUser.projects.page(page).per(10)
+        else
+          @projects = Project.page(page).per(10)
+        end
       end
       @pagination = {
         current_page: @projects.current_page,

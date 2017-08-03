@@ -7,6 +7,7 @@ class AuthenticatesController < ApplicationController
     else
       @user = {}
     end
+    
     if cookies[:current_contact_id]
       @contact = Contact.find(cookies[:current_contact_id])
     else

@@ -77,12 +77,14 @@
         @include flex-grid-column(4);
       }
       @include breakpoint(large){
+        display: flex;
+        flex-direction: column;
         @include flex-grid-column(3);
       }
       .card {
+        justify-content: space-between;
         position: relative;
         background: white;
-        height: 100%;
         padding: 2rem;
         border: none;
         border-radius: 6px;
@@ -104,8 +106,6 @@
           }
         }
         .card-buttons {
-          position: absolute;
-          bottom: 2rem;
           left: 0;
           width: 100%;
           text-align: center;

@@ -10,6 +10,8 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
+  validates_confirmation_of :password
+
   scope :agency, -> { where(branch: 'ZoomPop') }
   scope :sorted, -> { order(email: "ASC") }
   scope :newest_first, -> { order(created_at: "DESC") }
