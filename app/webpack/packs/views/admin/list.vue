@@ -3,7 +3,7 @@
     <transition name="fade">
       <LoadScreen v-if="loading"></LoadScreen>
     </transition>
-    <div id="accountList" v-if="validUser">
+    <div id="accountList">
       <div class="row">
         <div class="columns">
           <h2>Users</h2>
@@ -77,7 +77,6 @@
     data() {
       return {
         loading: false,
-        validUser: false,
         login: false,
         message: '',
         users: [],
@@ -93,18 +92,6 @@
       ...mapGetters({
         authUser: 'authUser'
       }),
-    },
-    watch: {
-      'authUser.id': function(id) {
-        if(id != null) {
-          this.validUser = true
-        }
-      },
-      validUser(status) {
-        if(this.validUser == true && this.users.length == 0) {
-          this.fetchData()
-        }
-      }
     },
     methods: {
       fetchData() {
@@ -146,9 +133,7 @@
       },
     },
     mounted(){
-      if(this.authUser.id) {
-        this.validUser = true
-      }
+
     },
     beforeRouteEnter(to, from, next) {
       // var page = to.query.page

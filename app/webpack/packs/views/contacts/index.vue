@@ -1,14 +1,14 @@
 <template>
   <section id="contactApp" class="pad">
-      <div v-if="!showLogin" class="row align-center" key="profile">
+      <div v-if="authUser.role != 'public'" class="row align-center" key="profile">
         <div class="columns small-11 medium-9 large-6">
           <div class="flex space-between">
             <div>
-              <h4 v-if="authUser.role == 'contact'">Account Info</h4>
-              <h4 v-else-if="authUser.role == 'admin'">Edit Contact</h4>
+              <h4 v-if="roleIs('contact')">Account Info</h4>
+              <h4 v-else-if="roleIs('admin')">Edit Contact</h4>
               <h2 class="banner">{{contact.full_name}}</h2>
             </div>
-            <button @click="clearCookie" class="self-align-bottom" v-if="authUser.role == 'contact'">Logout</button>
+            <button @click="clearCookie" class="self-align-bottom" v-if="roleIs('contact')">Logout</button>
           </div>
 
           <form v-on:submit.prevent="onSubmit" id="form" class="callout">
@@ -93,7 +93,7 @@
           </form>
         </div>
       </div>
-      <div id="login" v-else-if="!loading && showLogin" key="login">
+      <div id="login" v-else-if="!loading && authUser.role == 'public'" key="login">
         <Login :project-user="contact.id"></Login>
       </div>
 
@@ -123,20 +123,12 @@ export default {
   data() {
     return {
       loading: true,
-      contact: {
-        first_name: null,
-        last_name: null,
-        full_name: null,
-        email: null,
-        phone: null,
-        branch: null,
-      }
     }
   },
   computed: {
     ...mapGetters({
       authUser: 'authUser',
-      showLogin: 'showLogin'
+      contact: 'user',
     }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
@@ -149,11 +141,18 @@ export default {
     }
   },
   methods: {
+    roleIs(role) {
+      if(role == this.authUser.role) {
+        return true
+      } else {
+        return false
+      }
+    },
     clearCookie() {
       axios.post('/contacts/clear')
         .then( response => {
           console.log("cleared contact")
-          window.location.href = "/"
+          this.$router.push({name: 'home'})
         }).catch(error => {
           console.log(error)
         })
@@ -168,7 +167,7 @@ export default {
           // If they are contact show them their info
           axios.get('/api/v1/contacts/' + this.authUser.id + '.json').then( response => {
             this.loading = false
-            this.contact = response.data
+            this.$store.dispatch('setUser', response.data)
 
             document.title = response.data.full_name + " | Collateral Express"
           }).catch(error => {
@@ -194,7 +193,7 @@ export default {
           // If admin give them the ability to edit the contact
           axios.get('/api/v1/contacts/' + cid + '.json').then( response => {
             this.loading = false
-            this.contact = response.data
+            this.$store.dispatch('setUser', response.data)
 
             document.title = "Edit " +  response.data.full_name + " | Collateral Express"
           }).catch(error => {
@@ -292,17 +291,6 @@ export default {
   },
   created() {
     this.fetchData()
-    if(this.authUser.id) {
-      this.$store.dispatch('toggleLogin', false)
-    } else {
-      this.$store.dispatch('toggleLogin', true)
-    }
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('contactPropSet', (key, val) => {
-      this.$set(this.contact, key, val)
-    })
   }
 }
 </script>

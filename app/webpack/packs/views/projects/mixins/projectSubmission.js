@@ -80,7 +80,6 @@ const ProjectSubmission = {
       }
       if (!this.project.id) {
         // if this is a new project
-        console.log(this.project)
         axios.post('/projects/', axiosConfig)
         .then(function (response) {
           // IF SUCCESFUll

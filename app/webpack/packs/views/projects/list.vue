@@ -1,7 +1,7 @@
 <template>
   <div>
     <LoadScreen v-if="loading"></LoadScreen>
-    <section id="projectList" class="pad-small" v-if="validUser">
+    <section id="projectList" class="pad-small" v-if="authUser.id">
       <div class="row">
         <div class="columns">
           <h2>Project Requests</h2>
@@ -60,7 +60,7 @@
       </div>
     </section>
 
-    <div id="login" v-if="!loading && login">
+    <div id="login" v-if="!loading && authUser.role == 'public'">
       <Login></Login>
     </div>
   </div>
@@ -80,8 +80,6 @@
     data() {
       return {
         loading: false,
-        validUser: false,
-        login: false,
         projects: [],
         pagination: {
           current: null,
@@ -130,20 +128,6 @@
         this.scope = this.$route.query.filter
         if(!this.$route.query.filter) {
           this.scope = ""
-        }
-      },
-      'authUser.id': function(id) {
-        if(id != null) {
-          this.validUser = true
-        } else {
-          this.login = true
-        }
-      },
-      validUser(status) {
-        if(this.validUser == true && this.projects.length == 0) {
-          this.queryProjects()
-        } else {
-          this.login = true
         }
       }
     },
@@ -217,13 +201,6 @@
           console.log(error)
         });
       },
-    },
-    mounted(){
-      if(this.authUser.id) {
-        this.validUser = true
-      } else {
-        this.login = true
-      }
     },
     beforeRouteEnter(to, from, next) {
       var page = to.query.page

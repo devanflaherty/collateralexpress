@@ -119,7 +119,6 @@ export default {
   data() {
     return {
       loading: false,
-      validUser: false,
       user: {
         id: null,
         first_name: null,
@@ -137,13 +136,6 @@ export default {
     }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    },
-  },
-  watch: {
-    'authUser.id': function() {
-      if(this.authUser.role == 'admin' && this.authUser.id) {
-        this.validUser = true
-      }
     },
   },
   methods: {

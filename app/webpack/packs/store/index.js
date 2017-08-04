@@ -2,11 +2,20 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router'
 import axios from 'axios'
-import Notifications from 'vue-notification'
-Vue.use(Notifications)
 Vue.use(Vuex)
 
+// modules
+import {projectModule} from './projectModule'
+import {contactModule} from './contactModule'
+import {userModule} from './userModule'
+
+
 export const store = new Vuex.Store({
+  modules: {
+    project: projectModule,
+    contact: contactModule,
+    user: userModule
+  },
   state: {
     authUser: {
       id: null,
@@ -21,7 +30,7 @@ export const store = new Vuex.Store({
       project_id: null
     },
     contactSession: null,
-    showLogin: false,
+    validUser: false,
   },
   getters: {
     authUser(state) {
@@ -39,8 +48,8 @@ export const store = new Vuex.Store({
     contactSession(state) {
       return state.contactSession
     },
-    showLogin(state) {
-      return state.showLogin
+    validUser(state) {
+      return state.validUser
     }
   },
   mutations: {
@@ -64,8 +73,8 @@ export const store = new Vuex.Store({
     setContactSession(state, id) {
       state.contactSession = id
     },
-    toggleLogin(state, bool) {
-      state.showLogin = bool
+    toggleValidUser(state, bool) {
+      state.validUser = bool
     }
   },
   actions: {
@@ -73,12 +82,16 @@ export const store = new Vuex.Store({
     setAuth({commit}, payload) {
       if(payload) {
         commit('setAuth', payload)
+        if(payload.role == 'admin') {
+          commit('toggleValidUser', true)
+        }
       } else {
         var emptyAuth = {
           id: null,
-          role: null
+          role: 'public'
         }
         commit('setAuth', emptyAuth)
+        commit('toggleValidUser', false)
       }
     },
     setContactSession({commit}, id) {
@@ -117,25 +130,18 @@ export const store = new Vuex.Store({
       commit('setReveal', emptyReveal)
       $('#reveal').foundation('close');
     },
-    toggleLogin({commit}, bool) {
-      commit('toggleLogin', bool)
-    },
-
-    // Project Actions
-    deleteProject(context, id) {
-      axios.delete('/projects/' + id)
-      .then(function (response) {
-        context.dispatch('closeReveal')
-        context.dispatch('setFlash', response.data.flash[0][1])
-
-        // If Delete is succesfull we route to the list page
-        router.push({ name: 'list' })
-      })
-      .catch(function (error) {
-        // if it fails we just console log an error for now
-        console.log(error)
-      });
-
+    checkValidUser({commit, state}, id) {
+      if(state.authUser.role == 'admin') {
+        commit('toggleValidUser', true)
+      } else if (state.authUser.role == 'contact') {
+        if(state.authUser.id == id) {
+          commit('toggleValidUser', true)
+        } else {
+          commit('toggleValidUser', false)
+        }
+      } else {
+        commit('toggleValidUser', false)
+      }
     }
   }
 })

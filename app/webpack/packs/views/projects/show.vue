@@ -1,7 +1,7 @@
 <template>
   <div>
     <hr class="no-margin">
-    <section id="projectShow" v-if="validUser == true">
+    <section id="projectShow" v-if="validUser">
       <LoadScreen v-if="loading"></LoadScreen>
       <div class="row expanded small-collapse">
         <!-- Project Info -->
@@ -38,14 +38,14 @@
             {{project.legal}}
           </div>
 
-          <div class="files pad-small pad-in-small white-bg" v-if="project_media != ''">
+          <div class="files pad-small pad-in-small white-bg" v-if="projectMedia != ''">
             <div class="row">
               <div class="columns">
                 <h3>Files</h3>
               </div>
             </div>
             <ul id="fileList" class="row small-up-2 medium-up-3 large-up-4">
-              <li class="column" v-for="media in project_media">
+              <li class="column" v-for="media in projectMedia">
 
                 <div class="card">
                   <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.thumb.url + ')' }">
@@ -151,7 +151,6 @@
   import { mapGetters } from 'vuex'
   import axios from "axios"
   import moment from "moment"
-  import bus from "../../bus.js"
 
   // Mixins
   import DeleteProject from "./mixins/deleteProject.js"
@@ -170,66 +169,28 @@
     data() {
       return {
         loading: false,
-        validUser: false,
-        project: {
-          id: null,
-          title: null,
-          slug: null,
-          user_id: 1,
-          contact_id: null,
-          status: "",
-          description: null,
-          reference: null,
-          tactic: [],
-          due_date: null,
-          existing: false,
-          translation: false,
-          business_unit: null,
-          deliverables: "",
-          target: null,
-          flag: false,
-          archive: false
-        },
         createDate: "",
         dueDate: "",
-        project_media: [],
-        contact: {},
         dzUpload: false,
         error: null
       }
     },
     computed: {
       ...mapGetters({
-        authUser: 'authUser'
+        authUser: 'authUser',
+        project: 'project',
+        projectMedia: 'projectMedia',
+        contact: 'contact',
+        validUser: 'validUser'
       }),
     },
     watch: {
       '$route': 'fetchData',
-      'authUser.id': function(id) {
-        if(this.authUser.role == 'admin') {
-          this.validUser = true
-        } else if (this.authUser.role == 'contact') {
-          this.validateUser(id)
-        }
-      },
       'contact.id': function(id) {
-        if (this.authUser.role == 'contact') {
-          this.validateUser(this.authUser.id)
-        }
+        this.$store.dispatch('checkValidUser', id)
       },
-      validUser(status) {
-        if(this.validUser == true) {
-          this.fetchData()
-        }
-      }
     },
     methods: {
-      validateUser(id) {
-        if(id == this.contact.id && id != null) {
-          this.validUser = true
-        }
-      },
-
       fetchData() {
         this.loading = true
         axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
@@ -253,28 +214,35 @@
             })
           } else {
             this.loading = false
-            this.validUser = true
-            this.project = data.project
-            this.project_media = data.project_media.medias
-            this.contact = data.contact
+
+            this.$store.dispatch('setProject', data.project)
+            this.$store.dispatch('setProjectMedia', data.project_media.medias)
+            this.$store.dispatch('setContact', data.contact)
 
             this.createDate = moment(data.project.created_at).format("MMM Do YYYY")
             if(data.project.due_date != null) {
               this.dueDate = moment(data.project.due_date).format("MMM Do YYYY")
             }
 
-            document.title = this.project.title + " | Collateral Express"
+            document.title = data.project.title + " | Collateral Express"
           }
         } else if (this.authUser.id && err) {
           this.$router.push({ name: 'list' })
           console.log(error)
         } else if (!this.authUser.id && !err) {
           this.loading = false
-          this.$set(vm.project, 'id', data.project.id)
-          this.$set(vm.project, 'title', data.project.title)
+
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            project: {
+              id: data.project.id,
+              title: data.project.title
+            }
+          })
+
           this.$set(vm.contact, 'id', data.contact.id)
 
-          document.title = this.project.title + " | Collateral Express"
+          document.title = data.project.title + " | Collateral Express"
         } else {
           this.$store.dispatch({
             type: 'setFlash',
@@ -286,20 +254,6 @@
           console.log(error)
         }
       }
-    },
-    mounted() {
-      // When we first mount lets see if there is an admin
-      // If so the user is valid and everything is great
-      if(this.authUser.role == 'admin') {
-        this.validUser = true
-      } else if (this.authUser.role == 'contact') {
-        this.validateUser(this.authUser.id)
-      }
-
-      bus.$on('projectPropSet', (key, val) => {
-        this.$set(this.project, key, val)
-      })
-
     },
     beforeRouteEnter (to,from,next) {
       if(to.params.id) {

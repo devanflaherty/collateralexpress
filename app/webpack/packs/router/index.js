@@ -62,6 +62,7 @@ const authRequest = function(to, from, next) {
         next()
       }
     } else {
+      store.dispatch('setAuth')
       store.dispatch('setContactSession')
       directToLogin()
     }

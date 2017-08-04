@@ -59,7 +59,6 @@ export default {
   data() {
     return {
       loading: false,
-      validUser: false,
       user: {
         email: null,
         password: null

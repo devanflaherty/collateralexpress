@@ -123,7 +123,6 @@ export default {
   data() {
     return {
       loading: false,
-      validUser: false,
       user: {
         id: null,
         first_name: null,
@@ -148,7 +147,6 @@ export default {
     '$route': 'fetchData',
     'authUser.id': function() {
       if(this.authUser.role == 'admin' && this.authUser.id) {
-        this.validUser = true
         this.fetchData()
       }
     },
@@ -199,7 +197,6 @@ export default {
       if(userId) {
         axios.get('/api/v1/users/' + userId + '.json').then( response => {
           this.loading = false
-          this.validUser = true
           this.user = response.data
           document.title = "Edit " + this.user.full_name + " | Collateral Express"
 

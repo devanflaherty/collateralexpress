@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
-    <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
-      <li class="column" v-for="media in mediaFiles" v-bind:key="media">
+    <h3 v-if="projectMedia && projectMedia.length > 0">Files</h3>
+    <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="projectMedia && projectMedia.length > 0">
+      <li class="column" v-for="media in projectMedia" v-bind:key="media">
         <div class="card">
 
           <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.url + ')' }">
@@ -42,6 +42,8 @@
 
 
 <script>
+  import { mapGetters } from 'vuex'
+
   import axios from "axios"
   import Dropzone from 'vue2-dropzone'
 
@@ -50,17 +52,14 @@
 
   export default {
     name: 'MediaUploader',
-    props: ['mediaFiles','token', 'project-id'],
+    props: ['token', 'project-id'],
     components: {
       Dropzone
     },
-    data() {
-      return {
-        styles: {
-        }
-      }
-    },
     computed: {
+      ...mapGetters({
+        projectMedia: 'projectMedia',
+      }),
       projectParam() {
         var proj = this.projectId
         if(this.projectId) {
@@ -81,7 +80,7 @@
         axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
             console.log('media updated')
-            bus.$emit("mediaEmit", response.data.project_media.medias)
+            this.$store.dispatch('setProjectMedia', response.data.project_media.medias)
         })
 
         this.$store.dispatch('closeReveal')
@@ -92,7 +91,7 @@
       },
       removeMedia(id) {
         var vm = this
-        var filteredMedia = vm.mediaFiles.filter(m => m.id !== id)
+        var filteredMedia = this.projectMedia.filter(m => m.id !== id)
 
         axios.delete('/media/' + id,{
           utf8 : "✓",
@@ -112,7 +111,7 @@
         projInput.value = pid
         this.processDropzone()
       })
-      if(this.mediaFiles.length > 0) {
+      if(this.projectMedia.length > 0) {
         this.uploader = false
       }
     }
