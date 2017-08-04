@@ -115,9 +115,15 @@ export default {
     Login,
     FloatLabel
   },
+  metaInfo() {
+    return {
+      title: this.$route.meta.title
+    }
+  },
   data() {
     return {
       loading: true,
+      pageTitle: ""
     }
   },
   computed: {
@@ -166,7 +172,7 @@ export default {
             this.loading = false
             this.$store.dispatch('setUser', response.data)
 
-            document.title = response.data.full_name + " | Collateral Express"
+            this.pageTitle = response.data.full_name
           }).catch(error => {
             // Push to 404
             this.$router.push({ name: 'list' })
@@ -192,7 +198,7 @@ export default {
             this.loading = false
             this.$store.dispatch('setUser', response.data)
 
-            document.title = "Edit " +  response.data.full_name + " | Collateral Express"
+            this.pageTitle = "Edit " +  response.data.full_name
           }).catch(error => {
             // Push to 404
             this.$router.push({ name: 'list' })
@@ -287,6 +293,7 @@ export default {
     },
   },
   created() {
+    this.pageTitle = this.$route.meta.title
     this.fetchData()
   }
 }

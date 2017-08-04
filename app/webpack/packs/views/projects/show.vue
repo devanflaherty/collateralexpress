@@ -161,6 +161,11 @@
 
   export default {
     name: 'Show',
+    metaInfo() {
+      return {
+        title: this.pageTitle
+      }
+    },
     components: {
       AdminUpdates,
       Login
@@ -169,6 +174,7 @@
     data() {
       return {
         loading: false,
+        pageTitle: '',
         createDate: "",
         dueDate: "",
         dzUpload: false,
@@ -223,7 +229,7 @@
               this.dueDate = moment(data.project.due_date).format("MMM Do YYYY")
             }
 
-            document.title = data.project.title + " | Collateral Express"
+            this.pageTitle = data.project.title
           }
         } else if (this.authUser.id && err) {
           this.$router.push({ name: 'list' })
@@ -241,7 +247,7 @@
 
           this.$store.dispatch('setContactProperty', ['id', data.contact.id])
 
-          document.title = data.project.title + " | Collateral Express"
+          this.pageTitle = data.project.title
         } else {
           this.$store.dispatch({
             type: 'setFlash',

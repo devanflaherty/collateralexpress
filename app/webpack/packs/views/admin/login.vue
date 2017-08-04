@@ -52,6 +52,11 @@ export default {
   components: {
     FloatLabel
   },
+  metaInfo() {
+    return {
+      title: this.$route.meta.title
+    }
+  },
   data() {
     return {}
   },

@@ -116,9 +116,15 @@ export default {
   components: {
     FloatLabel
   },
+  metaInfo() {
+    return {
+      title: this.pageTitle
+    }
+  },
   data() {
     return {
       loading: false,
+      pageTitle: ""
     }
   },
   computed: {
@@ -173,8 +179,8 @@ export default {
     setData(id) {
       axios.get('/api/v1/users/' + id + '.json').then( response => {
         this.loading = false
+        this.pageTitle = "Update " + response.data.first_name
         this.$store.dispatch('setUser', response.data)
-        document.title = "Edit " + this.user.full_name + " | Collateral Express"
 
       }).catch(error => {
         // Push to 404
@@ -184,6 +190,7 @@ export default {
     }
   },
   created() {
+    this.pageTitle = this.$route.meta.title
     this.fetchData()
   }
 }

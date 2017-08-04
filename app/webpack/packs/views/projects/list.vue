@@ -73,6 +73,11 @@
 
   export default {
     name: 'ProjectList',
+    metaInfo() {
+      return {
+        title: this.$route.meta.title
+      }
+    },
     components: {
       Login
     },

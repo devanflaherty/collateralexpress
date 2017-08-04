@@ -25,6 +25,10 @@ import ContactReveal from "./views/shared/contact.vue"
 
 export default {
   name: 'Project_App',
+  metaInfo: {
+    title: 'Welcome',
+    titleTemplate: '%s | Collateral Express'
+  },
   components: {
     NavHeader,
     AppFooter,

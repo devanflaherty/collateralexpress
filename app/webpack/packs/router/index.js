@@ -197,14 +197,6 @@ const router = new VueRouter ({
 router.beforeEach((to, from, next) => {
   authRequest(to, from, next)
 
-  // Set Title
-  var vueTitle = to.meta.title
-  // if page has a set title do
-  if (vueTitle) {
-    console.log(to.meta.title)
-    document.title = vueTitle + " | Collateral Express"
-  }
-
   next()
 })
 

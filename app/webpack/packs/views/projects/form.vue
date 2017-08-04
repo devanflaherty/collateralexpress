@@ -10,7 +10,7 @@
             <header>
               <div class="row">
                 <div class="columns">
-                  <h2>{{page_title}}</h2>
+                  <h2>{{pageTitle}}</h2>
                   <h5 v-if="project && project.id">{{project.title}}</h5>
                 </div>
               </div>
@@ -267,6 +267,11 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
+  metaInfo() {
+    return {
+      title: this.pageTitle
+    }
+  },
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     Login,
@@ -280,6 +285,7 @@ export default {
   data() {
     return {
       loading: false,
+      pageTitle: '',
       formError: true,
       contactQuery: null,
       tactic_other: '',
@@ -298,10 +304,6 @@ export default {
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
-    page_title() {
-      // We create a property for the page title based on the $route.meta.title
-      return this.$route.meta.title
-    },
     formTouched() {
       return Object.keys(this.fields).filter(key => this.fields[key].touched);
     }
@@ -311,8 +313,6 @@ export default {
       // Watch if route changers
       // If it does we are going to re-fetch the data
       this.fetchData()
-      // Then set the the page title to the new route.meta.title
-      this.page_title = this.$route.meta.title
     },
     tactic_other(other) {
       // When the other_input field has been updated
@@ -377,8 +377,7 @@ export default {
           // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
           // That way we are getting the project.contact rather than contactSession
           this.contactQuery = data.project.contact_id
-
-          document.title = "Edit " + data.project.title + " | Collateral Express"
+          this.pageTitle = "Edit " + data.project.title
         }
       } else if (this.authUser.id && err) {
         this.$router.push({ name: 'new' })
@@ -394,7 +393,7 @@ export default {
           }
         })
 
-        document.title = data.project.title + " | Collateral Express"
+        this.pageTitle = data.project.title
       } else {
         this.$store.dispatch({
           type: 'setFlash',
@@ -409,7 +408,7 @@ export default {
     setNewData(data, err) {
       if(!err) {
         bus.$emit('emptyFloats')
-        document.title = "New Project | Collateral Express"
+        this.pageTitle = "New Project"
 
         this.loading = false
         this.$store.dispatch('setMessage','New Project')
@@ -437,6 +436,9 @@ export default {
     setTactics(tactic) {
       this.$store.dispatch('pushTactic', tactic)
     }
+  },
+  created() {
+    this.$route.meta.title
   },
   mounted() {
     // We set contactQuery to contactSession

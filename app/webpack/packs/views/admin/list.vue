@@ -61,6 +61,11 @@
 
   export default {
     name: 'AdminList',
+    metaInfo() {
+      return {
+        title: this.$route.meta.title
+      }
+    },
     data() {
       return {
         loading: false,

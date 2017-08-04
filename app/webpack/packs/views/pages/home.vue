@@ -84,6 +84,11 @@ import HeroHeader from "../shared/heroHeader.vue"
 
 export default {
   name: 'Home',
+  metaInfo() {
+    return {
+      title: this.$route.meta.title
+    }
+  },
   components: {
     HeroHeader
   },
