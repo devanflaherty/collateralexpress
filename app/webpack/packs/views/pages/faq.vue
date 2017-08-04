@@ -24,7 +24,7 @@
           <p>Click a heading to reveal the answer.</p>
         </div>
         <div class="columns small-8 small-offset-1">
-          <ul class="accordion" data-accordion>
+          <ul id="accordion" class="accordion" data-accordion>
 
             <li v-for="(faq, index) in faqs" class="accordion-item" :class="{'is-active': index === 0}" data-accordion-item>
               <a href="#" class="accordion-title"><h4>{{faq.question}}</h4></a>
@@ -67,6 +67,9 @@ export default {
         }
       ]
     }
+  },
+  mounted() {
+    $('#accordion').foundation();
   }
 }
 
