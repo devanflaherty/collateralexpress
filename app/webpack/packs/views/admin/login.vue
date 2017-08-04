@@ -28,6 +28,7 @@
           :error-text="veeErrors.first('User Password')"
           :attr="user.password"
           obj="user"
+          input-type="password"
           label="User Password"
           propKey="password"></FloatLabel>
       </div>

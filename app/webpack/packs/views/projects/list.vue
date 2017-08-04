@@ -166,6 +166,7 @@
       },
 
       setData(data, err) {
+        this.$Progress.finish()
         this.loading = false
         this.projects = data.projects
         this.query_message = "Succesfully found all projects."
@@ -203,6 +204,9 @@
           console.log(error)
         });
       },
+    },
+    created() {
+      this.$Progress.start()
     },
     beforeRouteEnter(to, from, next) {
       var page = to.query.page

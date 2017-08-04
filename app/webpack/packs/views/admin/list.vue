@@ -80,7 +80,8 @@
     },
     computed: {
       ...mapGetters({
-        authUser: 'authUser'
+        authUser: 'authUser',
+        users: 'users'
       }),
       token() {
         return document.getElementsByName('csrf-token')[0].getAttribute('content')
