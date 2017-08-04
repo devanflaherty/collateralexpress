@@ -184,7 +184,6 @@ export default {
 
     //contact methods
     postContact(id) {
-      var vm = this
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: token,
@@ -232,7 +231,6 @@ export default {
 
 
     findContact(email) {
-      var vm = this;
       var found = false
       if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
         this.message = 'Please enter a valid email address'

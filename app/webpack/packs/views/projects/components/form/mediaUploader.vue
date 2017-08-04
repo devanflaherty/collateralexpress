@@ -33,7 +33,7 @@
         <!-- Optional parameters if any! -->
         <input type="hidden" name="utf8" value="✓">
         <input type="hidden" name="authenticity_token" :value="token">
-        <input id="projectId" type="hidden" name="project_id" :value="projectId ? projectId : projectParam">
+        <input id="projectId" type="hidden" name="project_id" :value="project.id">
         <!--<input type="hidden" name="project[title]" :value="project.title"> -->
     </Dropzone>
     <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
@@ -52,20 +52,17 @@
 
   export default {
     name: 'MediaUploader',
-    props: ['token', 'project-id'],
+    props: ['project-id'],
     components: {
       Dropzone
     },
     computed: {
       ...mapGetters({
+        project: 'project',
         projectMedia: 'projectMedia',
       }),
-      projectParam() {
-        var proj = this.projectId
-        if(this.projectId) {
-          proj = this.projectId
-        }
-        return proj
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
       }
     },
     methods: {
@@ -75,7 +72,6 @@
       },
       uploadSuccess() {
         //add transition to state
-        var vm = this
         this.$notify({title: 'File Succesfully added'})
         axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
@@ -90,13 +86,12 @@
         bus.$emit('readyDZ', true)
       },
       removeMedia(id) {
-        var vm = this
         var filteredMedia = this.projectMedia.filter(m => m.id !== id)
 
         axios.delete('/media/' + id,{
           utf8 : "✓",
-          authenticity_token: vm.token,
-          project : vm.project_id
+          authenticity_token: this.token,
+          project : this.project.id
         })
         .then( response => {
           console.log('did it')
