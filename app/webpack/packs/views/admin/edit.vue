@@ -110,10 +110,6 @@ import axios from "axios"
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
-
 export default {
   name: 'Admin_Form',
   mixins: [onValidation],
@@ -145,15 +141,9 @@ export default {
   },
   watch: {
     '$route': 'fetchData',
-    'authUser.id': function() {
-      if(this.authUser.role == 'admin' && this.authUser.id) {
-        this.fetchData()
-      }
-    },
   },
   methods: {
     onSubmit: function () {
-      var vm = this
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
       if (!this.veeErrors.any()) {
@@ -183,9 +173,7 @@ export default {
       }
     },
     fetchData() {
-      this.error = this.post = null
       this.loading = true
-      var vm = this
       var userId = null
 
       if(this.$route.params.id) {
@@ -197,7 +185,7 @@ export default {
       if(userId) {
         axios.get('/api/v1/users/' + userId + '.json').then( response => {
           this.loading = false
-          this.user = response.data
+          this.$store.dispatch('setUser', response.data)
           document.title = "Edit " + this.user.full_name + " | Collateral Express"
 
         }).catch(error => {
@@ -210,12 +198,6 @@ export default {
   },
   created() {
     this.fetchData()
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('userPropSet', (key, val) => {
-      this.$set(this.user, key, val)
-    })
   }
 }
 </script>

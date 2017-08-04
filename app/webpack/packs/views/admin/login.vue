@@ -46,10 +46,6 @@ import axios from "axios"
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
-
 export default {
   name: 'Admin_Form',
   mixins: [onValidation],
@@ -57,17 +53,12 @@ export default {
     FloatLabel
   },
   data() {
-    return {
-      loading: false,
-      user: {
-        email: null,
-        password: null
-      }
-    }
+    return {}
   },
   computed: {
     ...mapGetters({
-      authUser: 'authUser'
+      authUser: 'authUser',
+      user: 'user'
     }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
@@ -77,24 +68,26 @@ export default {
     onSubmit: function () {
       axios.post('/users/sign_in', {
         utf8 : "✓",
-        authenticity_token: token,
+        authenticity_token: this.token,
         user: this.user
       })
       .then(response => {
-        alert('success')
+        this.$notify({
+          title: 'Succesfully signed in ' + this.user.email,
+          type: 'success',
+          group: 'auth'
+        })
         this.$router.push({name: 'list'})
       })
       .catch(error => {
-        alert('error')
+        this.$notify({
+          title: 'Error signing in ' + this.user.email,
+          type: 'alert',
+          group: 'auth'
+        })
       })
     }
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('userPropSet', (key, val) => {
-      this.$set(this.user, key, val)
-    })
-  },
+  }
 }
 </script>
 

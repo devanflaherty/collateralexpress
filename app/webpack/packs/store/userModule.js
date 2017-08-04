@@ -11,12 +11,17 @@ export const userModule = {
       last_name: null,
       full_name: null,
       phone: null,
-      location: null
-    }
+      password: null,
+      password_confirmation: null
+    },
+    users: []
   },
   getters: {
     user(state) {
       return state.user
+    },
+    users(state) {
+      return state.users
     }
   },
   mutations: {
@@ -28,12 +33,15 @@ export const userModule = {
         for (var key in payload.user) {
           state.user[key] = payload.user[key]
         }
-      } else if(payload.set){
-        var key = payload.set[0]
-        var val = payload.set[1]
+      } else {
+        var key = payload[0]
+        var val = payload[1]
         state.user[key] = val
       }
     },
+    setUsers(state, payload) {
+      state.users = payload
+    }
   },
   actions: {
     setUser({commit}, payload) {
@@ -41,6 +49,9 @@ export const userModule = {
     },
     setUserProperty({commit}, payload) {
       commit('setUserProperty', payload)
-    }
+    },
+    setUsers({commit}, payload) {
+      commit('setUsers', payload)
+    },
   }
 }

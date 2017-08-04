@@ -52,34 +52,19 @@
         </div>
       </div>
     </div>
-
-    <div id="login" v-if="!loading && login">
-      <Login></Login>
-    </div>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
   import axios from 'axios'
-  import bus from '../../bus'
-  import Login from '../shared/login/index.vue'
-
-  let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-  axios.defaults.headers.common['X-CSRF-Token'] = token
-  axios.defaults.headers.common['Accept'] = 'application/json'
 
   export default {
     name: 'AdminList',
-    components: {
-      Login
-    },
     data() {
       return {
         loading: false,
-        login: false,
         message: '',
-        users: [],
         pagination: {
           current: null,
           next: null,
@@ -92,6 +77,9 @@
       ...mapGetters({
         authUser: 'authUser'
       }),
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
+      }
     },
     methods: {
       fetchData() {
@@ -106,7 +94,7 @@
       setData(data, err) {
         if(!err) {
           this.loading = false
-          this.users = data.users
+          this.$store.dispatch('setUsers', data.users)
           this.message = "Succesfully found all users."
           // this.pagination.next = data.next_page
           // this.pagination.prev = data.prev_page
@@ -114,9 +102,8 @@
         }
       },
       deleteUser(user) {
-        var vm = this
         axios.delete('/users/' + user.id, {
-          authenticity_token: token,
+          authenticity_token: this.token,
           user : user,
         })
         .then(response => {
