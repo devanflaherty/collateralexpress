@@ -31,25 +31,16 @@
 
     </form>
 
-    <!-- <div class="callout alert" v-if="contact_id && contact_id != projectUser">
-      <p>
-        You've succesfully logged in as {{contact_name}}, but you don't have access to this project.
-      </p>
-    </div> -->
-
   </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import axios from 'axios'
   import bus from '../../../../bus'
 
   import { onValidation } from '../../validation'
   import FloatLabel from "../../floatLabel.vue"
-
-  let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-  axios.defaults.headers.common['X-CSRF-Token'] = token
-  axios.defaults.headers.common['Accept'] = 'application/json'
 
   export default {
     name: 'AdminLogin',
@@ -59,13 +50,14 @@
     data() {
       return {
         loading: false,
-        user: {
-          email: null,
-          password: null
-        }
       }
     },
-    props: ['project-user'],
+    computed: {
+      ...mapGetters(['user']),
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
+      }
+    },
     methods: {
       onSubmit: function () {
         axios.post('/users/sign_in', {
@@ -86,19 +78,11 @@
             text: response.data.flash[0][1],
             group: 'auth'
           })
-
-          this.$store.dispatch('toggleLogin', false)
         })
         .catch(error => {
           alert('error')
         })
       }
-    },
-    mounted() {
-      //Listen on the bus for changers to the child components error bag and merge in/remove errors
-      bus.$on('userPropSet', (key, val) => {
-        this.$set(this.user, key, val)
-      })
     }
   }
 </script>

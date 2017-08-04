@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import bus from '../../bus'
 import {emitValidationErrors} from './validation'
 
 export default {

@@ -24,8 +24,6 @@
 </template>
 
 <script>
-  import bus from '../../../bus'
-
   import ContactLogin from './components/contactLogin.vue'
   import AdminLogin from './components/adminLogin.vue'
 

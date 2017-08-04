@@ -102,16 +102,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import bus from "../../bus"
 import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 import Login from "../shared/login/index.vue"
-
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'Contact_Form',
@@ -148,6 +143,8 @@ export default {
         return false
       }
     },
+
+
     clearCookie() {
       axios.post('/contacts/clear')
         .then( response => {
@@ -157,10 +154,10 @@ export default {
           console.log(error)
         })
     },
+
+
     fetchData() {
-      this.error = this.post = null
       this.loading = true
-      var vm = this
 
       if(this.$route.name == 'contact-profile') {
         if(this.authUser.role == 'contact') {
@@ -180,7 +177,7 @@ export default {
           // if admin direct to their account
           this.$router.push({name: 'account'})
         } else {
-          vm.loading = false
+          this.loading = false
           // show login form
         }
       } else if(this.$route.name == 'contact-edit' && this.$route.params.id) {
@@ -202,14 +199,15 @@ export default {
             console.log(error)
           })
         } else {
-          vm.loading = false
+          this.loading = false
         }
       } else {
-        vm.loading = false
+        this.loading = false
       }
     },
+
+
     onSubmit() {
-      // bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
 
       // If there are no errors
@@ -217,11 +215,10 @@ export default {
 
         // Let's go on with the submission!
         // Let's set up some configurations
-        var vm = this
         var axiosConfig = {
           utf8 : "✓",
-          authenticity_token: vm.token,
-          contact : vm.contact
+          authenticity_token: this.token,
+          contact : this.contact
         }
 
         if (!this.contact.id) {
@@ -251,7 +248,7 @@ export default {
             this.$store.dispatch({
               type: 'setReveal',
               reveal_type: 'error',
-              msg: vm.contact.full_name,
+              msg: this.contact.full_name,
               text: error.message
             })
           });
@@ -267,7 +264,7 @@ export default {
               reveal_type: 'update',
               title: response.data.full_name,
               msg: 'congratulations, you just updated your contact.',
-              pid: vm.contact.id
+              pid: this.contact.id
             })
 
             this.$store.dispatch({
@@ -281,7 +278,7 @@ export default {
             this.$store.dispatch({
               type: 'setReveal',
               reveal_type: 'error',
-              title: vm.contact.full_name,
+              title: this.contact.full_name,
               msg: error.message,
             })
           })
