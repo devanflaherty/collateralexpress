@@ -1,15 +1,10 @@
 <template>
   <div id="app">
+    <vue-progress-bar id="progressBar"></vue-progress-bar>
     <NavHeader></NavHeader>
 
-  <!-- <transition name="fade" appear> -->
-    <router-view
-      id="main"
-      :token="token"
-      :auth-user="authUser"
-      :contactSession="contactSession">
+    <router-view id="main">
     </router-view>
-  <!-- </transition> -->
 
     <AppFooter></AppFooter>
 
@@ -22,7 +17,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import bus from "./bus"
 
 import NavHeader from "./views/shared/header/index.vue"
 import AppFooter from "./views/shared/footer.vue"
@@ -49,10 +43,7 @@ export default {
       reveal: 'reveal',
       flash: 'flash',
       contactSession: 'contactSession'
-    }),
-    token() {
-      return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    }
+    })
   },
   watch: {
     flash(flash){
@@ -80,6 +71,10 @@ export default {
 </script>
 
 <style lang="scss">
+#progressBar {
+  position: fixed;
+  top: 0;
+}
 .fade-enter-active, .fade-leave-active {
   transition: opacity .125s
 }
@@ -133,4 +128,5 @@ export default {
     border-left-color: #42A85F;
   }
 }
+
 </style>

@@ -16,8 +16,6 @@
               </div>
             </header>
 
-            <vue-progress-bar id="progressBar"></vue-progress-bar>
-
             <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
             <div class="row">
               <div class="columns">
@@ -487,10 +485,7 @@ export default {
 
 <style lang="scss">
 @import '../../../../assets/stylesheets/util/colors';
-#progressBar {
-  position: fixed;
-  top: 0;
-}
+
 .vdp-datepicker {
   .vdp-datepicker__calendar {
     min-width: 300px;
