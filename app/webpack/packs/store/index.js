@@ -31,6 +31,29 @@ export const store = new Vuex.Store({
     },
     contactSession: null,
     validUser: false,
+    defaultLinks: [
+      {
+        name: "Home",
+        url: "home"
+      },
+      {
+        name: "Create Project Request",
+        url: "new"
+      },
+      {
+        name: "How It Works",
+        url: "how"
+      },
+      {
+        name: "Gallery",
+        url: "gallery"
+      },
+      {
+        name: "FAQ",
+        url: "faq"
+      }
+    ],
+    links: []
   },
   getters: {
     authUser(state) {
@@ -50,6 +73,12 @@ export const store = new Vuex.Store({
     },
     validUser(state) {
       return state.validUser
+    },
+    defaultLinks(state) {
+      return state.defaultLinks
+    },
+    links(state) {
+      return state.links
     }
   },
   mutations: {
@@ -75,23 +104,21 @@ export const store = new Vuex.Store({
     },
     toggleValidUser(state, bool) {
       state.validUser = bool
+    },
+    setLinks(state, payload) {
+      state.links = payload
     }
   },
   actions: {
     // Global actions
-    setAuth({commit}, payload) {
+    setAuth({commit, dispatch}, payload) {
       if(payload) {
         commit('setAuth', payload)
-        if(payload.role == 'admin') {
-          commit('toggleValidUser', true)
-        }
+        dispatch('setLinks', payload.role)
       } else {
-        var emptyAuth = {
-          id: null,
-          role: 'public'
-        }
+        var emptyAuth = {id: null,role: 'public'}
         commit('setAuth', emptyAuth)
-        commit('toggleValidUser', false)
+        dispatch('setLinks')
       }
     },
     setContactSession({commit}, id) {
@@ -141,6 +168,21 @@ export const store = new Vuex.Store({
         }
       } else {
         commit('toggleValidUser', false)
+      }
+    },
+    setLinks({commit, state}, linkType) {
+      if(linkType == 'admin') {
+        var admin_links = [...state.defaultLinks]
+        admin_links.splice(2, 0, { name: "All Projects", url: "list" })
+        admin_links.push( { name: "Profile", url: "account"})
+        commit('setLinks', admin_links)
+      } else if (linkType == 'contact') {
+        var contact_links = [...state.defaultLinks]
+        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
+        contact_links.push( { name: "Profile", url: "contact-profile"})
+        commit('setLinks', contact_links)
+      } else {
+        commit('setLinks', state.defaultLinks)
       }
     }
   }

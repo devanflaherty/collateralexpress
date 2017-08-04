@@ -1,5 +1,5 @@
 <template>
-  <div id="account">
+  <div id="account" v-if="!loading">
     <div class="flex space-between">
       <div>
         <h4>Account Info</h4>
@@ -119,28 +119,17 @@ export default {
   data() {
     return {
       loading: false,
-      user: {
-        id: null,
-        first_name: null,
-        last_name: null,
-        full_name: null,
-        email: null,
-        phone: null,
-        password: null,
-        password_confirmation: null
-      }
     }
   },
   computed: {
-    ...mapGetters({
-      authUser: 'authUser'
-    }),
+    ...mapGetters(['authUser', 'user']),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
   },
   watch: {
     '$route': 'fetchData',
+    'authUser.id':'fetchData'
   },
   methods: {
     onSubmit: function () {
@@ -174,26 +163,24 @@ export default {
     },
     fetchData() {
       this.loading = true
-      var userId = null
 
       if(this.$route.params.id) {
-        userId = this.$route.params.id
-      } else if (this.$route.name == 'account'){
-        userId = this.authUser.id
+        this.setData(this.$route.params.id)
+      } else if (this.$route.name == 'account' && this.authUser.id){
+        this.setData(this.authUser.id)
       }
+    },
+    setData(id) {
+      axios.get('/api/v1/users/' + id + '.json').then( response => {
+        this.loading = false
+        this.$store.dispatch('setUser', response.data)
+        document.title = "Edit " + this.user.full_name + " | Collateral Express"
 
-      if(userId) {
-        axios.get('/api/v1/users/' + userId + '.json').then( response => {
-          this.loading = false
-          this.$store.dispatch('setUser', response.data)
-          document.title = "Edit " + this.user.full_name + " | Collateral Express"
-
-        }).catch(error => {
-          // Push to 404
-          this.$router.push({ name: 'login' })
-          console.log(error)
-        })
-      }
+      }).catch(error => {
+        // Push to 404
+        this.$router.push({ name: 'login' })
+        console.log(error)
+      })
     }
   },
   created() {
