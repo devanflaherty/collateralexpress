@@ -100,50 +100,29 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import bus from "../../bus"
 import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
-
 export default {
-  name: 'Admin_Form',
+  name: 'New_Admin',
   mixins: [onValidation],
   components: {
     FloatLabel
   },
-  data() {
+  metaInfo() {
     return {
-      loading: false,
-      validUser: false,
-      user: {
-        id: null,
-        first_name: null,
-        last_name: null,
-        email: null,
-        phone: null,
-        password: null,
-        password_confirmation: null
-      }
+      title: this.$route.meta.title
     }
   },
+  data() {
+    return {}
+  },
   computed: {
-    ...mapGetters({
-      authUser: 'authUser'
-    }),
+    ...mapGetters(['authUser', 'user']),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
-    },
-  },
-  watch: {
-    'authUser.id': function() {
-      if(this.authUser.role == 'admin' && this.authUser.id) {
-        this.validUser = true
-      }
     },
   },
   methods: {
@@ -154,15 +133,7 @@ export default {
         axios.post('/users', {
           utf8 : "✓",
           authenticity_token: this.token,
-          user: {
-            id: this.user.id,
-            email: this.user.email,
-            first_name: this.user.first_name,
-            last_name: this.user.last_name,
-            phone: this.user.phone,
-            password: this.user.password,
-            password_confirmation: this.user.password_confirmation,
-          }
+          user: this.user
         })
         .then(response => {
           this.$store.dispatch({
@@ -176,12 +147,6 @@ export default {
         })
       }
     },
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('userPropSet', (key, val) => {
-      this.$set(this.user, key, val)
-    })
   }
 }
 </script>

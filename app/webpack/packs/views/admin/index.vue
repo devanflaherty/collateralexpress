@@ -21,15 +21,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import bus from "../../bus"
 import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
-
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'Admin_Form',
@@ -41,12 +36,15 @@ export default {
     ...mapGetters({
       authUser: 'authUser'
     }),
+    token() {
+      return document.getElementsByName('csrf-token')[0].getAttribute('content')
+    }
   },
   methods: {
     logoutUser() {
       axios.delete('/users/sign_out', {
         utf8 : "✓",
-        authenticity_token: token
+        authenticity_token: this.token
       })
       .then(response => {
         this.$router.push({name: 'home'})

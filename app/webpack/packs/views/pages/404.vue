@@ -19,6 +19,11 @@ import HeroHeader from "../shared/heroHeader.vue"
 
 export default {
   name: 'fourohfour',
+  metaInfo() {
+    return {
+      title: this.$route.meta.title
+    }
+  },
   components: {
     HeroHeader
   }

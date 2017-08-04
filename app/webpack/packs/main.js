@@ -7,6 +7,8 @@
 import Vue from 'vue'
 import router from './router'
 import {store} from './store'
+import Meta from 'vue-meta'
+Vue.use(Meta)
 
 import VeeValidate from 'vee-validate';
 const veeConfig = {

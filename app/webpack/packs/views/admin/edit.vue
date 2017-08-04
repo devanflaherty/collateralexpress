@@ -1,5 +1,5 @@
 <template>
-  <div id="account">
+  <div id="account" v-if="!loading">
     <div class="flex space-between">
       <div>
         <h4>Account Info</h4>
@@ -110,52 +110,35 @@ import axios from "axios"
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
 
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
-
 export default {
   name: 'Admin_Form',
   mixins: [onValidation],
   components: {
     FloatLabel
   },
+  metaInfo() {
+    return {
+      title: this.pageTitle
+    }
+  },
   data() {
     return {
       loading: false,
-      validUser: false,
-      user: {
-        id: null,
-        first_name: null,
-        last_name: null,
-        full_name: null,
-        email: null,
-        phone: null,
-        password: null,
-        password_confirmation: null
-      }
+      pageTitle: ""
     }
   },
   computed: {
-    ...mapGetters({
-      authUser: 'authUser'
-    }),
+    ...mapGetters(['authUser', 'user']),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
   },
   watch: {
     '$route': 'fetchData',
-    'authUser.id': function() {
-      if(this.authUser.role == 'admin' && this.authUser.id) {
-        this.validUser = true
-        this.fetchData()
-      }
-    },
+    'authUser.id':'fetchData'
   },
   methods: {
     onSubmit: function () {
-      var vm = this
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
       if (!this.veeErrors.any()) {
@@ -185,40 +168,30 @@ export default {
       }
     },
     fetchData() {
-      this.error = this.post = null
       this.loading = true
-      var vm = this
-      var userId = null
 
       if(this.$route.params.id) {
-        userId = this.$route.params.id
-      } else if (this.$route.name == 'account'){
-        userId = this.authUser.id
+        this.setData(this.$route.params.id)
+      } else if (this.$route.name == 'account' && this.authUser.id){
+        this.setData(this.authUser.id)
       }
+    },
+    setData(id) {
+      axios.get('/api/v1/users/' + id + '.json').then( response => {
+        this.loading = false
+        this.pageTitle = "Update " + response.data.first_name
+        this.$store.dispatch('setUser', response.data)
 
-      if(userId) {
-        axios.get('/api/v1/users/' + userId + '.json').then( response => {
-          this.loading = false
-          this.validUser = true
-          this.user = response.data
-          document.title = "Edit " + this.user.full_name + " | Collateral Express"
-
-        }).catch(error => {
-          // Push to 404
-          this.$router.push({ name: 'login' })
-          console.log(error)
-        })
-      }
+      }).catch(error => {
+        // Push to 404
+        this.$router.push({ name: 'login' })
+        console.log(error)
+      })
     }
   },
   created() {
+    this.pageTitle = this.$route.meta.title
     this.fetchData()
-  },
-  mounted() {
-    //Listen on the bus for changers to the child components error bag and merge in/remove errors
-    bus.$on('userPropSet', (key, val) => {
-      this.$set(this.user, key, val)
-    })
   }
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h3 v-if="mediaFiles && mediaFiles.length > 0">Files</h3>
-    <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="mediaFiles && mediaFiles.length > 0">
-      <li class="column" v-for="media in mediaFiles" v-bind:key="media">
+    <h3 v-if="projectMedia && projectMedia.length > 0">Files</h3>
+    <transition-group name="mediaList" tag="ul" id="fileList" class="row small-up-4" v-if="projectMedia && projectMedia.length > 0">
+      <li class="column" v-for="media in projectMedia" v-bind:key="media">
         <div class="card">
 
           <div class="thumb-container" :style="{ 'background-image': 'url(' + media.file.url + ')' }">
@@ -33,7 +33,7 @@
         <!-- Optional parameters if any! -->
         <input type="hidden" name="utf8" value="✓">
         <input type="hidden" name="authenticity_token" :value="token">
-        <input id="projectId" type="hidden" name="project_id" :value="projectId ? projectId : projectParam">
+        <input id="projectId" type="hidden" name="project_id" :value="project.id">
         <!--<input type="hidden" name="project[title]" :value="project.title"> -->
     </Dropzone>
     <a href="#saveFiles" @click.prevent="processDropzone" class="button" v-if="projectId">Save Files</a>
@@ -42,6 +42,8 @@
 
 
 <script>
+  import { mapGetters } from 'vuex'
+
   import axios from "axios"
   import Dropzone from 'vue2-dropzone'
 
@@ -50,23 +52,17 @@
 
   export default {
     name: 'MediaUploader',
-    props: ['mediaFiles','token', 'project-id'],
+    props: ['project-id'],
     components: {
       Dropzone
     },
-    data() {
-      return {
-        styles: {
-        }
-      }
-    },
     computed: {
-      projectParam() {
-        var proj = this.projectId
-        if(this.projectId) {
-          proj = this.projectId
-        }
-        return proj
+      ...mapGetters({
+        project: 'project',
+        projectMedia: 'projectMedia',
+      }),
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
       }
     },
     methods: {
@@ -76,12 +72,11 @@
       },
       uploadSuccess() {
         //add transition to state
-        var vm = this
         this.$notify({title: 'File Succesfully added'})
         axios.get('/api/v1/projects/' + this.projectId  + '.json')
           .then( response => {
             console.log('media updated')
-            bus.$emit("mediaEmit", response.data.project_media.medias)
+            this.$store.dispatch('setProjectMedia', response.data.project_media.medias)
         })
 
         this.$store.dispatch('closeReveal')
@@ -91,13 +86,12 @@
         bus.$emit('readyDZ', true)
       },
       removeMedia(id) {
-        var vm = this
-        var filteredMedia = vm.mediaFiles.filter(m => m.id !== id)
+        var filteredMedia = this.projectMedia.filter(m => m.id !== id)
 
         axios.delete('/media/' + id,{
           utf8 : "✓",
-          authenticity_token: vm.token,
-          project : vm.project_id
+          authenticity_token: this.token,
+          project : this.project.id
         })
         .then( response => {
           console.log('did it')
@@ -112,7 +106,7 @@
         projInput.value = pid
         this.processDropzone()
       })
-      if(this.mediaFiles.length > 0) {
+      if(this.projectMedia.length > 0) {
         this.uploader = false
       }
     }

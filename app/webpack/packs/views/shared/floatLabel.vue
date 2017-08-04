@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import bus from '../../bus'
 import {emitValidationErrors} from './validation'
 
 export default {
@@ -70,11 +69,14 @@ export default {
         if(this.label == "Other") {
           this.$emit('updateOther', this.model)
         } else if(this.obj == "contact") {
-          bus.$emit('contactPropSet', this.key, this.model)
+          this.$store.dispatch('setContactProperty', [this.key,this.model])
         } else if(this.obj == "user") {
-          bus.$emit('userPropSet', this.key, this.model)
+          this.$store.dispatch('setUserProperty', [this.key,this.model])
         } else {
-          bus.$emit('projectPropSet', this.key, this.model)
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            set: [this.key, this.model]
+          })
         }
       }
     },
@@ -83,7 +85,6 @@ export default {
     },
     floatLabel(f) {
       if(this.model && this.model.length > 0 || f) {
-        // console.log(this.model + 'floating')
         this.float = true
       } else {
         this.float = false

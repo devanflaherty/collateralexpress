@@ -175,6 +175,11 @@ import HeroHeader from "../shared/heroHeader.vue"
 import Swiper from 'swiper/dist/js/swiper.min.js'
 export default {
   name: 'Home',
+  metaInfo() {
+    return {
+      title: this.$route.meta.title
+    }
+  },
   components: {
     HeroHeader
   },

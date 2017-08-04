@@ -12,8 +12,6 @@ const onValidation = {
     bus.$on('errors-changed', (newErrors, oldErrors) => {
       this.veeErrors.clear();
 
-      console.log(newErrors)
-
       newErrors.forEach(error => {
         if (!this.veeErrors.has(error.field)) {
           this.veeErrors.errors = [...this.veeErrors.errors, {field: error.field, msg: error.msg, rule: error.rule, scope: error.scope}]

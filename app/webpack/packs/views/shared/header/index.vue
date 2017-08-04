@@ -35,38 +35,12 @@ export default {
     return {
       overlay: false,
       nav_visible: false,
-      default_links: [
-        {
-          name: "Home",
-          url: "home"
-        },
-        {
-          name: "Create Project Request",
-          url: "new"
-        },
-        {
-          name: "How It Works",
-          url: "how"
-        },
-        {
-          name: "Gallery",
-          url: "gallery"
-        },
-        {
-          name: "FAQ",
-          url: "faq"
-        }
-      ],
-      links: []
     }
   },
-  computed: mapGetters(['authUser']),
+  computed: mapGetters(['authUser', 'links']),
   watch: {
     '$route': function() {
       this.overlayHeader()
-    },
-    'authUser.id': function(){
-      this.updateLinks()
     }
   },
   methods: {
@@ -83,27 +57,8 @@ export default {
     toggleNav() {
       this.nav_visible = !this.nav_visible
     },
-    updateLinks() {
-      if(this.$store.state.authUser.role == 'admin') {
-        var admin_links = [...this.default_links]
-        admin_links.splice(2, 0, { name: "All Projects", url: "list" })
-        admin_links.push( { name: "Profile", url: "account"})
-        this.links = admin_links
-      } else if (this.$store.state.authUser.role == 'contact') {
-        var contact_links = [...this.default_links]
-        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
-        contact_links.push( { name: "Profile", url: "contact-profile"})
-        this.links = contact_links
-      } else {
-        this.links = [...this.default_links]
-      }
-    }
   },
   mounted() {
-    this.updateLinks()
-    bus.$on('updateLinks', () => {
-      this.updateLinks()
-    })
     this.overlayHeader()
   }
 }

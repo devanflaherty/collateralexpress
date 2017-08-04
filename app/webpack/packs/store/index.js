@@ -2,11 +2,20 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router'
 import axios from 'axios'
-import Notifications from 'vue-notification'
-Vue.use(Notifications)
 Vue.use(Vuex)
 
+// modules
+import {projectModule} from './projectModule'
+import {contactModule} from './contactModule'
+import {userModule} from './userModule'
+
+
 export const store = new Vuex.Store({
+  modules: {
+    project: projectModule,
+    contact: contactModule,
+    user: userModule
+  },
   state: {
     authUser: {
       id: null,
@@ -21,7 +30,30 @@ export const store = new Vuex.Store({
       project_id: null
     },
     contactSession: null,
-    showLogin: false,
+    validUser: false,
+    defaultLinks: [
+      {
+        name: "Home",
+        url: "home"
+      },
+      {
+        name: "Create Project Request",
+        url: "new"
+      },
+      {
+        name: "How It Works",
+        url: "how"
+      },
+      {
+        name: "Gallery",
+        url: "gallery"
+      },
+      {
+        name: "FAQ",
+        url: "faq"
+      }
+    ],
+    links: []
   },
   getters: {
     authUser(state) {
@@ -39,8 +71,14 @@ export const store = new Vuex.Store({
     contactSession(state) {
       return state.contactSession
     },
-    showLogin(state) {
-      return state.showLogin
+    validUser(state) {
+      return state.validUser
+    },
+    defaultLinks(state) {
+      return state.defaultLinks
+    },
+    links(state) {
+      return state.links
     }
   },
   mutations: {
@@ -64,21 +102,23 @@ export const store = new Vuex.Store({
     setContactSession(state, id) {
       state.contactSession = id
     },
-    toggleLogin(state, bool) {
-      state.showLogin = bool
+    toggleValidUser(state, bool) {
+      state.validUser = bool
+    },
+    setLinks(state, payload) {
+      state.links = payload
     }
   },
   actions: {
     // Global actions
-    setAuth({commit}, payload) {
+    setAuth({commit, dispatch}, payload) {
       if(payload) {
         commit('setAuth', payload)
+        dispatch('setLinks', payload.role)
       } else {
-        var emptyAuth = {
-          id: null,
-          role: null
-        }
+        var emptyAuth = {id: null,role: 'public'}
         commit('setAuth', emptyAuth)
+        dispatch('setLinks')
       }
     },
     setContactSession({commit}, id) {
@@ -108,6 +148,7 @@ export const store = new Vuex.Store({
       $('#reveal').foundation('open');
     },
     closeReveal({commit}) {
+      $('#reveal').foundation('close');
       var emptyReveal = {
         reveal_type: null,
         title: null,
@@ -115,27 +156,34 @@ export const store = new Vuex.Store({
         pid: null
       }
       commit('setReveal', emptyReveal)
-      $('#reveal').foundation('close');
     },
-    toggleLogin({commit}, bool) {
-      commit('toggleLogin', bool)
+    checkValidUser({commit, state}, id) {
+      if(state.authUser.role == 'admin') {
+        commit('toggleValidUser', true)
+      } else if (state.authUser.role == 'contact') {
+        if(state.authUser.id == id) {
+          commit('toggleValidUser', true)
+        } else {
+          commit('toggleValidUser', false)
+        }
+      } else {
+        commit('toggleValidUser', false)
+      }
     },
-
-    // Project Actions
-    deleteProject(context, id) {
-      axios.delete('/projects/' + id)
-      .then(function (response) {
-        context.dispatch('closeReveal')
-        context.dispatch('setFlash', response.data.flash[0][1])
-
-        // If Delete is succesfull we route to the list page
-        router.push({ name: 'list' })
-      })
-      .catch(function (error) {
-        // if it fails we just console log an error for now
-        console.log(error)
-      });
-
+    setLinks({commit, state}, linkType) {
+      if(linkType == 'admin') {
+        var admin_links = [...state.defaultLinks]
+        admin_links.splice(2, 0, { name: "All Projects", url: "list" })
+        admin_links.push( { name: "Profile", url: "account"})
+        commit('setLinks', admin_links)
+      } else if (linkType == 'contact') {
+        var contact_links = [...state.defaultLinks]
+        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
+        contact_links.push( { name: "Profile", url: "contact-profile"})
+        commit('setLinks', contact_links)
+      } else {
+        commit('setLinks', state.defaultLinks)
+      }
     }
   }
 })

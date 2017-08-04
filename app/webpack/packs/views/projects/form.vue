@@ -10,13 +10,11 @@
             <header>
               <div class="row">
                 <div class="columns">
-                  <h2>{{page_title}}</h2>
+                  <h2>{{pageTitle}}</h2>
                   <h5 v-if="project && project.id">{{project.title}}</h5>
                 </div>
               </div>
             </header>
-
-            <vue-progress-bar id="progressBar"></vue-progress-bar>
 
             <!-- <Status :projectStatus="project.status" :projectFlag="project.flag" :projectArchive="project.archive"></Status> -->
             <div class="row">
@@ -80,7 +78,7 @@
                     <h5 style="margin-top: 1rem">Tactics</h5>
 
                     <div class="row small-up-2 large-up-3">
-                      <div class="column" v-for="tactic in available_tactics" v-bind:key="tactic" >
+                      <div class="column" v-for="tactic in availableTactics" v-bind:key="tactic" >
                         <input type="checkbox" :id="tactic" :value="tactic" v-model="project.tactic">
                         <label :for="tactic">
                           {{tactic}}
@@ -92,7 +90,13 @@
                     <div class="row" v-if="project.tactic.includes('Other')">
                       <div class="columns small-6">
                         <div class="float-input">
-                          <FloatLabel label="Other" propKey="tactic_other" @updateOther="setTactics" validation=""></FloatLabel>
+                          <FloatLabel
+                            data-vv-value-path="model"
+                            data-vv-name="other"
+                            :attr="tactic_other"
+                            propKey="tactic_other"
+                            label="Other"
+                            @updateOther="setTactics"></FloatLabel>
                         </div>
                       </div>
                     </div>
@@ -195,7 +199,7 @@
           <div class="form-panel small-12 columns" style="padding: 0;">
             <div id="fileUploader" class="row align-center">
               <div class="small-12 large-10 column">
-                <MediaUploader :project-id="project.id" :mediaFiles="project_media" :token="token"></MediaUploader>
+                <MediaUploader :project-id="project.id" :token="token"></MediaUploader>
               </div>
             </div>
 
@@ -205,7 +209,6 @@
                   <contact
                     :contact-query="contactQuery"
                     :project-id="project.id"
-                    :token="token"
                     @contactEmit="updateContact"
                   ></contact>
                 </div>
@@ -264,7 +267,11 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
-  props: ['token'],
+  metaInfo() {
+    return {
+      title: this.pageTitle
+    }
+  },
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     Login,
@@ -278,42 +285,24 @@ export default {
   data() {
     return {
       loading: false,
-      validUser: false,
+      pageTitle: '',
       formError: true,
-      project: {
-        id: null,
-        title: null,
-        slug: null,
-        user_id: 1,
-        contact_id: null,
-        status: "",
-        description: null,
-        reference: null,
-        tactic: [],
-        due_date: null,
-        existing: false,
-        translation: false,
-        business_unit: null,
-        deliverables: "",
-        target: null,
-        flag: false,
-        archive: false
-      },
-      project_media: [],
       contactQuery: null,
       tactic_other: '',
-      available_tactics: [],
       dzUpload: false,
     }
   },
   computed: {
     ...mapGetters({
       authUser: 'authUser',
-      contactSession: 'contactSession'
+      contactSession: 'contactSession',
+      validUser: 'validUser',
+      project: 'project',
+      projectMedia: 'projectMedia',
+      availableTactics: 'availableTactics',
     }),
-    page_title() {
-      // We create a property for the page title based on the $route.meta.title
-      return this.$route.meta.title
+    token() {
+      return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
     formTouched() {
       return Object.keys(this.fields).filter(key => this.fields[key].touched);
@@ -324,8 +313,6 @@ export default {
       // Watch if route changers
       // If it does we are going to re-fetch the data
       this.fetchData()
-      // Then set the the page title to the new route.meta.title
-      this.page_title = this.$route.meta.title
     },
     tactic_other(other) {
       // When the other_input field has been updated
@@ -338,40 +325,17 @@ export default {
       // We will run the validateUser Method
       // checking the projects ID against the session ID
       // If validation fails we don't show them the page
-      if(this.authUser.role == 'contact') {
-        this.validateUser(this.authUser.id)
-      }
+      this.$store.dispatch('checkValidUser', id)
     },
     contactSession(id) {
       // Generally will only run on a few instances
       // First time vue instance is being loaded & First time a contactUser is logging in
       this.contactQuery = id
-    },
-    'authUser.id': function() {
-      // When the auth value updates from index.vue set validUser to true
-      if(this.authUser.role == 'admin') {
-        this.validUser = true
-      } else if (this.authUser.role == 'contact') {
-        this.validateUser(this.authUser.id)
-      }
-    },
-    validUser(status) {
-      if(this.validUser == true) {
-        // If the we have a validUser we then fetch the data
-        this.fetchData()
-      }
     }
   },
   methods: {
     isTouched(key) {
       return this.fields[key].touched ? true : false
-    },
-    validateUser(id) {
-      // if the ID passed is equal to the projects.contact_id
-      // Then we have a validUser
-      if(id == this.project.contact_id && id != null) {
-        this.validUser = true
-      }
     },
     fetchData() {
       this.loading = true
@@ -392,14 +356,13 @@ export default {
     },
 
     setData(data, err) {
-      var vm = this
       // if we have an ID param
       if(this.authUser.id && !err) {
         // if there is an authUser
         // We make a request with the ID Param
         if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
           // If the contact id is not equal to what is returned
-          vm.$store.dispatch({
+          this.$store.dispatch({
             type: 'setReveal',
             reveal_type: 'notice',
             title: "Not Authorized",
@@ -408,26 +371,29 @@ export default {
         } else {
           // If contactSession is valid or is authorized
           this.loading = false
-          this.validUser = true
-          this.project = data.project
           this.$validator.clean();
-          this.project_media = data.project_media.medias
+          this.$store.dispatch('setProject', data.project)
+          this.$store.dispatch('setProjectMedia', data.project_media.medias)
           // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
           // That way we are getting the project.contact rather than contactSession
           this.contactQuery = data.project.contact_id
-
-          document.title = "Edit " + this.project.title + " | Collateral Express"
+          this.pageTitle = "Edit " + data.project.title
         }
       } else if (this.authUser.id && err) {
         this.$router.push({ name: 'new' })
         console.log(err)
       } else if (!this.authUser.id && !err) {
         this.loading = false
-        this.$set(vm.project, 'id', data.project.id)
-        this.$set(vm.project, 'title', data.project.title)
-        this.$set(vm.project, 'contact_id', data.project.contact_id)
+        this.$store.dispatch({
+          type: 'setProjectProperty',
+          project: {
+            id: data.project.id,
+            title: data.project.title,
+            contact_id: data.project.contact_id
+          }
+        })
 
-        document.title = this.project.title + " | Collateral Express"
+        this.pageTitle = data.project.title
       } else {
         this.$store.dispatch({
           type: 'setFlash',
@@ -441,12 +407,12 @@ export default {
 
     setNewData(data, err) {
       if(!err) {
-        this.$store.dispatch('setMessage','New Project')
         bus.$emit('emptyFloats')
-        document.title = "New Project | Collateral Express"
+        this.pageTitle = "New Project"
 
         this.loading = false
-        this.project = data.project
+        this.$store.dispatch('setMessage','New Project')
+        this.$store.dispatch('setProject', data.project)
         this.$validator.clean();
       } else {
         this.$router.push({ name: '404' })
@@ -459,41 +425,22 @@ export default {
       // When the contact component finds an existing contact, or
       // There is a new contact we will update the project with that contact
       // Will either be null or the contacts ID
-      this.project.contact_id = contact.id
+      this.$store.dispatch({
+        type: 'setProjectProperty',
+        set: ['contact_id', contact.id]
+      })
       // This would be the last time(s) the contactQuery is set in it's life span
       // It inherits the ID found in the contact Component
       this.contactQuery = contact.id
     },
     setTactics(tactic) {
-      var vm = this
-      var tArray = this.project.tactic.filter(function(tactic) {
-        //console.log(tactic)
-        if (vm.available_tactics.includes(tactic)) return tactic
-      })
-      this.project.tactic = tArray
-      this.project.tactic.push(tactic)
-    },
-    getTactics() {
-      // Get Available tactics
-      var vm = this
-      console.log('get')
-      axios.get('/api/v1/projects/new.json')
-        .then( response => {
-          vm.available_tactics = response.data.tactics
-        }).catch(error => {
-          console.log(error)
-        })
+      this.$store.dispatch('pushTactic', tactic)
     }
   },
+  created() {
+    this.$route.meta.title
+  },
   mounted() {
-    if(this.authUser.role == 'admin') {
-      // When we first mount lets see if there is an admin
-      // If so the user is valid and everything is great
-      this.validUser = true
-    } else {
-      // If auth is null We will run the validate User method
-      this.validateUser(this.authUser.id)
-    }
     // We set contactQuery to contactSession
     // This will set contactQuery first before any other method
     // Allowing our contact component to default load the contactSession
@@ -501,26 +448,11 @@ export default {
       this.contactQuery = this.contactSession
     }
     // We grab the tactics
-    this.getTactics()
-
-    bus.$on('projectEmit', (project) => {
-      // Updates project with new project object
-      this.project = project
-    })
-
-    bus.$on('projectPropSet', (key, val) => {
-      // updates individual property of the project object
-      this.$set(this.project, key, val)
-    })
+    this.$store.dispatch('setAvailableTactics')
 
     bus.$on('readyDZ', (bool) => {
       // Sets wether Dropzone should upload files or not
       this.dzUpload = bool
-    })
-
-    bus.$on('mediaEmit', (media) => {
-      // Updates the prohect_media aray with new media records
-      this.project_media = media
     })
   },
   beforeRouteEnter (to,from,next) {
@@ -547,7 +479,6 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
-    // this.$store.dispatch('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
   },
@@ -556,10 +487,7 @@ export default {
 
 <style lang="scss">
 @import '../../../../assets/stylesheets/util/colors';
-#progressBar {
-  position: fixed;
-  top: 0;
-}
+
 .vdp-datepicker {
   .vdp-datepicker__calendar {
     min-width: 300px;

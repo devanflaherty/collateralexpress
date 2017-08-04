@@ -30,17 +30,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import axios from "axios"
-import bus from "../../../../bus.js"
 import Status from "./status.vue"
 import ProjectSubmission from "../../mixins/projectSubmission.js"
 
 export default {
   name: 'AdminUpdates',
   mixins: [ProjectSubmission],
-  props: ['project', 'contact'],
   components: {
     Status
+  },
+  computed: {
+    ...mapGetters(['contact', 'project']),
   },
   methods: {
     updateReveal() {

@@ -62,6 +62,7 @@ const authRequest = function(to, from, next) {
         next()
       }
     } else {
+      store.dispatch('setAuth')
       store.dispatch('setContactSession')
       directToLogin()
     }
@@ -195,14 +196,6 @@ const router = new VueRouter ({
 // Set Document Title
 router.beforeEach((to, from, next) => {
   authRequest(to, from, next)
-
-  // Set Title
-  var vueTitle = to.meta.title
-  // if page has a set title do
-  if (vueTitle) {
-    console.log(to.meta.title)
-    document.title = vueTitle + " | Collateral Express"
-  }
 
   next()
 })

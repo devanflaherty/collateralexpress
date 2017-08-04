@@ -1,7 +1,20 @@
 import bus from '../../../bus'
 import axios from "axios"
 
+let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
+axios.defaults.headers.common['X-CSRF-Token'] = token
+axios.defaults.headers.common['Accept'] = 'application/json'
+
 const ProjectSubmission = {
+  computed: {
+    axiosConfig() {
+      return {
+        utf8 : "✓",
+        authenticity_token: this.token,
+        project : this.project
+      }
+    }
+  },
   methods: {
     //
     // Form submission handling
@@ -32,35 +45,124 @@ const ProjectSubmission = {
             bus.$emit('postContact')
           }
         }
-      } // validate end
+      } else {
+        this.$notify({
+          title: 'There are errors in your form',
+          type: 'alert',
+          group: 'app'
+        });
+      }// validate end
     },
+
+    postProject() {
+      axios.post('/projects/', this.axiosConfig)
+      .then(response => {
+        // IF SUCCESFUll
+        if(this.dzUpload) {
+          bus.$emit('uploadMedia', response.data.project.id)
+        }
+
+        this.$store.dispatch('setMessage', response.data.project.title + " has been created!")
+
+        this.$store.dispatch({
+          type: 'setReveal',
+          reveal_type: 'new',
+          title: response.data.project.title,
+          msg: "Congratulations, you just created your project.",
+          pid: response.data.project.id
+        })
+
+        this.$store.dispatch({
+          type: 'setFlash',
+          title:response.data.flash[0][1],
+          group: 'app'
+        })
+      })
+      .catch(error => {
+        // IF THERE ARE ERRORS
+        this.$store.dispatch({
+          type: 'setReveal',
+          reveal_type: 'error',
+          title: this.project.title,
+          msg: error.message,
+        })
+        this.axErrors(error.response, error.request, error.message);
+      });
+    },
+
+    patchProject() {
+      axios.patch('/projects/' + this.project.id, this.axiosConfig)
+      .then(response => {
+        // Successful
+
+        if(this.dzUpload) {
+          bus.$emit('uploadMedia', response.data.project.id)
+        }
+        this.$store.dispatch('setMessage', response.data.project.title + " has been created!")
+        // And then we will launch the Foundation Reveal
+        this.$store.dispatch({
+          type: 'setReveal',
+          reveal_type: 'update',
+          title: response.data.project.title,
+          msg: 'congratulations, you just updated your project.',
+          pid: response.data.project.id
+        })
+
+        // We also want to grab the flash that was sent in the response
+        this.$store.dispatch({
+          type: 'setFlash',
+          title:response.data.flash[0][1],
+          group: 'app'
+        })
+      })
+      .catch(error => {
+        // If there is an error we show the Foundation Reveal
+        this.$store.dispatch({
+          type: 'setReveal',
+          type: 'error',
+          title: response.data.project.title,
+          msg: error.message
+        })
+        // Get the flash
+        this.$store.dispatch({
+          type: 'setFlash',
+          title:response.data.flash[0][1],
+          group: 'app'
+        })
+        // and run our error function
+        this.axErrors(error.response, error.request, error.message);
+      });
+    },
+
     axErrors(res,req,msg) {
-      var vm = this
       if (res) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        vm.errors = res.data.errors;
-        for(var er in vm.errors) {
-          var erArray = vm.errors[er].join("<br>");
-          vm.$notify({
+        this.errors = res.data.errors;
+        for(var er in this.errors) {
+          var erArray = this.errors[er].join("<br>");
+          this.$notify({
             title: er,
-            text: erArray
+            text: erArray,
+            group: 'app'
           });
         }
       } else if (req) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        vm.$notify({
+        this.$notify({
           title: "Error",
-          text: req
+          text: req,
+          group: 'app'
         });
         console.log(req);
       } else {
         // Something happened in setting up the request that triggered an Error
-        vm.$notify({
+        this.$notify({
           title: "Error",
-          text: msg
+          text: msg,
+          group: 'app'
         });
         console.log('Error', msg);
       }
@@ -72,91 +174,12 @@ const ProjectSubmission = {
     // Once a contact has been updated/saved THEN we post the form
     // A project has to have a contact
     bus.$on('submitProjectForm', () => {
-      var vm = this
-      var axiosConfig = {
-        utf8 : "✓",
-        authenticity_token: this.token,
-        project : this.project
-      }
       if (!this.project.id) {
         // if this is a new project
-        console.log(this.project)
-        axios.post('/projects/', axiosConfig)
-        .then(function (response) {
-          // IF SUCCESFUll
-          if(vm.dzUpload) {
-            bus.$emit('uploadMedia', response.data.project.id)
-          }
-
-          vm.$store.dispatch('setMessage', response.data.project.title + " has been created!")
-
-          vm.$store.dispatch({
-            type: 'setReveal',
-            reveal_type: 'new',
-            title: response.data.project.title,
-            msg: "Congratulations, you just created your project.",
-            pid: response.data.project.id
-          })
-
-          vm.$store.dispatch({
-            type: 'setFlash',
-            title:response.data.flash[0][1],
-            group: 'app'
-          })
-        })
-        .catch(function (error) {
-          // IF THERE ARE ERRORS
-          vm.$store.dispatch({
-            type: 'setReveal',
-            reveal_type: 'error',
-            title: vm.project.title,
-            msg: error.message,
-          })
-          vm.axErrors(error.response, error.request, error.message);
-        });
+        this.postProject()
       } else {
         // If the project does exist let's update it
-        axios.patch('/projects/' + this.project.id, axiosConfig)
-        .then(function (response) {
-          // Successful
-
-          if(vm.dzUpload) {
-            bus.$emit('uploadMedia', response.data.project.id)
-          }
-          vm.$store.dispatch('setMessage', response.data.project.title + " has been created!")
-          // And then we will launch the Foundation Reveal
-          vm.$store.dispatch({
-            type: 'setReveal',
-            reveal_type: 'update',
-            title: response.data.project.title,
-            msg: 'congratulations, you just updated your project.',
-            pid: response.data.project.id
-          })
-
-          // We also want to grab the flash that was sent in the response
-          vm.$store.dispatch({
-            type: 'setFlash',
-            title:response.data.flash[0][1],
-            group: 'app'
-          })
-        })
-        .catch(function (error) {
-          // If there is an error we show the Foundation Reveal
-          vm.$store.dispatch({
-            type: 'setReveal',
-            type: 'error',
-            title: response.data.project.title,
-            msg: error.message
-          })
-          // Get the flash
-          vm.$store.dispatch({
-            type: 'setFlash',
-            title:response.data.flash[0][1],
-            group: 'app'
-          })
-          // and run our error function
-          vm.axErrors(error.response, error.request, error.message);
-        });
+        this.patchProject()
       }
     })
   },

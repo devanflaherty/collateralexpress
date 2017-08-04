@@ -84,7 +84,7 @@
         <button class="button gradient" @click.prevent="makeContactEditable(!edit_contact)">
           {{edit_contact ? "Finish Editing" : "Edit Contact"}}
         </button>
-        <button class="button gradient" @click.prevent="resetContact(true)">
+        <button class="button gradient" @click.prevent="resetContact()">
           New Contact
         </button>
       </div>
@@ -136,6 +136,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import bus from '../../../../bus'
 import {emitValidationErrors} from '../../../shared/validation.js'
 import FloatLabel from '../../../shared/floatLabel.vue'
@@ -151,32 +152,26 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['contactQuery', 'projectId', 'token'],
+  props: ['contactQuery'],
   data() {
     return {
       message: "",
       edit_contact: true,
-      contact: {
-        id: '',
-        email: null,
-        first_name: '',
-        last_name: '',
-        phone: '',
-        branch: ''
-      },
-      contacts: [],
     }
+  },
+  computed: {
+    ...mapGetters(['contact', 'contacts']),
   },
   watch: {
     'contact.email': function(newEmail, oldEmail) {
       if(newEmail != oldEmail && this.contact.email != null) {
         this.findContact(newEmail)
       }
-      this.mountContact()
+      this.fetchContact()
     },
     contactQuery() {
       if (this.contactQuery != null) {
-        this.mountContact()
+        this.fetchContact()
       }
     }
   },
@@ -185,22 +180,23 @@ export default {
     makeContactEditable(bool) {
       this.edit_contact = bool
     },
+
+
     //contact methods
-    manageContact(id) {
-      var vm = this
+    postContact(id) {
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: token,
-        contact : vm.contact,
-        project : vm.projectId
+        contact : this.contact,
+        project : this.projectId
       }
       if(!id || id == null || id == undefined) {
         // If contact doesn't exist
         axios.post('/contacts/', axiosConfig)
-        .then(function (response) {
+        .then(response => {
           // IF SUCCESFUll
-          vm.$emit("contactEmit", response.data.contact)
-          vm.$notify({
+          this.$emit("contactEmit", response.data.contact)
+          this.$notify({
             title: response.data.contact.first_name + " created"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
@@ -208,31 +204,33 @@ export default {
       } else if (id) {
         //If contact exists
         axios.patch('/contacts/' + id, axiosConfig)
-        .then(function (response) {
+        .then(response => {
           // IF SUCCESFUll
-          vm.$emit("contactEmit", response.data.contact)
-          vm.$notify({
+          this.$emit("contactEmit", response.data.contact)
+          this.$notify({
             title: response.data.contact.first_name + " updated"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
         })
       }
     },
-    mountContact() {
-      var vm = this
+
+
+    fetchContact() {
       if(this.contactQuery != null) {
         axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
         .then( response => {
-          vm.contact = response.data
-          vm.makeContactEditable(false)
+          this.$store.dispatch('setContact', response.data)
+          this.makeContactEditable(false)
         })
         .catch(error => {
           console.log(error)
         })
       }
     },
+
+
     findContact(email) {
-      var vm = this;
       var found = false
       if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
         this.message = 'Please enter a valid email address'
@@ -245,52 +243,48 @@ export default {
         this.contacts.find(c => {
           if (c.email == email) {
             console.log('find contact ' + email)
-            this.contact.id = c.id
+            this.$store.dispatch('setContactProperty', ['id', c.id])
             this.$emit("contactEmit", {id: c.id})
             this.makeContactEditable(false)
           }
         })
 
-        this.mountContact()
+        this.fetchContact()
       }
     },
-    resetContact(totalReset) {
-      if(totalReset) {
-        console.log('reset')
-        this.contact.email = null
-        this.$emit('contactEmit', {id: null})
-      }
-      this.contact.id = ''
-      this.contact.first_name = ''
-      this.contact.full_name = ''
-      this.contact.last_name = ''
-      this.contact.phone = ''
-      this.contact.position = ''
-      this.contact.branch = ''
 
+
+    resetContact() {
+      this.$emit('contactEmit', {id: null})
+      this.$store.dispatch({
+        type: 'setContactProperty',
+        contact: {
+          email: null,
+          id: '',
+          first_name: '',
+          full_name: '',
+          last_name: '',
+          phone: '',
+          branch: ''
+        }
+      })
       this.makeContactEditable(true)
     }
   },
   created() {
-    var vm = this;
     // Form contacts array with all contacts on creation
     axios.get('/api/v1/contacts.json').then( response => {
-      vm.contacts = response.data.contact;
+      this.$store.dispatch('setContacts', response.data.contact)
     })
 
-    this.mountContact()
+    this.fetchContact()
   },
   mounted() {
-    bus.$on('contactPropSet', (key, val) => {
-      this.$set(this.contact, key, val)
-    })
-
     bus.$on('postContact', (id) => {
-      this.manageContact(id)
+      this.postContact(id)
     })
   },
   beforeDestroy() {
-    bus.$off('contactPropSet')
     bus.$off('postContact')
   }
 }

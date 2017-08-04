@@ -43,7 +43,6 @@
 
 <script>
   import axios from "axios"
-  import bus from "../../../../bus.js"
 
   export default {
     name: 'Status',
@@ -74,22 +73,30 @@
         }
       },
       setStatus() {
-        bus.$emit('projectPropSet', 'status', this.status)
+        this.$store.dispatch({
+          type: 'setProjectProperty',
+          project: { status: this.status }
+        })
       },
       setArchive() {
-        bus.$emit('projectPropSet', 'archive', this.archive)
+        this.$store.dispatch({
+          type: 'setProjectProperty',
+          project: { archive: this.archive}
+        })
       },
       setFlag() {
-        bus.$emit('projectPropSet', 'flag', this.flag)
+        this.$store.dispatch({
+          type: 'setProjectProperty',
+          project: { flag: this.flag}
+        })
       }
     },
     created(){
-      var vm = this
       this.setInitProject()
       // Get Available tactics
       axios.get('/api/v1/projects/new.json')
         .then( response => {
-          vm.available_states = response.data.states
+          this.available_states = response.data.states
         }).catch(error => {
           console.log(error)
         })

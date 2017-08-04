@@ -3,7 +3,7 @@
     <transition name="fade">
       <LoadScreen v-if="loading"></LoadScreen>
     </transition>
-    <div id="accountList" v-if="validUser">
+    <div id="accountList">
       <div class="row">
         <div class="columns">
           <h2>Users</h2>
@@ -52,35 +52,24 @@
         </div>
       </div>
     </div>
-
-    <div id="login" v-if="!loading && login">
-      <Login></Login>
-    </div>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
   import axios from 'axios'
-  import bus from '../../bus'
-  import Login from '../shared/login/index.vue'
-
-  let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-  axios.defaults.headers.common['X-CSRF-Token'] = token
-  axios.defaults.headers.common['Accept'] = 'application/json'
 
   export default {
     name: 'AdminList',
-    components: {
-      Login
+    metaInfo() {
+      return {
+        title: this.$route.meta.title
+      }
     },
     data() {
       return {
         loading: false,
-        validUser: false,
-        login: false,
         message: '',
-        users: [],
         pagination: {
           current: null,
           next: null,
@@ -93,17 +82,8 @@
       ...mapGetters({
         authUser: 'authUser'
       }),
-    },
-    watch: {
-      'authUser.id': function(id) {
-        if(id != null) {
-          this.validUser = true
-        }
-      },
-      validUser(status) {
-        if(this.validUser == true && this.users.length == 0) {
-          this.fetchData()
-        }
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
       }
     },
     methods: {
@@ -119,7 +99,7 @@
       setData(data, err) {
         if(!err) {
           this.loading = false
-          this.users = data.users
+          this.$store.dispatch('setUsers', data.users)
           this.message = "Succesfully found all users."
           // this.pagination.next = data.next_page
           // this.pagination.prev = data.prev_page
@@ -127,9 +107,8 @@
         }
       },
       deleteUser(user) {
-        var vm = this
         axios.delete('/users/' + user.id, {
-          authenticity_token: token,
+          authenticity_token: this.token,
           user : user,
         })
         .then(response => {
@@ -146,9 +125,7 @@
       },
     },
     mounted(){
-      if(this.authUser.id) {
-        this.validUser = true
-      }
+
     },
     beforeRouteEnter(to, from, next) {
       // var page = to.query.page

@@ -1,7 +1,7 @@
 <template>
   <div>
     <LoadScreen v-if="loading"></LoadScreen>
-    <section id="projectList" class="pad-small" v-if="validUser">
+    <section id="projectList" class="pad-small" v-if="authUser.id">
       <div class="row">
         <div class="columns">
           <h2>Project Requests</h2>
@@ -60,7 +60,7 @@
       </div>
     </section>
 
-    <div id="login" v-if="!loading && login">
+    <div id="login" v-if="!loading && authUser.role == 'public'">
       <Login></Login>
     </div>
   </div>
@@ -69,19 +69,21 @@
 <script>
   import { mapGetters } from 'vuex'
   import axios from 'axios'
-  import bus from '../../bus'
   import Login from '../shared/login/index.vue'
 
   export default {
     name: 'ProjectList',
+    metaInfo() {
+      return {
+        title: this.$route.meta.title
+      }
+    },
     components: {
       Login
     },
     data() {
       return {
         loading: false,
-        validUser: false,
-        login: false,
         projects: [],
         pagination: {
           current: null,
@@ -131,20 +133,6 @@
         if(!this.$route.query.filter) {
           this.scope = ""
         }
-      },
-      'authUser.id': function(id) {
-        if(id != null) {
-          this.validUser = true
-        } else {
-          this.login = true
-        }
-      },
-      validUser(status) {
-        if(this.validUser == true && this.projects.length == 0) {
-          this.queryProjects()
-        } else {
-          this.login = true
-        }
       }
     },
     methods: {
@@ -170,11 +158,10 @@
             url = url
           }
         }
-        var vm = this
         axios.get(url).then( response => {
-          vm.setData(response.data)
+          this.setData(response.data)
         }).catch(error => {
-          vm.$router.push({name: '404'})
+          this.$router.push({name: '404'})
         })
       },
 
@@ -197,7 +184,6 @@
       },
 
       deleteProject(project) {
-        var vm = this
         axios.delete('/projects/' + project.id, {
           project : project,
         })
@@ -217,13 +203,6 @@
           console.log(error)
         });
       },
-    },
-    mounted(){
-      if(this.authUser.id) {
-        this.validUser = true
-      } else {
-        this.login = true
-      }
     },
     beforeRouteEnter(to, from, next) {
       var page = to.query.page
