@@ -148,6 +148,7 @@ export const store = new Vuex.Store({
       $('#reveal').foundation('open');
     },
     closeReveal({commit}) {
+      $('#reveal').foundation('close');
       var emptyReveal = {
         reveal_type: null,
         title: null,
@@ -155,7 +156,6 @@ export const store = new Vuex.Store({
         pid: null
       }
       commit('setReveal', emptyReveal)
-      $('#reveal').foundation('close');
     },
     checkValidUser({commit, state}, id) {
       if(state.authUser.role == 'admin') {

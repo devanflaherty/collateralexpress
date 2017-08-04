@@ -69,7 +69,6 @@
 <script>
   import { mapGetters } from 'vuex'
   import axios from 'axios'
-  import bus from '../../bus'
   import Login from '../shared/login/index.vue'
 
   export default {
@@ -154,11 +153,10 @@
             url = url
           }
         }
-        var vm = this
         axios.get(url).then( response => {
-          vm.setData(response.data)
+          this.setData(response.data)
         }).catch(error => {
-          vm.$router.push({name: '404'})
+          this.$router.push({name: '404'})
         })
       },
 
@@ -181,7 +179,6 @@
       },
 
       deleteProject(project) {
-        var vm = this
         axios.delete('/projects/' + project.id, {
           project : project,
         })

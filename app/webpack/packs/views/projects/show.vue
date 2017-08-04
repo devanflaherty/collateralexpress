@@ -7,7 +7,7 @@
         <!-- Project Info -->
         <div class="columns small-12 medium-8 large-9" :class="{'pad-small': authUser.role == 'contact'}">
 
-          <AdminUpdates v-if="authUser.role == 'admin'" :project="project" :contact="contact"></AdminUpdates>
+          <AdminUpdates v-if="authUser.role == 'admin'"></AdminUpdates>
 
           <div id="projectInfo" class="pad-small pad-in-small">
             <h2 class="banner" :class="{'black-banner':project.archive}">{{project.title}}</h2><br>
@@ -201,13 +201,12 @@
       },
 
       setData(data, err) {
-        var vm = this
         // if we have an ID param
         if(this.authUser.id && !err) {
           // if there is an authUser
           // We make a request with the ID Param
           if(this.authUser.role == 'contact' && this.authUser.id != data.contact.id) {
-            vm.$notify({
+            this.$notify({
               title: "Please Log In",
               text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again.",
               group: 'auth'
@@ -240,7 +239,7 @@
             }
           })
 
-          this.$set(vm.contact, 'id', data.contact.id)
+          this.$store.dispatch('setContactProperty', ['id', data.contact.id])
 
           document.title = data.project.title + " | Collateral Express"
         } else {

@@ -32,6 +32,7 @@ class ContactsController < ApplicationController
     @contact = Contact.find(params[:id])
     respond_to do |format|
       # Using cookies so we can access ID via javascript
+      puts "---Cookie Set---"
       cookies[:current_contact_id] = @contact.id
       if @contact.update_attributes(contact_params)
         # Find project if updated from project form

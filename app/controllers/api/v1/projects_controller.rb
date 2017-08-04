@@ -16,6 +16,7 @@ class Api::V1::ProjectsController < ApplicationController
     @project = Project.new
     @project[:status] = "open"
     @project[:title] = nil
+    @project[:user_id] = 1
     @project[:deliverables] = "0"
   end
 

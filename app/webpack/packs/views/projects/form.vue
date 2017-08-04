@@ -211,7 +211,6 @@
                   <contact
                     :contact-query="contactQuery"
                     :project-id="project.id"
-                    :token="token"
                     @contactEmit="updateContact"
                   ></contact>
                 </div>
@@ -270,7 +269,6 @@ import UserFields from "./components/form/user.vue"
 
 export default {
   name: 'NewForm',
-  props: ['token'],
   mixins: [ProjectSubmission, DeleteProject, ProgressMixin, onValidation],
   components: {
     Login,
@@ -297,8 +295,11 @@ export default {
       validUser: 'validUser',
       project: 'project',
       projectMedia: 'projectMedia',
-      availableTactics: 'availableTactics'
+      availableTactics: 'availableTactics',
     }),
+    token() {
+      return document.getElementsByName('csrf-token')[0].getAttribute('content')
+    },
     page_title() {
       // We create a property for the page title based on the $route.meta.title
       return this.$route.meta.title
@@ -357,14 +358,13 @@ export default {
     },
 
     setData(data, err) {
-      var vm = this
       // if we have an ID param
       if(this.authUser.id && !err) {
         // if there is an authUser
         // We make a request with the ID Param
         if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
           // If the contact id is not equal to what is returned
-          vm.$store.dispatch({
+          this.$store.dispatch({
             type: 'setReveal',
             reveal_type: 'notice',
             title: "Not Authorized",
@@ -428,7 +428,10 @@ export default {
       // When the contact component finds an existing contact, or
       // There is a new contact we will update the project with that contact
       // Will either be null or the contacts ID
-      this.$store.dispatch('setProjectProperty', ['contact_id', contact.id])
+      this.$store.dispatch({
+        type: 'setProjectProperty',
+        set: ['contact_id', contact.id]
+      })
       // This would be the last time(s) the contactQuery is set in it's life span
       // It inherits the ID found in the contact Component
       this.contactQuery = contact.id
@@ -476,7 +479,6 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
-    this.$store.dispatch('closeReveal')
     bus.$emit('progressEmit', 0)
     next()
   },
