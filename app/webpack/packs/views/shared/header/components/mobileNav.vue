@@ -1,5 +1,5 @@
 <template>
-  <nav id="mobileNav" :class="{'show' : !mobileNav, 'hidden' : mobileNav}" :style="{height: topSet}">
+  <nav id="mobileNav" :class="{'show' : mobileNav, 'hidden' : !mobileNav}" :style="{height: topSet}">
     <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
     <a href="#launchContact" @click.prevent="launchContact">Contact</a>
   </nav>
@@ -31,7 +31,7 @@ export default {
   },
   watch: {
     mobileNav(bool) {
-      if(bool) {
+      if(!bool) {
         this.topSet = '0px'
       } else {
         this.topSet = this.getOffset()

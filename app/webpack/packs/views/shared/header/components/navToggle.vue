@@ -1,5 +1,5 @@
 <template>
-  <button id="navToggle" @click="toggle()" :class="[{ isActive: !mobileNav, notActive: mobileNav }]">
+  <button id="navToggle" @click="toggle()" :class="[{ isActive: mobileNav, notActive: !mobileNav }]">
     <span></span>
     <span></span>
   </button>
