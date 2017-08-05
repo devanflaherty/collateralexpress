@@ -199,11 +199,18 @@
     methods: {
       fetchData() {
         this.loading = true
-        axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
-          this.setData(response.data)
-        }).catch(error => {
-          this.setData(response.data, error)
-        })
+        if(this.$route.params.id) {
+          this.$Progress.start()
+          axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+            this.$Progress.finish()
+            this.setData(response.data)
+          }).catch(error => {
+            this.Progress.fail()
+            this.setData(response.data, error)
+          })
+        } else {
+          this.$router.push({name: '404'})
+        }
       },
 
       setData(data, err) {
@@ -260,21 +267,24 @@
         }
       }
     },
-    beforeRouteEnter (to,from,next) {
-      if(to.params.id) {
-        axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-          next(vm => vm.setData(response.data))
-        }).catch(error => {
-          next(vm => vm.setData(response.data, error))
-        })
-      } else {
-        next({name: '404'})
-      }
-    },
-    beforeRouteUpdate (to, from, next) {
+    created() {
       this.fetchData()
-      next()
     }
+    // beforeRouteEnter (to,from,next) {
+    //   if(to.params.id) {
+    //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
+    //       next(vm => vm.setData(response.data))
+    //     }).catch(error => {
+    //       next(vm => vm.setData(response.data, error))
+    //     })
+    //   } else {
+    //     next({name: '404'})
+    //   }
+    // },
+    // beforeRouteUpdate (to, from, next) {
+    //   this.fetchData()
+    //   next()
+    // }
   }
 </script>
 

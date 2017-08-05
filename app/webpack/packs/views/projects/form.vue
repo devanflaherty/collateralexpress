@@ -339,17 +339,21 @@ export default {
     },
     fetchData() {
       this.loading = true
-
+      this.$Progress.start()
       if(this.$route.name == "edit") {
         axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
+          this.$Progress.fail()
           this.setData(response.data, error)
         })
       } else {
         axios.get('/api/v1/projects/new.json').then( response => {
+          this.$Progress.finish()
           this.setNewData(response.data)
         }).catch(error => {
+          this.$Progress.fail()
           this.setNewData(response.data, error)
         })
       }
@@ -413,6 +417,7 @@ export default {
         this.loading = false
         this.$store.dispatch('setMessage','New Project')
         this.$store.dispatch('setProject', data.project)
+        this.$store.dispatch('setProjectMedia', [])
         this.$validator.clean();
       } else {
         this.$router.push({ name: '404' })
@@ -438,7 +443,8 @@ export default {
     }
   },
   created() {
-    this.$route.meta.title
+    this.pageTitle = this.$route.meta.title
+    this.fetchData()
   },
   mounted() {
     // We set contactQuery to contactSession
@@ -455,28 +461,28 @@ export default {
       this.dzUpload = bool
     })
   },
-  beforeRouteEnter (to,from,next) {
-    // Before we hit the page we will fetch Data
-    if(to.name == "edit") {
-      axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-        next(vm => vm.setData(response.data))
-      }).catch(error => {
-        next(vm => vm.setData(response.data, error))
-      })
-    } else {
-      axios.get('/api/v1/projects/new.json').then( response => {
-        next(vm => vm.setNewData(response.data))
-      }).catch(error => {
-        next(vm => vm.setNewData(response.data, error))
-      })
-    }
-  },
-  beforeRouteUpdate (to, from, next) {
-    // Once the route has updated we will fetch Data
-    // Will run if route ID changes but we stay on this page
-    this.fetchData()
-    next()
-  },
+  // beforeRouteEnter (to,from,next) {
+  //   // Before we hit the page we will fetch Data
+  //   if(to.name == "edit") {
+  //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
+  //       next(vm => vm.setData(response.data))
+  //     }).catch(error => {
+  //       next(vm => vm.setData(response.data, error))
+  //     })
+  //   } else {
+  //     axios.get('/api/v1/projects/new.json').then( response => {
+  //       next(vm => vm.setNewData(response.data))
+  //     }).catch(error => {
+  //       next(vm => vm.setNewData(response.data, error))
+  //     })
+  //   }
+  // },
+  // beforeRouteUpdate (to, from, next) {
+  //   // Once the route has updated we will fetch Data
+  //   // Will run if route ID changes but we stay on this page
+  //   this.fetchData()
+  //   next()
+  // },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
     bus.$emit('progressEmit', 0)
