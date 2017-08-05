@@ -11,8 +11,7 @@
     <section id="homeSteps">
       <div class="row">
         <div class="column section-heading">
-          <h4 class="serif">Don't Hesistate</h4>
-          <h2>Live your best life now</h2>
+          <h2>Where your success begins</h2>
         </div>
       </div>
 
@@ -62,15 +61,23 @@
     <section id="assets" class="flex align-middle">
       <div class="rellax-image"
         style="background-image: url(https://unsplash.it/g/600/900)"></div>
+      <div class="overlay"></div>
 
       <div class="row align-center">
         <div class="column shrink">
           <blockquote class="white-w-magenta">
             <p>
-              Thousands of assets<br>
-              <strong>At your finger tips</strong>
+              Flex your<br>
+              <strong>Brand Muscle</strong>
             </p>
           </blockquote>
+
+          <p>
+            First go to Brand Muscle. There you'll find examples of sales flyers, emails, brochures. Find the type of material you need then upload the PDF here to Collateral Express. We'll customize your vision to the needs you express in the Project Request Form.
+          </P>
+          <p>
+            Can't find it on Brand Muscle?  No problem. Tell us what you need by emailing us <a href="mailto:coexdemo@gmail.com">here</a>. We'll help out in a jiff.
+          </p>
 
           <a href="#" class="button hollow">Brand Muscle</a>
         </div>

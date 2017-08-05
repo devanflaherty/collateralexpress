@@ -160,8 +160,18 @@
   @include breakpoint(medium) {
     padding: 6rem;
   }
+  .overlay {
+    @include overlay($black, 0.5);
+  }
   .row {
     position: relative;
+  }
+  p {
+    color: $white;
+    a {
+      font-family: Tele-Ult;
+      color: $white;
+    }
   }
   .button {
     color: $white;
