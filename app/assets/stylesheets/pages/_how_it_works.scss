@@ -114,6 +114,12 @@
       }
     }
   }
+  #projectCard {
+    transition: all 0.5s ease;
+    &:hover {
+      box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
+    }
+  }
   .can-do-buttons {
     @include flex;
     flex-direction: row;

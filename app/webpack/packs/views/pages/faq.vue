@@ -1,29 +1,15 @@
 <template>
   <div id="faq" v-once>
-    <HeroHeader :title="'<p>Need some help<br><strong>We\'ve got your back</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
-
-    <section id="copy" class="pad">
-      <div class="row">
-        <div class="columns small-5">
-          <p>We understand that using tools like Collateral Express can leave you with a few questions. So rather than making you dig for answers that you may never find, or going to your coleague not wanting to sound like the tech laggard we made this page for you.</p>
-        </div>
-
-        <div class="columns small-5 small-offset-2">
-          <p>If you can’t find the answer to a particular question, or if you have run across any bugs while using the application please contact us by clicking the link below.</p>
-          <a href="mailto:hello@saltagency.co?subject=Collateral%20Express%20Support" class="button hollow">Contact Support</a>
-        </div>
-      </div>
-    </section>
-
-    <hr class="no-margin">
+    <HeroHeader :title="'<p>If you’ve got questions<br><strong>We\'ve got your FAQ</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
 
     <section id="faqContainer" class="pad white-bg">
-      <div class="row">
-        <div class="columns small-3">
+      <div class="row align-center">
+        <div class="columns small-11 medium-3">
           <h2>FAQ's</h2>
-          <p>Click a heading to reveal the answer.</p>
+          <p>Can’t find your answer here? Found a bug? Give support a shout. They’ve got your back in a big way.</p>
+          <a href="mailto:hello@saltagency.co?subject=Collateral%20Express%20Support" class="button hollow">Contact Support</a>
         </div>
-        <div class="columns small-8 small-offset-1">
+        <div class="columns small-11 medium-8 medium-offset-1">
           <ul id="accordion" class="accordion" data-accordion>
 
             <li v-for="(faq, index) in faqs" class="accordion-item" :class="{'is-active': index === 0}" data-accordion-item>

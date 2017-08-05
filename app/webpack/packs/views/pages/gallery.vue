@@ -2,14 +2,14 @@
   <section id="gallery">
 
     <HeroHeader
-      :title="'<p>See what\'s been made<br><strong>With collateral express</strong></p>'"
+      :title="'<p>Believe your eyes<br><strong>We made all this here</strong></p>'"
       :image="'https://unsplash.it/g/1200/720'">
     </HeroHeader>
 
     <div class="row pad-small">
       <div class="column">
         <h2>Gallery</h2>
-        <p>See what has been made through Collateral Express.</p>
+        <p>Things of beauty--crushing sales targets.</p>
 
         <div class="row small-up-2 medium-up-3">
 
