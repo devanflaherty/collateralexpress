@@ -7,6 +7,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import bus from '../../../../bus'
 
 export default {
   data() {
@@ -23,6 +24,9 @@ export default {
       var count = this.links.length
       var offset = count * 64
       return offset + 64 + 'px'
+    },
+    launchContact() {
+      bus.$emit('contactReveal')
     }
   },
   watch: {

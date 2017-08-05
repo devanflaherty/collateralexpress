@@ -1,10 +1,10 @@
 <template>
   <footer>
     <div class="row expanded">
-      <div class="columns">
+      <div class="columns small-12 medium-6">
         <p>&copy; Copyright T-Mobile Collateral Express</p>
       </div>
-      <div class="columns text-right flex align-middle align-right">
+      <div class="columns small-12 medium-6 text-right">
         <nav id="footerNav">
           <router-link :to="{name: 'home'}">Home</router-link>
           <router-link :to="{name: 'new'}">Create Project Request</router-link>
@@ -25,13 +25,5 @@
 </script>
 
 <style scoped lang="scss">
-footer {
-  color: #999;
-  #footerNav {
-   a {
-     color: #999;
-     margin-left: .5rem;
-   }
-  }
-}
+
 </style>

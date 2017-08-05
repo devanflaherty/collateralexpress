@@ -12,7 +12,7 @@
           <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
           <a href="#launchContact" @click.prevent="launchContact">Contact</a>
         </nav>
-        <toggle class="hide-for-navbreak"></toggle>
+        <toggle class="hide-for-navbreak" :class="{'white-toggle': overlay}"></toggle>
         <MobileNav :links="links" class="hide-for-navbreak"></MobileNav>
       </div>
     </div>

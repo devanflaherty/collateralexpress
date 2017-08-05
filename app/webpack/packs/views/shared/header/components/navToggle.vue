@@ -45,6 +45,11 @@ export default {
       }
     }
   }
+  .white-toggle {
+    span:after, span:before {
+      background: white;
+    }
+  }
   span {
     background-color: transparent;
     cursor: pointer;

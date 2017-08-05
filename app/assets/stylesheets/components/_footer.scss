@@ -1,0 +1,28 @@
+footer {
+  color: #999;
+  @include breakpoint(small only){
+    padding: 1rem;
+  }
+  #footerNav {
+    @include flex;
+    @include flex-align(left, middle);
+    flex-wrap: wrap;
+    @include breakpoint(medium){
+      flex-wrap: nowrap;
+      @include flex-align(right, middle);
+    }
+    a {
+      color: #999;
+      margin-left: .5rem;
+      &:hover {
+        color: $black;
+      }
+      @include breakpoint(small only){
+        margin-left: 0;
+        flex: 1 0 100%;
+        text-align: left;
+        display: block;
+      }
+    }
+  }
+}
