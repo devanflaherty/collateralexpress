@@ -4,7 +4,7 @@
       <div class="columns small-12 medium-6">
         <p>&copy; Copyright T-Mobile Collateral Express</p>
       </div>
-      <div class="columns small-12 medium-6 text-right">
+      <div class="columns small-12 medium-6 flex align-middle text-right">
         <nav id="footerNav">
           <router-link :to="{name: 'home'}">Home</router-link>
           <router-link :to="{name: 'new'}">Create Project Request</router-link>

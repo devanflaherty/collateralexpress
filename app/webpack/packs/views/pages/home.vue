@@ -10,7 +10,7 @@
 
     <section id="homeSteps">
       <div class="row">
-        <div class="column section-heading">
+        <div class="column text-center" style="margin-bottom: 2rem">
           <h2>Where your success begins</h2>
         </div>
       </div>

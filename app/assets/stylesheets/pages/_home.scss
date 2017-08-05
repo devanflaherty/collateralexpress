@@ -58,7 +58,10 @@
 }
 
 #homeSteps {
-  padding: 6rem 0;
+  padding: 3rem 0;
+  @include breakpoint(medium){
+    padding: 6rem 0;
+  }
   #stepColumns {
     > .columns {
       @include breakpoint(small only) {
