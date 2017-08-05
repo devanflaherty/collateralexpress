@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id, 'medium-12 large-10': !validUser, 'medium-8 large-7': validUser }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || authUser.id, 'medium-12 large-10': !project && !authUser.id }">
 
             <header>
               <div class="row">
@@ -176,7 +176,7 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
+          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
             <aside id="projectSidebar">
               <nav v-if="authUser.id">
                 <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: $route.params.id} }">View Project</router-link>
