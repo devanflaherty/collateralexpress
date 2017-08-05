@@ -197,6 +197,8 @@ const router = new VueRouter ({
 router.beforeEach((to, from, next) => {
   authRequest(to, from, next)
 
+  store.dispatch('toggleMobileNav', !store.getters.mobileNav)
+
   next()
 })
 

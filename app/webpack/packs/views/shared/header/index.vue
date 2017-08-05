@@ -12,8 +12,8 @@
           <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
           <a href="#launchContact" @click.prevent="launchContact">Contact</a>
         </nav>
-        <toggle class="hide-for-navbreak" @toggleNav="toggleNav()"></toggle>
-        <MobileNav :links="links" :toggleState="nav_visible" class="hide-for-navbreak"></MobileNav>
+        <toggle class="hide-for-navbreak"></toggle>
+        <MobileNav :links="links" class="hide-for-navbreak"></MobileNav>
       </div>
     </div>
   </header>
@@ -33,8 +33,7 @@ export default {
   },
   data() {
     return {
-      overlay: false,
-      nav_visible: false,
+      overlay: false
     }
   },
   computed: mapGetters(['authUser', 'links']),
@@ -53,10 +52,7 @@ export default {
     },
     launchContact() {
       bus.$emit('contactReveal')
-    },
-    toggleNav() {
-      this.nav_visible = !this.nav_visible
-    },
+    }
   },
   mounted() {
     this.overlayHeader()
