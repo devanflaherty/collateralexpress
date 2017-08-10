@@ -1,22 +1,25 @@
 <template>
-  <button id="navToggle" @click="toggle()" :class="[{ isActive: active, notActive: !active }]">
+  <button id="navToggle" @click="toggle()" :class="[{ isActive: mobileNav, notActive: !mobileNav }]">
     <span></span>
     <span></span>
   </button>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
       message: "Toggle",
-      active: false
     }
+  },
+  computed: {
+    ...mapGetters(['mobileNav']),
   },
   methods: {
     toggle() {
-      this.active = !this.active;
-      this.$emit('toggleNav')
+      this.$store.dispatch('toggleMobileNav', !this.mobileNav)
     }
   }
 }
@@ -40,6 +43,11 @@ export default {
       span:after, span:before {
         background: #EB0183;
       }
+    }
+  }
+  .white-toggle {
+    span:after, span:before {
+      background: white;
     }
   }
   span {

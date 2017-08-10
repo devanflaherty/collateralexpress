@@ -1,18 +1,21 @@
 <template>
   <section id="admin" class="pad">
     <div class="row align-center">
-      <div class="columns small-11 medium-9 large-6">
+      <div class="columns small-11 medium-12 large-6">
         <router-view>
         </router-view>
       </div>
-      <aside class="columns small-11 medium-3 large-4" v-if="authUser.role == 'admin'">
+      <aside class="columns small-11 medium-12 large-4" v-if="authUser.role == 'admin'">
+        <h3>Admin Actions</h3>
+        <hr class="no-margin">
         <nav>
-          <router-link :to="{name: 'account'}" class="button expanded" v-if="$route.name != 'account'">Edit Account</router-link>
+          <div class="flex">
+            <router-link :to="{name: 'account'}" class="button expanded" v-if="$route.name != 'account'">Edit Account</router-link>
+            <router-link :to="{name: 'new-admin'}" class="button expanded secondary" v-if="$route.name != 'new-admin'">Add New Admin</router-link>
+          </div>
+          <router-link :to="{name: 'list-admin'}" class="button expanded hollow">View All Admin Users</router-link>
 
-          <router-link :to="{name: 'list-admin'}" class="button expanded hollow">All Admin</router-link>
-          <router-link :to="{name: 'new-admin'}" class="button expanded">Add Admin</router-link>
-
-          <a href="#logout" @click.prevent="logoutUser" class="button expanded secondary">Logout</a>
+          <a href="#logout" style="float: right" @click.prevent="logoutUser">Logout</a>
         </nav>
       </aside>
     </div>
@@ -72,5 +75,9 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
+}
+h3 {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 </style>

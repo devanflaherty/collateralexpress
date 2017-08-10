@@ -58,7 +58,10 @@
 }
 
 #homeSteps {
-  padding: 6rem 0;
+  padding: 3rem 0;
+  @include breakpoint(medium){
+    padding: 6rem 0;
+  }
   #stepColumns {
     > .columns {
       @include breakpoint(small only) {
@@ -160,8 +163,18 @@
   @include breakpoint(medium) {
     padding: 6rem;
   }
+  .overlay {
+    @include overlay($black, 0.5);
+  }
   .row {
     position: relative;
+  }
+  p {
+    color: $white;
+    a {
+      font-family: Tele-Ult;
+      color: $white;
+    }
   }
   .button {
     color: $white;

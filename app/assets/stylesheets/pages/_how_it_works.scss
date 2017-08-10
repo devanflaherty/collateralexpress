@@ -107,6 +107,19 @@
       }
     }
   }
+  .can-do-col:first-of-type {
+    @include breakpoint(small only){
+      img {
+        width: 25%!important;
+      }
+    }
+  }
+  #projectCard {
+    transition: all 0.5s ease;
+    &:hover {
+      box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
+    }
+  }
   .can-do-buttons {
     @include flex;
     flex-direction: row;
@@ -116,24 +129,33 @@
     a {
       margin-bottom: 0;
       @include breakpoint(small only) {
+        line-height: 3px;
         flex: 1 0 100%;
         margin-bottom: .25rem;
       }
     }
   }
   .card {
-    height: 370px;
-    width: 370px;
+    height: 290px;
+    width: 290px;
     position: relative;
     border-radius: 6px;
-    padding: 3rem;
+    padding: 2rem;
     margin: 0 1rem 2rem;
+    @include breakpoint(medium){
+      padding: 3rem;
+      height: 370px;
+      width: 370px;
+    }
     .can-do-image {
       width: auto;
       height: auto;
       img {
         display: block;
         margin: 0 auto;
+        @include breakpoint(small only){
+          width: 50%;
+        }
       }
     }
 

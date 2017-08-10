@@ -137,6 +137,8 @@
     },
     methods: {
       queryProjects() {
+        this.$Progress.start()
+        var url = this.resource_url
         if(this.$route.query) {
           var url = this.resource_url + "?"
           var filter = null
@@ -159,8 +161,10 @@
           }
         }
         axios.get(url).then( response => {
+          this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
+          this.$Progress.fail()
           this.$router.push({name: '404'})
         })
       },
@@ -204,28 +208,8 @@
         });
       },
     },
-    beforeRouteEnter(to, from, next) {
-      var page = to.query.page
-      var filter = to.query.filter
-      var url = '/api/v1/projects.json'
-      if(page && filter) {
-        url = url + '?page=' + page + "&q=" + filter
-      } else if (page && !filter) {
-        url = url + '?page=' + page
-      } else if (filter && !page) {
-        url = url + '?q=' + filter
-      } else {
-        url = url
-      }
-      axios.get(url).then( response => {
-        next(vm => vm.setData(response.data))
-      }).catch(error => {
-        next({name: '404'})
-      })
-    },
-    beforeRouteUpdate (to, from, next) {
+    created() {
       this.queryProjects()
-      next()
     }
   }
 </script>

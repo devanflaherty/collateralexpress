@@ -53,7 +53,8 @@ export const store = new Vuex.Store({
         url: "faq"
       }
     ],
-    links: []
+    links: [],
+    mobileNav: false
   },
   getters: {
     authUser(state) {
@@ -79,6 +80,9 @@ export const store = new Vuex.Store({
     },
     links(state) {
       return state.links
+    },
+    mobileNav(state) {
+      return state.mobileNav
     }
   },
   mutations: {
@@ -107,6 +111,9 @@ export const store = new Vuex.Store({
     },
     setLinks(state, payload) {
       state.links = payload
+    },
+    toggleMobileNav(state, payload) {
+      state.mobileNav = payload
     }
   },
   actions: {
@@ -184,6 +191,9 @@ export const store = new Vuex.Store({
       } else {
         commit('setLinks', state.defaultLinks)
       }
-    }
+    },
+    toggleMobileNav({commit}, payload) {
+      commit('toggleMobileNav', payload)
+    },
   }
 })

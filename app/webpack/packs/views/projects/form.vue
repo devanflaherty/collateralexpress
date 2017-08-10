@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id, 'medium-12 large-10': !validUser, 'medium-8 large-7': validUser }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || authUser.id, 'medium-12 large-10': !project && !authUser.id }">
 
             <header>
               <div class="row">
@@ -176,7 +176,7 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-4 large-3 columns show-for-medium">
+          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
             <aside id="projectSidebar">
               <nav v-if="authUser.id">
                 <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: $route.params.id} }">View Project</router-link>
@@ -339,17 +339,21 @@ export default {
     },
     fetchData() {
       this.loading = true
-
+      this.$Progress.start()
       if(this.$route.name == "edit") {
         axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
+          this.$Progress.fail()
           this.setData(response.data, error)
         })
       } else {
         axios.get('/api/v1/projects/new.json').then( response => {
+          this.$Progress.finish()
           this.setNewData(response.data)
         }).catch(error => {
+          this.$Progress.fail()
           this.setNewData(response.data, error)
         })
       }
@@ -413,6 +417,7 @@ export default {
         this.loading = false
         this.$store.dispatch('setMessage','New Project')
         this.$store.dispatch('setProject', data.project)
+        this.$store.dispatch('setProjectMedia', [])
         this.$validator.clean();
       } else {
         this.$router.push({ name: '404' })
@@ -438,7 +443,8 @@ export default {
     }
   },
   created() {
-    this.$route.meta.title
+    this.pageTitle = this.$route.meta.title
+    this.fetchData()
   },
   mounted() {
     // We set contactQuery to contactSession
@@ -455,28 +461,28 @@ export default {
       this.dzUpload = bool
     })
   },
-  beforeRouteEnter (to,from,next) {
-    // Before we hit the page we will fetch Data
-    if(to.name == "edit") {
-      axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-        next(vm => vm.setData(response.data))
-      }).catch(error => {
-        next(vm => vm.setData(response.data, error))
-      })
-    } else {
-      axios.get('/api/v1/projects/new.json').then( response => {
-        next(vm => vm.setNewData(response.data))
-      }).catch(error => {
-        next(vm => vm.setNewData(response.data, error))
-      })
-    }
-  },
-  beforeRouteUpdate (to, from, next) {
-    // Once the route has updated we will fetch Data
-    // Will run if route ID changes but we stay on this page
-    this.fetchData()
-    next()
-  },
+  // beforeRouteEnter (to,from,next) {
+  //   // Before we hit the page we will fetch Data
+  //   if(to.name == "edit") {
+  //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
+  //       next(vm => vm.setData(response.data))
+  //     }).catch(error => {
+  //       next(vm => vm.setData(response.data, error))
+  //     })
+  //   } else {
+  //     axios.get('/api/v1/projects/new.json').then( response => {
+  //       next(vm => vm.setNewData(response.data))
+  //     }).catch(error => {
+  //       next(vm => vm.setNewData(response.data, error))
+  //     })
+  //   }
+  // },
+  // beforeRouteUpdate (to, from, next) {
+  //   // Once the route has updated we will fetch Data
+  //   // Will run if route ID changes but we stay on this page
+  //   this.fetchData()
+  //   next()
+  // },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
     bus.$emit('progressEmit', 0)

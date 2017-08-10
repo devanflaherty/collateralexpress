@@ -24,29 +24,22 @@
     <section id="copy" class="pad">
       <div class="row align-center">
         <div class="columns small-11 medium-5">
-          <h3>How are we different?</h3>
+          <h4>Why Collateral Express</h4>
+          <h3 class="banner">Keep it on track.</h3>
           <p>
-            With tools like TMAP and Brand Muscle already in your tool belt you might be wondering, “Why do I need to use Collateral Express?”, well that is a great question.
-          </p>
-          <p>
-            Collateral Express is the go-to tool for any requesting any new projects, or requiring updates for an existing project.
-          </p>
-          <p>
-            What that means for you is the days of shooting off an email and hoping it got in the right hands is over! Collateral Express gives you peace that your project is going through the correct steps and is added to the correct system all to help ensure it gets done in a timely and efficient manner.
+            The idea’s to give you one place where you can request projects and they’re automatically taken care of and easily trackable. Request a project here through Collateral Express, and you know it’s in the right hands and will get done—on-time and on-target.
           </p>
         </div>
 
         <div class="columns small-11 medium-5 medium-offset-1">
           <div style="margin-top:4rem" class="hide-for-medium"></div>
-          <h4>What you need to know</h4>
+          <h4>You got this</h4>
+          <h3 class="banner">It’s not that different</h3>
           <p>
-            Making all project requests go through a system to make your life easier will of course require some change in protocols. This is for the best!
+            With a small change to how you submit jobs, you get more control and more insight into what’s going on. All we ask is you have the information we need to complete it for you.
           </p>
           <p>
-            All that we ask is that you have all the information needed to help us complete your project. It really is that simple.
-          </p>
-          <p>
-            Once your project has been received and approved, you will be informed with an ETD. Please be ready to answer any questions the project manager may have to help complete the project quickly.
+            Once we’ve received your project and given the go-ahead, you’ll get an Estimated Time of Delivery (EDT) and any follow-up questions from the project manager.
           </p>
         </div>
       </div>
@@ -67,11 +60,13 @@
                 <div class="columns small-10 medium-5">
                   <blockquote data-swiper-parallax="-200">
                     <p>
-                      Fill Out A<br>
-                      <strong>Project Request</strong>
+                      Go to Brand Muscle<br>
+                      <strong>for inspiration</strong>
                     </p>
                   </blockquote>
-                  <p class="step-desc" style="margin-left:2rem;">Use the form and answer all the questions to the best of your knowledge. There are a variety of fields that will help the design team to take your request, so you can relax.</p>
+                  <p class="step-desc" style="margin-left:2rem;">
+                    Whether you're doing email, direct mail, flyers, or brochures, you’ll find all kinds of great marketing materials to use as a starting place.
+                  </p>
                 </div>
                 <div class="columns small-10 medium-3 show-for-medium">
                   <img src="/assets/slides/airplane.png" data-swiper-parallax="-500">
@@ -87,11 +82,11 @@
                 <div class="columns small-10 medium-6">
                   <blockquote data-swiper-parallax="-200">
                     <p class="white-banner">
-                      Stay connected as we<br>
-                      <strong>Review, assign, and complete</strong>
+                      Bring your genius to us<br>
+                      <strong>at Collateral Express.</strong>
                     </p>
                   </blockquote>
-                  <p class="step-desc">Another description and step</p>
+                  <p class="step-desc">Complete the Project Request Form. We’ve designed it to communicate everything needed to complete your project.</p>
                 </div>
                 <div class="columns small-10 medium-3 show-for-medium">
                   <img src="/assets/slides/airplane.png" data-swiper-parallax="-500">
@@ -108,11 +103,10 @@
                 <div class="columns small-10 medium-7">
                   <blockquote data-swiper-parallax="-200">
                     <p class="white-banner">
-                      Start using your new asset<br>
-                      <strong>Project Complete</strong>
+                      Relax and watch the magic happen.
                     </p>
                   </blockquote>
-                  <p class="step-desc">Another description and step</p>
+                  <p class="step-desc" style="width: 320px; margin-left: 2rem">We may have follow up questions for you—so don’t be surprised if we contact you after you get approval.</p>
                 </div>
               </div>
             </div>
@@ -128,11 +122,7 @@
 
     <section id="canDo" class="pad">
       <div class="text-center">
-        <h2>What can you do</h2>
-        <p>
-          Welcome to the one stop shop for your collateral needs.<br>
-          The question is what can you not do?
-        </p>
+        <h2>Start Here</h2>
       </div>
 
       <div class="can-do-cards row align-center">
@@ -142,7 +132,7 @@
               <img src="/assets/icons/search.png" >
             </div>
             <p>
-              Find an exisiting asset to help communicate the direction of your project request, include the link or file  on the project request form.
+              Find an exisiting asset to help communicate the direction of your project request, include the link or file on the project request form.
             </p>
             <div class="can-do-buttons">
               <a href="#" class="expanded button hollow">
@@ -153,15 +143,17 @@
         </div>
 
         <div class="can-do-col">
-          <div class="card primary-bg no-border text-center contrast-text">
-            <div class="can-do-image">
-              <img src="/assets/marketing/phone.png" >
+          <router-link :to="{ name: 'new'}">
+            <div id="projectCard" class="card primary-bg no-border text-center contrast-text">
+              <div class="can-do-image">
+                <img src="/assets/marketing/phone.png" >
+              </div>
+              <div>
+                <h4>Project Requests</h4>
+                <span>Request, Check-In, Complete</span>
+              </div>
             </div>
-            <div>
-              <h4>Project Requests</h4>
-              <span>Request, Check-In, Complete</span>
-            </div>
-          </div>
+          </router-link>
         </div>
       </div>
     </section>

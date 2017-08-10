@@ -1,37 +1,42 @@
 <template>
-  <nav id="mobileNav" :class="{'show' : toggleState, 'hidden' : !toggleState}" :style="{height: topSet}">
+  <nav id="mobileNav" :class="{'show' : mobileNav, 'hidden' : !mobileNav}" :style="{height: topSet}">
     <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
     <a href="#launchContact" @click.prevent="launchContact">Contact</a>
   </nav>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import bus from '../../../../bus'
+
 export default {
   data() {
     return {
       topSet: '0'
     }
   },
-  props: ['links', 'toggle-state'],
-
+  props: ['links'],
+  computed: {
+    ...mapGetters(['mobileNav']),
+  },
   methods: {
     getOffset() {
       var count = this.links.length
       var offset = count * 64
-      return offset + 'px'
+      return offset + 64 + 'px'
+    },
+    launchContact() {
+      bus.$emit('contactReveal')
     }
   },
   watch: {
-    toggleState(bool) {
+    mobileNav(bool) {
       if(!bool) {
         this.topSet = '0px'
       } else {
         this.topSet = this.getOffset()
       }
     }
-  },
-  created() {
-    // this.topSet = this.getOffset()
   }
 }
 </script>

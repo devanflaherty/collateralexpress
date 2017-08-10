@@ -75,6 +75,13 @@ const authRequest = function(to, from, next) {
 const router = new VueRouter ({
   mode: 'history',
   linkExactActiveClass: 'is-active',
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  },
   routes: [
   {
     name: 'home',
@@ -196,6 +203,8 @@ const router = new VueRouter ({
 // Set Document Title
 router.beforeEach((to, from, next) => {
   authRequest(to, from, next)
+
+  store.dispatch('toggleMobileNav', false)
 
   next()
 })
