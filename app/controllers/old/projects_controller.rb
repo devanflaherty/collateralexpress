@@ -1,5 +1,6 @@
 class ProjectsController < ApplicationController
-  #before_action :authenticate_user!, except: [:index, :show, :new]
+  before_action :authenticate_user!, except: [:index, :show, :new]
+  skip_before_action :verify_authenticity_token, :only => [:destroy]
   before_action :find_contact
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 

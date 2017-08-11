@@ -5,8 +5,7 @@ class CreateContacts < ActiveRecord::Migration[5.1]
       t.string :last_name,    :limit => 50
       t.string :email,        :null => false, :default => ''
       t.string :phone
-      t.string :branch
-      t.string :position
+      t.string :location
       t.string :avatar
 
       t.timestamps

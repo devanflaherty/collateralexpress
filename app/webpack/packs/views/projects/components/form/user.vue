@@ -4,7 +4,7 @@
     <p>Full Name: {{user.full_name}}</p>
     <p>Email: {{user.email}}</p>
     <p v-if="user.phone">Phone: {{user.phone}}</p>
-    <p v-if="user.branch">Branch: {{user.branch}}</p>
+    <p v-if="user.location">Location: {{user.location}}</p>
     <p v-if="user.position">Position: {{user.position}}</p>
 
     <!-- <input v-model.lazy="user.email" type="text">

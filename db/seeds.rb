@@ -19,7 +19,7 @@
   last_name: "Flaherty",
   email: "devanflaherty@gmail.com",
   phone: "480.388.1741",
-  branch: "Salt Agency"
+  location: "Whitefish"
 )
 
 @contactConnie = Contact.create(
@@ -27,7 +27,7 @@
   last_name: "Cermak",
   email: "connie@zoompop.com",
   phone: "444.333.7777",
-  branch: "ZoomPop"
+  location: "Whitefish"
 )
 
 # Create an initial event for the home page

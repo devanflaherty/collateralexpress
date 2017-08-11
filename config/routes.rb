@@ -1,37 +1,30 @@
 Rails.application.routes.draw do
   root 'app#index'
 
-  devise_for :users,
-    controllers: {
-      sessions: 'users/sessions',
-      registrations: 'users/registrations'
-    }
-
-  devise_scope :user do
-    delete 'users/:id', to: 'users/registrations#destroy_user', method: :delete
-  end
-
-  resources :projects, :except => [:index, :new, :edit, :show]
-  resources :contacts, :except => [:index, :new, :edit, :show]
-  resources :media, only: [:create, :delete, :destroy]
-
   ##-------------------------------------------------------##
   ## API Resources                                         ##
   ##-------------------------------------------------------##
   namespace :api do
     namespace :v1 do
-      resources :users, :except => [:new, :edit, :create, :update, :destroy]
+      post 'user_token' => 'user_token#create'
+      get 'user' => 'authenticate#index'
+      get 'refresh' => 'authenticate#refresh'
+      resources :users, :except => [:new, :edit]
+      put 'users' => 'users#update'
       resources :contacts
+      post 'contacts/clear', to: 'contacts#clear', method: :post
+      post 'contacts/login', to: 'contacts#login', method: :post
       resources :projects
+
+      resources :media, only: [:create, :delete, :destroy]
     end
   end
 
   ##-------------------------------------------------------##
   ## Custom Routes                                         ##
   ##-------------------------------------------------------##
-  post 'contacts/clear', to: 'contacts#clear', method: :post
-  post 'contacts/login', to: 'contacts#login', method: :post
-  get 'api/v1/authenticate', to: 'api/v1/authenticates#index'
+  # post 'contacts/clear', to: 'contacts#clear', method: :post
+  # post 'contacts/login', to: 'contacts#login', method: :post
 
   ##-------------------------------------------------------##
   ## Route to enable Vue Routes                            ##

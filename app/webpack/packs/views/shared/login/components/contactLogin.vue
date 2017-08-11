@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import axios from 'axios'
+  import FloatLabel from "../../floatLabel.vue"
 
   export default {
     name: 'ContactLogin',
@@ -25,6 +25,9 @@
         // persistent_url: null
       }
     },
+    components: {
+      FloatLabel
+    },
     props: ['project-user'],
     computed: {
       token() {
@@ -33,7 +36,7 @@
     },
     methods: {
       loginContact() {
-        axios.post('/contacts/login', {
+        this.axios.post('/api/v1/contacts/login', {
           utf8 : "✓",
           authenticity_token: this.token,
           contact_email : this.contact_email,

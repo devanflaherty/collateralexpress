@@ -9,7 +9,7 @@ class Contact < ApplicationRecord
   validates :phone, presence: true
 
   # Scopes
-  scope :agency, -> { where(branch: 'ZoomPop') }
+  scope :located, -> { where(location: 'ZoomPop') }
   scope :sorted, -> { order(email: "ASC") }
   scope :newest_first, -> { order(created_at: "DESC") }
   scope :search, -> (query) {where(["email LIKE ?", "%#{query}%"])}

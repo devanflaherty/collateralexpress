@@ -22,26 +22,22 @@
                 <div class="fieldset">
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.title"
                       v-validate="'required'"
-                      data-vv-value-path="model"
                       data-vv-name="Project Title"
                       :has-error="veeErrors.has('Project Title')"
                       :error-text="veeErrors.first('Project Title')"
-                      :attr="project.title"
-                      label="*Project Title"
-                      propKey="title"></FloatLabel>
+                      label="*Project Title"></FloatLabel>
                   </div>
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.description"
                       v-validate="'required'"
-                      data-vv-value-path="model"
                       data-vv-name="Project Description"
                       :has-error="veeErrors.has('Project Description')"
                       :error-text="veeErrors.first('Project Description')"
-                      :attr="project.description"
                       label="*Project Description"
-                      propKey="description"
                       inputType='textarea'></FloatLabel>
                   </div>
 
@@ -91,10 +87,8 @@
                       <div class="columns small-6">
                         <div class="float-input">
                           <FloatLabel
-                            data-vv-value-path="model"
+                            v-model="other"
                             data-vv-name="other"
-                            :attr="tactic_other"
-                            propKey="tactic_other"
                             label="Other"
                             @updateOther="setTactics"></FloatLabel>
                         </div>
@@ -134,14 +128,12 @@
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.reference"
                       v-validate="'url'"
-                      data-vv-value-path="model"
                       data-vv-name="Asset Reference"
                       :has-error="veeErrors.has('Asset Reference')"
                       :error-text="veeErrors.first('Asset Reference')"
-                      :attr="project.reference"
-                      label="Asset Reference"
-                      propKey="reference"></FloatLabel>
+                      label="Asset Reference"></FloatLabel>
                     <p class="hint">http://tmap.com/link/to/asset</p>
                   </div>
 
@@ -149,26 +141,22 @@
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.business_unit"
                       v-validate=""
-                      data-vv-value-path="model"
                       data-vv-name="Business Unit"
                       :has-error="veeErrors.has('Business Unit')"
                       :error-text="veeErrors.first('Business Unit')"
-                      :attr="project.business_unit"
-                      label="Business Unit"
-                      propKey="business_unit"></FloatLabel>
+                      label="Business Unit"></FloatLabel>
                   </div>
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.target"
                       v-validate=""
-                      data-vv-value-path="model"
                       data-vv-name="Target Audience"
                       :has-error="veeErrors.has('Target Audience')"
                       :error-text="veeErrors.first('Target Audience')"
-                      :attr="project.target"
-                      label="Target Audience"
-                      propKey="target"></FloatLabel>
+                      label="Target Audience"></FloatLabel>
                   </div>
                 </div>
 
@@ -246,7 +234,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from "axios"
 import bus from '../../bus'
 
 import Datepicker from 'vuejs-datepicker';
@@ -341,7 +328,7 @@ export default {
       this.loading = true
       this.$Progress.start()
       if(this.$route.name == "edit") {
-        axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+        this.axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
           this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
@@ -349,7 +336,7 @@ export default {
           this.setData(response.data, error)
         })
       } else {
-        axios.get('/api/v1/projects/new.json').then( response => {
+        this.axios.get('/api/v1/projects/new.json').then( response => {
           this.$Progress.finish()
           this.setNewData(response.data)
         }).catch(error => {
@@ -461,28 +448,6 @@ export default {
       this.dzUpload = bool
     })
   },
-  // beforeRouteEnter (to,from,next) {
-  //   // Before we hit the page we will fetch Data
-  //   if(to.name == "edit") {
-  //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-  //       next(vm => vm.setData(response.data))
-  //     }).catch(error => {
-  //       next(vm => vm.setData(response.data, error))
-  //     })
-  //   } else {
-  //     axios.get('/api/v1/projects/new.json').then( response => {
-  //       next(vm => vm.setNewData(response.data))
-  //     }).catch(error => {
-  //       next(vm => vm.setNewData(response.data, error))
-  //     })
-  //   }
-  // },
-  // beforeRouteUpdate (to, from, next) {
-  //   // Once the route has updated we will fetch Data
-  //   // Will run if route ID changes but we stay on this page
-  //   this.fetchData()
-  //   next()
-  // },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
     bus.$emit('progressEmit', 0)

@@ -130,9 +130,9 @@
                   <label>Position</label>
                   <span>{{contact.position}}</span>
                 </li>
-                <li v-if="contact.branch">
+                <li v-if="contact.location">
                   <label>Location</label>
-                  <span>{{contact.branch}}</span>
+                  <span>{{contact.location}}</span>
                 </li>
               </ul>
             </div><!--close callout-->
@@ -149,7 +149,6 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import axios from "axios"
   import moment from "moment"
 
   // Mixins
@@ -195,17 +194,22 @@
       'contact.id': function(id) {
         this.$store.dispatch('checkValidUser', id)
       },
+      validUser(new_val, old_val) {
+        if(new_val != old_val) {
+          this.fetchData()
+        }
+      }
     },
     methods: {
       fetchData() {
         this.loading = true
         if(this.$route.params.id) {
           this.$Progress.start()
-          axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
             this.$Progress.finish()
             this.setData(response.data)
           }).catch(error => {
-            this.Progress.fail()
+            this.$Progress.fail()
             this.setData(response.data, error)
           })
         } else {
@@ -268,23 +272,10 @@
       }
     },
     created() {
-      this.fetchData()
+      if(this.$auth.check()) {
+        this.fetchData()
+      }
     }
-    // beforeRouteEnter (to,from,next) {
-    //   if(to.params.id) {
-    //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-    //       next(vm => vm.setData(response.data))
-    //     }).catch(error => {
-    //       next(vm => vm.setData(response.data, error))
-    //     })
-    //   } else {
-    //     next({name: '404'})
-    //   }
-    // },
-    // beforeRouteUpdate (to, from, next) {
-    //   this.fetchData()
-    //   next()
-    // }
   }
 </script>
 

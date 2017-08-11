@@ -3,28 +3,22 @@
     <form v-on:submit.prevent="onSubmit" id="form" class="callout">
       <div class="float-input">
         <FloatLabel
+          v-model="email"
           v-validate="'required|email'"
-          data-vv-value-path="model"
           data-vv-name="User Email"
           :has-error="veeErrors.has('User Email')"
           :error-text="veeErrors.first('User Email')"
-          :attr="user.email"
-          obj="user"
-          label="User Email"
-          propKey="email"></FloatLabel>
+          label="User Email"></FloatLabel>
       </div>
 
       <div class="float-input">
         <FloatLabel
+          v-model="password"
           v-validate="'required'"
-          data-vv-value-path="model"
           data-vv-name="User Password"
           :has-error="veeErrors.has('User Password')"
           :error-text="veeErrors.first('User Password')"
-          :attr="user.password"
-          obj="user"
-          label="User Password"
-          propKey="password"></FloatLabel>
+          label="User Password"></FloatLabel>
       </div>
 
       <input type="submit" value="submit" class="button gradient">
@@ -50,38 +44,41 @@
     data() {
       return {
         loading: false,
+        email: null,
+        password: null
       }
     },
     computed: {
-      ...mapGetters(['user']),
       token() {
         return document.getElementsByName('csrf-token')[0].getAttribute('content')
       }
     },
     methods: {
       onSubmit: function () {
-        axios.post('/users/sign_in', {
-          utf8 : "✓",
-          authenticity_token: token,
-          user: this.user
-        })
-        .then(response => {
-          vm.$store.dispatch({
-            type: 'setAuth',
-            id: response.data.user.id,
-            role: response.data.role
-          })
-
-          vm.$store.dispatch({
-            type: 'setFlash',
-            title: 'Login Status',
-            text: response.data.flash[0][1],
-            group: 'auth'
-          })
-        })
-        .catch(error => {
-          alert('error')
-        })
+        this.$auth.login({
+            url: '/api/v1/user_token',
+            data: {
+              auth: {email: this.email, password: this.password}
+            },
+            success: function (response) {
+              this.$notify({
+                title: 'Succesfully signed in ' + this.email,
+                type: 'success',
+                group: 'auth'
+              })
+              this.$store.dispatch('setToken', response.data.jwt)
+              this.$store.dispatch('checkValidUser')
+            },
+            error: function (error) {
+              this.$notify({
+                title: 'Error signing in ' + this.email,
+                type: 'alert',
+                group: 'auth'
+              })
+            },
+            redirect: this.$route.path,
+            rememberMe: true,
+        });
       }
     }
   }

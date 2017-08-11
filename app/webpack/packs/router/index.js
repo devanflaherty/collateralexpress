@@ -24,53 +24,53 @@ import AdminAccount from '../views/admin/edit.vue'
 import AdminCreate from '../views/admin/new.vue'
 import AdminList from '../views/admin/list.vue'
 
-const authRequest = function(to, from, next) {
-  const directToLogin = function() {
-    if(
-      to.name == 'account' ||
-      to.name == 'edit-admin' ||
-      to.name == 'list-admin' ||
-      to.name == 'new-admin'
-    ) {
-      router.push({name: 'login'})
-    }
-  }
-
-  axios.get('/api/v1/authenticate.json')
-  .then(function (response) {
-    if (response.data.user) {
-      store.dispatch({
-        type: 'setAuth',
-        id: response.data.user.id,
-        role: response.data.role
-      })
-
-      if(response.data.role == 'contact') {
-        store.dispatch('setContactSession', response.data.user.id)
-      } else {
-        store.dispatch('setContactSession')
-      }
-
-      bus.$emit('updateLinks')
-      // Redirects
-
-      if(response.data.role == 'admin' && to.name == 'login') {
-        router.push({name: 'account'})
-      } else if(response.data.role != 'admin') {
-        directToLogin()
-      } else {
-        next()
-      }
-    } else {
-      store.dispatch('setAuth')
-      store.dispatch('setContactSession')
-      directToLogin()
-    }
-  }).catch(function (error) {
-    console.log('Trouble authentication user.')
-    next()
-  })
-}
+// const authRequest = function(to, from, next) {
+//   const directToLogin = function() {
+//     if(
+//       to.name == 'account' ||
+//       to.name == 'edit-admin' ||
+//       to.name == 'list-admin' ||
+//       to.name == 'new-admin'
+//     ) {
+//       router.push({name: 'login'})
+//     }
+//   }
+//
+//   axios.get('/api/v1/authenticate.json')
+//   .then(function (response) {
+//     if (response.data.user) {
+//       store.dispatch({
+//         type: 'setAuth',
+//         id: response.data.user.id,
+//         role: response.data.role
+//       })
+//
+//       if(response.data.role == 'contact') {
+//         store.dispatch('setContactSession', response.data.user.id)
+//       } else {
+//         store.dispatch('setContactSession')
+//       }
+//
+//       bus.$emit('updateLinks')
+//       // Redirects
+//
+//       if(response.data.role == 'admin' && to.name == 'login') {
+//         router.push({name: 'account'})
+//       } else if(response.data.role != 'admin') {
+//         directToLogin()
+//       } else {
+//         next()
+//       }
+//     } else {
+//       store.dispatch('setAuth')
+//       store.dispatch('setContactSession')
+//       directToLogin()
+//     }
+//   }).catch(function (error) {
+//     console.log('Trouble authentication user.')
+//     next()
+//   })
+// }
 
 const router = new VueRouter ({
   mode: 'history',
@@ -122,7 +122,10 @@ const router = new VueRouter ({
         name: 'list',
         path:'',
         component: ProjectList,
-        meta: {title: 'Projects'}
+        meta: {
+          title: 'Projects',
+          auth: ['admin', 'contact']
+        }
       },
       {
         name: 'new',
@@ -134,12 +137,18 @@ const router = new VueRouter ({
         name: 'show',
         path:':id',
         component: ProjectShow,
+        meta: {
+          // auth: true
+        }
       },
       {
         name: 'edit',
         path:':id/edit',
         component: ProjectForm,
-        meta: {title: 'Edit Project'}
+        meta: {
+          title: 'Edit Project',
+          auth: true
+        }
       }
     ]
   },
@@ -147,13 +156,19 @@ const router = new VueRouter ({
     name: 'contact-edit',
     path:'/contacts/:id/edit',
     component: ContactEdit,
-    meta: {title: 'Edit Contact'}
+    meta: {
+      title: 'Edit Contact',
+      auth: ['admin']
+    }
   },
   {
     name: 'contact-profile',
     path:'/profile',
     component: ContactEdit,
-    meta: {title: 'Profile'}
+    meta: {
+      title: 'Profile',
+      auth: ['admin','contact']
+    }
   },
   {
     component: Admin,
@@ -164,31 +179,46 @@ const router = new VueRouter ({
         name: 'account',
         component: AdminAccount,
         path:'',
-        meta: {title: 'Update Account'}
+        meta: {
+          title: 'Update Account',
+          auth: 'admin'
+        }
       },
       {
         name: 'login',
         component: AdminLogin,
         path:'login',
-        meta: {title: 'Login'}
+        meta: {
+          title: 'Login',
+          auth: false
+        },
       },
       {
         name: 'edit-admin',
         component: AdminAccount,
         path:':id/edit',
-        meta: {title: 'Edit User'}
+        meta: {
+          title: 'Edit User',
+          auth: 'admin'
+        }
       },
       {
         name: 'new-admin',
         component: AdminCreate,
         path:'new',
-        meta: {title: 'Add an Admin'}
+        meta: {
+          title: 'Add an Admin',
+          auth: 'admin'
+        }
       },
       {
         name: 'list-admin',
         component: AdminList,
         path:'list',
-        meta: {title: 'All Users'}
+        meta: {
+          title: 'All Users',
+          auth: 'admin'
+        }
       }
     ]
   },
@@ -202,9 +232,16 @@ const router = new VueRouter ({
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
-  authRequest(to, from, next)
+  if (localStorage.getItem('default_auth_token')) {
+    var token = localStorage.getItem('default_auth_token')
+    store.dispatch('setAuth', token)
+  } else {
+    store.dispatch('setAuth', '')
+  }
 
-  store.dispatch('toggleMobileNav', false)
+  if(store.getters.mobileNav == true) {
+    store.dispatch('toggleMobileNav', false)
+  }
 
   next()
 })

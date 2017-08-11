@@ -57,7 +57,6 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import axios from 'axios'
 
   export default {
     name: 'AdminList',
@@ -81,6 +80,7 @@
     computed: {
       ...mapGetters({
         authUser: 'authUser',
+        validToken: 'validToken',
         users: 'users'
       }),
       token() {
@@ -91,7 +91,7 @@
       fetchData() {
         var url = this.resource_url
 
-        axios.get(url).then( response => {
+        this.axios.get(url).then( response => {
           this.setData(response.data)
         }).catch(error => {
           this.$router.push({name: '404'})
@@ -108,7 +108,7 @@
         }
       },
       deleteUser(user) {
-        axios.delete('/users/' + user.id, {
+        this.axios.delete('/api/v1/users/' + user.id, {
           authenticity_token: this.token,
           user : user,
         })
@@ -125,23 +125,13 @@
         });
       },
     },
-    mounted(){
-
-    },
-    beforeRouteEnter(to, from, next) {
-      // var page = to.query.page
-      // var filter = to.query.filter
+    created(){
       var url = '/api/v1/users.json'
-
-      axios.get(url).then( response => {
-        next(vm => vm.setData(response.data))
+      this.axios.get(url).then( response => {
+        this.setData(response.data)
       }).catch(error => {
         console.log('Not authenticated')
       })
-    },
-    beforeRouteUpdate (to, from, next) {
-      this.fetchData()
-      next()
     }
   }
 </script>

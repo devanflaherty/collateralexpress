@@ -49,9 +49,9 @@ gem 'friendly_id', '~> 5.2', '>= 5.2.1'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #  02. Authentication
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+gem 'knock'
 # Use devise as the user authentication handler
-gem 'devise', '~> 4.2'
+# gem 'devise', '~> 4.2'
 # User roles management
 gem 'rolify', '~> 5.1'
 
