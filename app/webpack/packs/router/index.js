@@ -124,7 +124,7 @@ const router = new VueRouter ({
         component: ProjectList,
         meta: {
           title: 'Projects',
-          auth: ['admin', 'contact']
+          // auth: ['admin', 'contact']
         }
       },
       {
@@ -147,7 +147,7 @@ const router = new VueRouter ({
         component: ProjectForm,
         meta: {
           title: 'Edit Project',
-          auth: true
+          // auth: true
         }
       }
     ]
@@ -167,7 +167,7 @@ const router = new VueRouter ({
     component: ContactEdit,
     meta: {
       title: 'Profile',
-      auth: ['admin','contact']
+      // auth: ['admin','contact']
     }
   },
   {
@@ -232,9 +232,17 @@ const router = new VueRouter ({
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
+  store.dispatch('setContactSession')
+
   if (localStorage.getItem('default_auth_token')) {
     var token = localStorage.getItem('default_auth_token')
-    store.dispatch('setAuth', token)
+    store.dispatch('setAuthViaToken', token)
+  } else if(store.getters.contactSession && store.getters.authUser.role != 'admin'){
+    store.dispatch({
+      type: 'setAuth',
+      id: store.getters.contactSession,
+      role: 'contact'
+    })
   } else {
     store.dispatch('setAuth', '')
   }

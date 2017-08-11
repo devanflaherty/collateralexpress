@@ -52,6 +52,7 @@
               role: 'contact'
             })
             this.$store.dispatch('setContactSession', response.data.contact.id)
+            this.$store.dispatch('checkValidUser', response.data.contact.id)
             this.$store.dispatch({
               type: 'setFlash',
               title: 'Login Status',

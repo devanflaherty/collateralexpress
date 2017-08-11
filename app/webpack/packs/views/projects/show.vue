@@ -272,7 +272,7 @@
       }
     },
     created() {
-      if(this.$auth.check()) {
+      if(this.authUser.id) {
         this.fetchData()
       }
     }

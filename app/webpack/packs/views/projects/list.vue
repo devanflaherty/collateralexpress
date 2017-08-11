@@ -60,7 +60,7 @@
       </div>
     </section>
 
-    <div id="login" v-if="!loading && !$auth.check(['admin', 'contact'])">
+    <div id="login" v-if="!loading && !authUser.id">
       <Login></Login>
     </div>
   </div>

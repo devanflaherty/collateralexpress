@@ -94,7 +94,9 @@ export const store = new Vuex.Store({
   },
   mutations: {
     setAuth(state, user) {
-      state.authUser = user
+      state.authUser.id = user.id
+      state.authUser.email = user.email
+      state.authUser.role = user.role
     },
     setToken(state, token) {
       state.validToken = token
@@ -129,6 +131,16 @@ export const store = new Vuex.Store({
     // Global actions
     setAuth({commit, dispatch}, payload) {
       if(payload != '') {
+        commit('setAuth', payload)
+        dispatch('setLinks', payload.role)
+      } else {
+        var emptyAuth = {id: null, role: 'public'}
+        commit('setAuth', emptyAuth)
+        dispatch('setLinks')
+      }
+    },
+    setAuthViaToken({commit, dispatch}, payload) {
+      if(payload != '') {
         var userData = jwtDecode(payload)
         var user = {
           id: userData.sub,
@@ -145,9 +157,9 @@ export const store = new Vuex.Store({
     },
     setToken({commit, dispatch}, token) {
       commit('setToken', token)
-      dispatch('setAuth', token)
+      dispatch('setAuthViaToken', token)
     },
-    setContactSession({commit}, id) {
+    setContactSession({commit, state, dispatch}, id) {
       if(id) {
         commit('setContactSession', id)
       } else {

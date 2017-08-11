@@ -41,7 +41,7 @@ class Api::V1::ContactsController < ApiController
         # save_to_project
 
         # Set our responses
-        flash.now[:notice] = "Contact '#{@contact.full_name}' updated succesfully."
+        flash[:notice] = "Contact '#{@contact.full_name}' updated succesfully."
 
         # Set our responses
         format.json { render json: { contact: @contact, flash: flash} }
