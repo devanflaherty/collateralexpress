@@ -209,16 +209,11 @@ export const store = new Vuex.Store({
       }
     },
     setLinks({commit, state}, linkType) {
-      if(linkType == 'admin') {
+      if(linkType == 'admin' || linkType == 'contact') {
         var admin_links = [...state.defaultLinks]
         admin_links.splice(2, 0, { name: "All Projects", url: "list" })
         admin_links.push( { name: "Profile", url: "account"})
         commit('setLinks', admin_links)
-      } else if (linkType == 'contact') {
-        var contact_links = [...state.defaultLinks]
-        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
-        contact_links.push( { name: "Profile", url: "contact-profile"})
-        commit('setLinks', contact_links)
       } else {
         commit('setLinks', state.defaultLinks)
       }

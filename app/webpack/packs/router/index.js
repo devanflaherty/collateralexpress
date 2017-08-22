@@ -124,7 +124,7 @@ const router = new VueRouter ({
         component: ProjectList,
         meta: {
           title: 'Projects',
-          // auth: ['admin', 'contact']
+          auth: true
         }
       },
       {
@@ -181,7 +181,7 @@ const router = new VueRouter ({
         path:'',
         meta: {
           title: 'Update Account',
-          auth: 'admin'
+          auth: true
         }
       },
       {
@@ -189,9 +189,15 @@ const router = new VueRouter ({
         component: AdminLogin,
         path:'login',
         meta: {
-          title: 'Login',
-          auth: false
+          title: 'Login'
         },
+         beforeEnter: (to, from, next) => {
+          if(store.getters.authUser.id != null) {
+            next({name: 'account'})
+          } else {
+            next()
+          }
+        }
       },
       {
         name: 'edit-admin',
@@ -237,13 +243,15 @@ router.beforeEach((to, from, next) => {
   if (localStorage.getItem('default_auth_token')) {
     var token = localStorage.getItem('default_auth_token')
     store.dispatch('setAuthViaToken', token)
-  } else if(store.getters.contactSession && store.getters.authUser.role != 'admin'){
-    store.dispatch({
-      type: 'setAuth',
-      id: store.getters.contactSession,
-      role: 'contact'
-    })
-  } else {
+  }
+  // else if(store.getters.contactSession && store.getters.authUser.role != 'admin'){
+  //   store.dispatch({
+  //     type: 'setAuth',
+  //     id: store.getters.contactSession,
+  //     role: 'contact'
+  //   })
+  // }
+  else {
     store.dispatch('setAuth', '')
   }
 

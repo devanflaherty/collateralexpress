@@ -1,5 +1,5 @@
 <template>
-  <div id="addAccount">
+  <div id="addAccount" v-if="$auth.check('admin')">
     <div class="flex space-between">
       <div>
         <h2 class="banner">Add an Admin</h2>

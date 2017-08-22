@@ -16,11 +16,13 @@ class User < ApplicationRecord
           # and use confirmation to ensure they always match
           :confirmation => true
 
-  validates :password_confirmation, 
+  validates :password_confirmation,
             :presence=>true, :if => :password_digest_changed?
 
   scope :sorted, -> { order(email: "ASC") }
   scope :newest_first, -> { order(created_at: "DESC") }
+  scope :admins, -> { where(role: 'admin') }
+  scope :contacts, -> { where(role: 'contact') }
   scope :search, -> (query) {where(["email LIKE ?", "%#{query}%"])}
 
   def format_email
@@ -30,7 +32,7 @@ class User < ApplicationRecord
   def to_token_payload
     {
       sub: id,
-      role: 'admin',
+      role: role,
       email: email
     }
   end

@@ -8,12 +8,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       post 'user_token' => 'user_token#create'
       get 'user' => 'authenticate#index'
-      get 'refresh' => 'authenticate#refresh'
       resources :users, :except => [:new, :edit]
       put 'users' => 'users#update'
       resources :contacts
       post 'contacts/clear', to: 'contacts#clear', method: :post
-      post 'contacts/login', to: 'contacts#login', method: :post
       resources :projects
 
       resources :media, only: [:create, :delete, :destroy]

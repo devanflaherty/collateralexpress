@@ -1,7 +1,19 @@
 <template>
   <div>
-    <input type="email" v-model="contact_email" placeholder="Enter your email here">
-    <button @click="loginContact" class="button gradient">Login</button>
+    <form v-on:submit.prevent="onSubmit" id="form">
+      <div class="float-input">
+        <FloatLabel
+          v-model="contact_email"
+          v-validate="'required|email'"
+          data-vv-name="Contact Email"
+          :has-error="veeErrors.has('Contact Email')"
+          :error-text="veeErrors.first('Contact Email')"
+          label="Contact Email"></FloatLabel>
+      </div>
+
+      <input type="submit" value="Login" class="button gradient">
+
+    </form>
 
     <div class="callout alert" v-if="contact_id && contact_id != projectUser">
       <p>
@@ -22,6 +34,7 @@
         contact_id: null,
         contact_name: null,
         contact_email: null,
+        password: null
         // persistent_url: null
       }
     },
@@ -35,34 +48,35 @@
       },
     },
     methods: {
-      loginContact() {
-        this.axios.post('/api/v1/contacts/login', {
-          utf8 : "✓",
-          authenticity_token: this.token,
-          contact_email : this.contact_email,
-          // persistent_url : this.persistent_url
-        })
-          .then( response => {
-            this.contact_id = response.data.contact.id
-            this.contact_name = response.data.contact.first_name + " " + response.data.contact.last_name
-
-            this.$store.dispatch({
-              type: 'setAuth',
-              id: response.data.contact.id,
-              role: 'contact'
-            })
-            this.$store.dispatch('setContactSession', response.data.contact.id)
-            this.$store.dispatch('checkValidUser', response.data.contact.id)
-            this.$store.dispatch({
-              type: 'setFlash',
-              title: 'Login Status',
-              text: response.data.flash[0][1],
-              group: 'auth'
-            })
-
-          }).catch(error => {
-            console.log(error)
-          })
+      onSubmit: function () {
+        this.password = this.contact_email
+        this.$auth.login({
+            url: '/api/v1/user_token',
+            data: {
+              auth: {email: this.contact_email, password: this.password}
+            },
+            success: function (response) {
+              this.$notify({
+                title: 'Succesfully signed in ' + this.contact_email,
+                type: 'success',
+                group: 'auth'
+              })
+              this.contact_id = response.data.user.id
+              this.contact_name = response.data.user.first_name + " " + response.data.user.last_name
+              this.$store.dispatch('setToken', response.data.jwt)
+              this.$store.dispatch('setContactSession', response.data.user.id)
+              this.$store.dispatch('checkValidUser')
+            },
+            error: function (error) {
+              this.$notify({
+                title: 'Error signing in ' + this.email,
+                type: 'alert',
+                group: 'auth'
+              })
+            },
+            redirect: this.$route.path,
+            rememberMe: true,
+        });
       }
     }
   }

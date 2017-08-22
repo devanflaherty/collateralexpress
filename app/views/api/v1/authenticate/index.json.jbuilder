@@ -8,7 +8,6 @@
 # json.(@loggedIn)
 if @user
   json.user do
-    json.(@user, :id, :email)
-    json.role('admin')
+    json.(@user, :id, :email, :role)
   end
 end

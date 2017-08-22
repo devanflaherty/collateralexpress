@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170705215819) do
+ActiveRecord::Schema.define(version: 20170822214424) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,18 +25,6 @@ ActiveRecord::Schema.define(version: 20170705215819) do
     t.index ["author_type", "author_id"], name: "index_comments_on_author_type_and_author_id"
     t.index ["project_id", "author_id"], name: "index_comments_on_project_id_and_author_id"
     t.index ["project_id"], name: "index_comments_on_project_id"
-  end
-
-  create_table "contacts", force: :cascade do |t|
-    t.string "first_name", limit: 25
-    t.string "last_name", limit: 50
-    t.string "email", default: "", null: false
-    t.string "phone"
-    t.string "location"
-    t.string "avatar"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_contacts_on_email", unique: true
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -61,7 +49,7 @@ ActiveRecord::Schema.define(version: 20170705215819) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.bigint "contact_id"
+    t.integer "contact_id"
     t.bigint "user_id"
     t.string "title"
     t.string "slug"
@@ -81,7 +69,6 @@ ActiveRecord::Schema.define(version: 20170705215819) do
     t.boolean "archive", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_id"], name: "index_projects_on_contact_id"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
@@ -96,11 +83,11 @@ ActiveRecord::Schema.define(version: 20170705215819) do
     t.string "avatar"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "comments", "projects"
   add_foreign_key "media", "projects"
-  add_foreign_key "projects", "contacts"
   add_foreign_key "projects", "users"
 end

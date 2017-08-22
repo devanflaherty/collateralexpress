@@ -157,7 +157,7 @@ export default {
 
       if(this.$route.params.id) {
         this.setData(this.$route.params.id)
-      } else if (this.$route.name == 'account' && this.$auth.check('admin')){
+      } else if (this.$route.name == 'account' && this.$auth.check()){
         this.setData(this.$auth.user().id)
       }
     },

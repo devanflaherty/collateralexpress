@@ -3,7 +3,18 @@ class Api::V1::UsersController < ApiController
   skip_before_action :verify_authenticity_token, :only => [:destroy]
 
   def index
-    @users = User.all
+    query = request.query_parameters
+
+    if query[:role]
+      role = query[:role]
+      if role == 'admin'
+        @users = User.admins
+      elsif role == 'contact'
+        @users = User.contacts
+      end
+    else
+      @users = User.all
+    end
   end
 
   def show
@@ -12,13 +23,15 @@ class Api::V1::UsersController < ApiController
 
   def create
     @user = User.new(user_params)
+    # Set Role
+    @user.role = 'admin'
+
     respond_to do |format|
       if @user.save
+        cookies[:current_contact_id] = @user.id
         # UserMailer.new_user(@user).deliver_later
 
         flash[:notice] = "User '#{@user.full_name}' created succesfully."
-
-        # session[:current_contact_id] = @user.id
 
         format.json { render json: { user: @user, flash: flash} }
       else
@@ -37,7 +50,6 @@ class Api::V1::UsersController < ApiController
     @user = User.find(id)
     respond_to do |format|
       if @user.update_attributes(user_params)
-        # session[:current_contact_id] = @user.id
 
         flash[:notice] = "User '#{@user.full_name}' updated succesfully."
 
@@ -52,6 +64,7 @@ class Api::V1::UsersController < ApiController
   def destroy
     @user = User.find(params[:id])
     @user.destroy
+    cookies.delete :current_contact_id
     flash[:notice] = "User '#{@user.full_name}' deleted succesfully."
     respond_to do |format|
       format.json { render json: {user: @user, flash: flash} }

@@ -11,23 +11,31 @@
   first_name: "Admin",
   last_name: "User",
   email: "coexdemo@gmail.com",
-  password: "password"
+  password: "password",
+  password_confirmation: "password",
+  role: 'admin'
 )
 
-@contact = Contact.create(
+@contact = User.create(
   first_name: "Devan",
   last_name: "Flaherty",
   email: "devanflaherty@gmail.com",
   phone: "480.388.1741",
-  location: "Whitefish"
+  location: "Whitefish",
+  password: "devanflaherty@gmail.com",
+  password_confirmation: "devanflaherty@gmail.com",
+  role: 'contact'
 )
 
-@contactConnie = Contact.create(
+@contactConnie = User.create(
   first_name: "Connie",
   last_name: "Cermak",
   email: "connie@zoompop.com",
   phone: "444.333.7777",
-  location: "Whitefish"
+  location: "Whitefish",
+  password: "connie@zoompop.com",
+  password_confirmation: "connie@zoompop.com",
+  role: 'contact'
 )
 
 # Create an initial event for the home page

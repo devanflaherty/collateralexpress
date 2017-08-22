@@ -1,23 +1,24 @@
 class Api::V1::ContactsController < ApiController
+  skip_before_action :verify_authenticity_token, :only => [:clear]
+
   def index
-    @contacts = Contact.all
+    @contacts = User.contacts
   end
 
   def show
-    @contact = Contact.find(params[:id])
+    @contact = User.find(params[:id])
   end
 
   def create
-    @contact = Contact.new(contact_params)
+    @contact = User.new(contact_params)
+    # Set Role
+    @contact.role = 'contact'
 
     respond_to do |format|
       if @contact.save
         #using cookies so we can access ID via javascript
         cookies[:current_contact_id] = @contact.id
-
-        # Find project if updated from project form
-        # If project found we will save the updated contact to the found project
-        # save_to_project
+        # ContactMailer.new_contact(@contact).deliver_later
 
         # Set Responses
         flash[:notice] = "Contact '#{@contact.full_name}' added succesfully."
@@ -30,7 +31,7 @@ class Api::V1::ContactsController < ApiController
   end
 
   def update
-    @contact = Contact.find(params[:id])
+    @contact = User.find(params[:id])
     respond_to do |format|
       # Using cookies so we can access ID via javascript
       puts "---Cookie Set---"
@@ -53,7 +54,7 @@ class Api::V1::ContactsController < ApiController
   end
 
   def destroy
-    @contact = Contact.find(params[:id])
+    @contact = User.find(params[:id])
     @contact.destroy
     flash[:notice] = "Contact '#{@contact.full_name}' deleted succesfully."
     respond_to do |format|
@@ -77,7 +78,7 @@ class Api::V1::ContactsController < ApiController
         url = params[:persistent_url]
       end
 
-      @contact = Contact.search(params[:contact_email]).first
+      @contact = User.search(params[:contact_email]).first
       if @contact
         if @contact[:id].to_i != cookies[:current_contact_id].to_i
           cookies[:current_contact_id] = @contact.id
@@ -95,7 +96,7 @@ class Api::V1::ContactsController < ApiController
 
   def edit
     if cookies[:current_contact_id] == params[:id]
-      @contact = Contact.find(params[:id])
+      @contact = User.find(params[:id])
     else
       redirect_to '/'
     end
@@ -104,7 +105,7 @@ class Api::V1::ContactsController < ApiController
   private
 
     def contact_params
-      params.require(:contact).permit(:first_name, :last_name, :email, :phone, :location, :position, :avatar)
+      params.require(:contact).permit(:first_name, :last_name, :password, :password_confirmation, :email, :phone, :location, :position, :avatar)
     end
 
     def save_to_project

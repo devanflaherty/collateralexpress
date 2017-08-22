@@ -168,10 +168,15 @@ export default {
 
     //contact methods
     postContact(id) {
+      // Set Default Password for contact
+      var contactUser = {...this.contact}
+      contactUser.password = this.contact.email
+      contactUser.password_confirmation = this.contact.email
+
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: this.token,
-        contact : this.contact,
+        contact : contactUser,
         project : this.projectId
       }
       if(!id || id == null || id == undefined) {

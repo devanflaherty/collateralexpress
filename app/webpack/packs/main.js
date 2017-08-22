@@ -38,7 +38,7 @@ Vue.use(VueAuth, {
     http: require('@websanova/vue-auth/drivers/http/axios.1.x.js'),
     router: require('@websanova/vue-auth/drivers/router/vue-router.2.x.js'),
     token: [{request: 'Authorization', response: 'Authorization', authType: 'bearer', foundIn: 'header'}],
-    authRedirect: {path: '/account'},
+    authRedirect: {path: '/account/login'},
     rolesVar: 'role',
     loginData: {url: '/api/v1/user_token', redirect: '/account', fetchUser: true},
     fetchData: {url: '/api/v1/user'},

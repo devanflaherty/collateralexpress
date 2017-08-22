@@ -37,8 +37,6 @@ class Api::V1::ProjectsController < ApiController
 
         flash.now[:notice] = "Project '#{@project.title}' created succesfully."
 
-        # session[:current_contact_id] = @project.contact_id
-
         format.json { render json: { project: @project, flash: flash} }
       else
         format.json { render json: { errors: @project.errors.messages }, status: 422}
@@ -94,8 +92,8 @@ class Api::V1::ProjectsController < ApiController
   private
 
     def query_projects
-      if cookies[:current_contact_id]
-        @authUser = Contact.find_by_id(cookies[:current_contact_id])
+      if current_user.role == 'contact'
+        @authUser = current_user
       end
 
       query = request.query_parameters
