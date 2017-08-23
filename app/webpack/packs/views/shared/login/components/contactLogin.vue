@@ -15,9 +15,9 @@
 
     </form>
 
-    <div class="callout alert" v-if="contact_id && contact_id != projectUser">
+    <div class="callout alert" v-if="access_message">
       <p>
-        You've succesfully logged in as {{contact_name}}, but you don't have access to this project.
+        {{access_message}}
       </p>
     </div>
 
@@ -25,17 +25,16 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import FloatLabel from "../../floatLabel.vue"
 
   export default {
     name: 'ContactLogin',
     data() {
       return {
-        contact_id: null,
-        contact_name: null,
         contact_email: null,
-        password: null
-        // persistent_url: null
+        password: null,
+        access_message: null
       }
     },
     components: {
@@ -46,6 +45,7 @@
       token() {
         return document.getElementsByName('csrf-token')[0].getAttribute('content')
       },
+      ...mapGetters(['project'])
     },
     methods: {
       onSubmit: function () {
@@ -61,11 +61,9 @@
                 type: 'success',
                 group: 'auth'
               })
-              this.contact_id = response.data.user.id
-              this.contact_name = response.data.user.first_name + " " + response.data.user.last_name
+              this.access_message = "You've succesfully logged in with the email " + this.contact_email + ", but you don't have access to this project."
               this.$store.dispatch('setToken', response.data.jwt)
-              this.$store.dispatch('setContactSession', response.data.user.id)
-              this.$store.dispatch('checkValidUser')
+              this.$store.dispatch('setContactSession')
             },
             error: function (error) {
               this.$notify({

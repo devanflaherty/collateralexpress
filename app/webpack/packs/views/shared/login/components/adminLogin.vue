@@ -67,7 +67,6 @@
                 group: 'auth'
               })
               this.$store.dispatch('setToken', response.data.jwt)
-              this.$store.dispatch('checkValidUser')
             },
             error: function (error) {
               this.$notify({

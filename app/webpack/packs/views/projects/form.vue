@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || authUser.id, 'medium-12 large-10': !project && !authUser.id }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || $auth.check(), 'medium-12 large-10': !project && !$auth.check() }">
 
             <header>
               <div class="row">
@@ -164,14 +164,13 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
+          <div v-if="$route.params.id || $auth.check()" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
             <aside id="projectSidebar">
-              <nav v-if="authUser.id">
+              <nav v-if="$auth.check()">
                 <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: $route.params.id} }">View Project</router-link>
                 <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
                 <router-link v-if="$route.params.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
-                <router-link v-if="authUser.role == 'admin'" :to="{name: 'account'}">Update your Account</router-link>
-                <router-link v-if="authUser.role == 'contact'" :to="{name: 'contact-profile'}">Update your Profile</router-link>
+                <router-link :to="{name: 'account'}">Update your Profile</router-link>
               </nav>
             </aside>
             <a v-if="project && project.id"
@@ -299,7 +298,9 @@ export default {
     '$route': function() {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      this.fetchData()
+      if(this.$auth.check()) {
+        this.fetchData()
+      }
     },
     tactic_other(other) {
       // When the other_input field has been updated
@@ -313,6 +314,10 @@ export default {
       // checking the projects ID against the session ID
       // If validation fails we don't show them the page
       this.$store.dispatch('checkValidUser', id)
+    },
+    'authUser.id':function() {
+      // If we get an authUser fetchData
+      this.fetchData()
     },
     contactSession(id) {
       // Generally will only run on a few instances
@@ -348,10 +353,11 @@ export default {
 
     setData(data, err) {
       // if we have an ID param
-      if(this.authUser.id && !err) {
+      if(this.$auth.check() && !err) {
         // if there is an authUser
         // We make a request with the ID Param
-        if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
+        this.loading = false
+        if(this.$auth.check('contact') && this.authUser.id != data.project.contact_id) {
           // If the contact id is not equal to what is returned
           this.$store.dispatch({
             type: 'setReveal',
@@ -361,7 +367,6 @@ export default {
           })
         } else {
           // If contactSession is valid or is authorized
-          this.loading = false
           this.$validator.clean();
           this.$store.dispatch('setProject', data.project)
           this.$store.dispatch('setProjectMedia', data.project_media.medias)
@@ -370,10 +375,11 @@ export default {
           this.contactQuery = data.project.contact_id
           this.pageTitle = "Edit " + data.project.title
         }
-      } else if (this.authUser.id && err) {
+      } else if (this.$auth.check() && err) {
+        this.loading = false
         this.$router.push({ name: 'new' })
         console.log(err)
-      } else if (!this.authUser.id && !err) {
+      } else if (!this.$auth.check() && !err) {
         this.loading = false
         this.$store.dispatch({
           type: 'setProjectProperty',
@@ -386,6 +392,7 @@ export default {
 
         this.pageTitle = data.project.title
       } else {
+        this.loading = false
         this.$store.dispatch({
           type: 'setFlash',
           title: "We couldn/'t get your project.",
@@ -431,7 +438,9 @@ export default {
   },
   created() {
     this.pageTitle = this.$route.meta.title
-    this.fetchData()
+    if(this.$auth.check()) {
+      this.fetchData()
+    }
   },
   mounted() {
     // We set contactQuery to contactSession
