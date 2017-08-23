@@ -59,10 +59,6 @@
         </div>
       </div>
     </section>
-
-    <div id="login" v-if="!loading && !authUser.id">
-      <Login></Login>
-    </div>
   </div>
 </template>
 
@@ -97,9 +93,6 @@
       }
     },
     computed: {
-      ...mapGetters({
-        authUser: 'authUser'
-      }),
       queryNext() {
         if(this.scope) {
           return {
