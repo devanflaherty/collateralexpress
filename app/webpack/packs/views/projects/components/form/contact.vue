@@ -189,6 +189,10 @@ export default {
             title: response.data.contact.first_name + " created"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
+
+          if(!this.$auth.check()) {
+            this.loginContact()
+          }
         })
       } else if (id) {
         //If contact exists
@@ -200,6 +204,10 @@ export default {
             title: response.data.contact.first_name + " updated"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
+
+          if(!this.$auth.check()) {
+            this.loginContact()
+          }
         })
       }
     },
@@ -258,6 +266,35 @@ export default {
         }
       })
       this.makeContactEditable(true)
+    },
+
+
+    loginContact() {
+      this.$auth.login({
+        url: '/api/v1/user_token',
+        data: {
+          auth: {email: this.contact.email, password: this.contact.email}
+        },
+        success: function (response) {
+          this.$notify({
+            title: 'Succesfully signed in ' + this.email,
+            type: 'success',
+            group: 'auth'
+          })
+          this.$store.dispatch('setToken', response.data.jwt)
+          this.$store.dispatch('setContactSession')
+        },
+        error: function (error) {
+          this.$notify({
+            title: 'Error signing in ' + this.email,
+            text: 'We could not find a contact with that email.',
+            type: 'alert',
+            group: 'auth'
+          })
+        },
+        redirect: this.$route.path,
+        rememberMe: false,
+      });
     }
   },
   created() {

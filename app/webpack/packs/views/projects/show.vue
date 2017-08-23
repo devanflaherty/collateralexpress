@@ -222,6 +222,10 @@
 
       setData(data, err) {
         // if we have an ID param
+        if(!err) {
+          this.$store.dispatch('checkValidUser', data.contact.id)
+        }
+
         if(this.$auth.check() && !err) {
           this.loading = false
           // if there is an authUser

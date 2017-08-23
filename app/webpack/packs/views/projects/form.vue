@@ -298,9 +298,7 @@ export default {
     '$route': function() {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      if(this.$auth.check()) {
-        this.fetchData()
-      }
+      this.fetchData()
     },
     tactic_other(other) {
       // When the other_input field has been updated
@@ -381,14 +379,14 @@ export default {
         console.log(err)
       } else if (!this.$auth.check() && !err) {
         this.loading = false
-        this.$store.dispatch({
-          type: 'setProjectProperty',
-          project: {
-            id: data.project.id,
-            title: data.project.title,
-            contact_id: data.project.contact_id
-          }
-        })
+        // this.$store.dispatch({
+        //   type: 'setProjectProperty',
+        //   project: {
+        //     id: data.project.id,
+        //     title: data.project.title,
+        //     contact_id: data.project.contact_id
+        //   }
+        // })
 
         this.pageTitle = data.project.title
       } else {
@@ -438,9 +436,7 @@ export default {
   },
   created() {
     this.pageTitle = this.$route.meta.title
-    if(this.$auth.check()) {
-      this.fetchData()
-    }
+    this.fetchData()
   },
   mounted() {
     // We set contactQuery to contactSession
