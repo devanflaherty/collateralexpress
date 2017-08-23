@@ -5,5 +5,4 @@ class Api::V1::AuthenticateController < ApiController
     @user = current_user
   end
 
-
 end

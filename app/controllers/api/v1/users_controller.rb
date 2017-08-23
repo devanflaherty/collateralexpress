@@ -29,7 +29,7 @@ class Api::V1::UsersController < ApiController
     respond_to do |format|
       if @user.save
         cookies[:current_contact_id] = @user.id
-        # UserMailer.new_user(@user).deliver_later
+        UserMailer.new_user(@user).deliver_later
 
         flash[:notice] = "User '#{@user.full_name}' created succesfully."
 

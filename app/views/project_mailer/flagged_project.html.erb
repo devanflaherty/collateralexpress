@@ -1,12 +1,12 @@
 <h3 style="margin: 0 0 8px;"><strong><%= @project.title %></strong></h3>
-<h1 style="margin: 0 0 16px;display: inline-block; padding: 8px; background:#EB0183; color: white;">Status: <strong><%= @project.status %></strong></h1>
+<h1 style="margin: 0 0 16px;display: inline-block; padding: 8px; background: #cc4b37; color: white;">Flagged</strong></h1>
 
 <div style="
   overflow: hidden;
   border-radius: 6px;
   border: 1px solid #cecece;
   ">
-  <p style="padding: 32px 32px;">The team assigned to your project has updated it's status. If you have any questions about the status of your project please get in contact with <a href="mailto:<%= @project.user.email %>"><%= @project.user.full_name %></a>.</p>
+  <p style="padding: 32px 32px;">Your project has been marked as 'flagged' and progress has been halted. Most commonly this happens because the team assigned to the project found a potential duplicate or error in your request. They will be with you shortly with more information on what is needed to continue progress on your project.</a>.</p>
 
   <a href="<%= @url %>/project/<%= @project.slug %>"
     style="display:block;

@@ -1,3 +1,4 @@
+require 'jwt'
 class User < ApplicationRecord
   has_secure_password
   has_many :projects,:foreign_key => 'user_id'
@@ -36,6 +37,12 @@ class User < ApplicationRecord
       role: role,
       email: email
     }
+  end
+
+  def get_token
+    user = self
+    key = Knock.token_secret_signature_key.call
+    token = JWT.encode user.to_token_payload, key, 'HS256'
   end
 
 end

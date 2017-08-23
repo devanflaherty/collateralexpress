@@ -18,7 +18,7 @@ class Api::V1::ContactsController < ApiController
       if @contact.save
         #using cookies so we can access ID via javascript
         cookies[:current_contact_id] = @contact.id
-        # ContactMailer.new_contact(@contact).deliver_later
+        UserMailer.new_contact(@contact).deliver_later
 
         # Set Responses
         flash[:notice] = "Contact '#{@contact.full_name}' added succesfully."
@@ -60,38 +60,6 @@ class Api::V1::ContactsController < ApiController
     respond_to do |format|
       format.json { render json: {flash: flash} }
     end
-  end
-
-  def clear
-    if cookies[:current_contact_id]
-      cookies.delete :current_contact_id
-      flash[:notice] = "Removed saved contact."
-      respond_to do |format|
-        format.json { render :json => {flash: flash} }
-      end
-    end
-  end
-
-  def login
-    if params[:contact_email]
-      if params[:persistent_url]
-        url = params[:persistent_url]
-      end
-
-      @contact = User.search(params[:contact_email]).first
-      if @contact
-        if @contact[:id].to_i != cookies[:current_contact_id].to_i
-          cookies[:current_contact_id] = @contact.id
-          flash[:notice] = "Succesfully logged in #{@contact.full_name}."
-        else
-          flash[:notice] = "#{@contact.full_name} is already logged in."
-        end
-
-        respond_to do |format|
-          format.json { render :json => {flash: flash, contact: @contact, url: url} }
-        end
-      end # if contact
-    end # if params
   end
 
   def edit

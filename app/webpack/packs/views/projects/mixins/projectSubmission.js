@@ -7,7 +7,7 @@ const ProjectSubmission = {
     axiosConfig() {
       return {
         utf8 : "✓",
-        authenticity_token: this.token,
+        authenticity_token: token,
         project : this.project
       }
     }

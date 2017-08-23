@@ -47,10 +47,14 @@ class Api::V1::ProjectsController < ApiController
   def update
     @project = Project.friendly.find(params[:id])
     status = @project.status
+    flag = @project.flag
     respond_to do |format|
       if @project.update_attributes(project_params)
         if @project.status != status
           ProjectMailer.status_update(@project).deliver_later
+        end
+        if @project.flag == true && flag != true
+          ProjectMailer.flagged_project(@project).deliver_later
         end
         session[:current_contact_id] = @project.contact_id
 
