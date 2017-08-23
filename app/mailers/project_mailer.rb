@@ -30,15 +30,6 @@ class ProjectMailer < ApplicationMailer
     mail to: email_with_name, subject: "'#{@project.title}' status has been set to #{@project.status}"
   end
 
-  def completed_project(project)
-    @project = project
-    @contact = @project.contact
-    @support_email = "coexdemo@gmail.com"
-    @url  = "http://collateralexpress.com/"
-    email_with_name = %("#{@contact.full_name}" <#{@contact.email}>)
-    mail to: email_with_name, subject: "#{@project.title} has been completed"
-  end
-  
   def flagged_project(project)
     @project = project
     @contact = @project.contact
