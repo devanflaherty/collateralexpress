@@ -1,5 +1,5 @@
 <template>
-  <div id="addAccount">
+  <div id="addAccount" v-if="$auth.check('admin')">
     <div class="flex space-between">
       <div>
         <h2 class="banner">Add an Admin</h2>
@@ -10,28 +10,22 @@
         <div class="columns">
           <div class="float-input">
             <FloatLabel
+              v-model="user.email"
               v-validate="'required|email'"
-              data-vv-value-path="model"
               data-vv-name="User Email"
               :has-error="veeErrors.has('User Email')"
               :error-text="veeErrors.first('User Email')"
-              :attr="user.email"
-              obj="user"
-              label="User Email"
-              propKey="email"></FloatLabel>
+              label="User Email"></FloatLabel>
           </div>
         </div>
         <div class="columns">
           <div class="float-input">
             <FloatLabel
-              data-vv-value-path="model"
+              v-model="user.phone"
               data-vv-name="User Phone"
               :has-error="veeErrors.has('User Phone')"
               :error-text="veeErrors.first('User Phone')"
-              :attr="user.phone"
-              obj="user"
-              label="User Phone"
-              propKey="phone"></FloatLabel>
+              label="User Phone"></FloatLabel>
           </div>
         </div>
       </div>
@@ -40,56 +34,48 @@
         <div class="columns">
           <div class="float-input">
             <FloatLabel
-              data-vv-value-path="model"
+              v-model="user.first_name"
+              v-validate="'required'"
               data-vv-name="First Name"
               :has-error="veeErrors.has('First Name')"
               :error-text="veeErrors.first('First Name')"
-              :attr="user.first_name"
-              obj="user"
-              label="First Name"
-              propKey="first_name"></FloatLabel>
+              label="First Name"></FloatLabel>
           </div>
         </div>
         <div class="columns">
           <div class="float-input">
             <FloatLabel
-              data-vv-value-path="model"
+              v-model="user.last_name"
+              v-validate="'required'"
               data-vv-name="Last Name"
               :has-error="veeErrors.has('Last Name')"
               :error-text="veeErrors.first('Last Name')"
-              :attr="user.last_name"
-              obj="user"
-              label="Last Name"
-              propKey="last_name"></FloatLabel>
+              label="Last Name"></FloatLabel>
           </div>
         </div>
       </div>
 
       <div class="float-input">
         <FloatLabel
-          data-vv-value-path="model"
+          v-model="user.password"
+          v-validate="''"
           data-vv-name="User Password"
           :has-error="veeErrors.has('User Password')"
           :error-text="veeErrors.first('User Password')"
-          :attr="user.password"
-          obj="user"
           inputType="password"
-          label="User Password"
-          propKey="password"></FloatLabel>
+          label="User Password"></FloatLabel>
       </div>
 
       <div class="float-input" v-if="user.password">
         <FloatLabel
+          v-model="user.password_confirmation"
           v-validate="'required|confirmed:User Password'"
-          data-vv-value-path="model"
           data-vv-name="Password Confirmation"
           :has-error="veeErrors.has('Password Confirmation')"
           :error-text="veeErrors.first('Password Confirmation')"
-          :attr="user.password_confirmation"
-          obj="user"
           inputType="password"
           label="Password Confirmation"
-          propKey="password_confirmation"></FloatLabel>
+          ></FloatLabel>
       </div>
 
       <input type="submit" value="submit" :disabled="veeErrors.any()" class="button gradient">
@@ -99,8 +85,8 @@
 </template>
 
 <script>
+import bus from '../../bus'
 import { mapGetters } from 'vuex'
-import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
@@ -117,10 +103,21 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      user: {
+        id: null,
+        email: null,
+        first_name: null,
+        last_name: null,
+        full_name: null,
+        phone: null,
+        password: null,
+        password_confirmation: null
+      },
+    }
   },
   computed: {
-    ...mapGetters(['authUser', 'user']),
+    ...mapGetters(['authUser']),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
@@ -130,7 +127,7 @@ export default {
       bus.$emit('validate'); // Validate child components
       this.$validator.validateAll(); // Validate self
       if (!this.veeErrors.any()) {
-        axios.post('/users', {
+        this.axios.post('/api/v1/users', {
           utf8 : "✓",
           authenticity_token: this.token,
           user: this.user

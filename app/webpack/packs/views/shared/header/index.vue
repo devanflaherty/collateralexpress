@@ -36,7 +36,7 @@ export default {
       overlay: false
     }
   },
-  computed: mapGetters(['authUser', 'links']),
+  computed: mapGetters(['links']),
   watch: {
     '$route': function() {
       this.overlayHeader()

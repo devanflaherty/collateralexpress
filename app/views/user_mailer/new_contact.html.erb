@@ -1,0 +1,34 @@
+<h1 style="margin: 0 0 32px;">Welcome to Collateral Express!</h1>
+<div style="
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cecece;
+  ">
+  <p style="padding: 32px 32px 0;">Congratulations on creating your first project and becoming a part of Collateral Express.
+    Now that you've created your first project you know just how easy it is, and it only gets easier!
+    Next time you create a project just enter in your email in the contact field and we'll automatically fill in the rest of your info!</p>
+
+  <h3 style="padding: 0 32px;">Staying up to date</h3>
+  <p style="padding: 32px 32px 0;">
+    Curious on the status of your past projects? If you're not already logged in you simply just need to go <a href="<%= @url %>/account/login">here</a> and enter in your email.
+    Once logged in you can view "all Projects" and in turn make changes, view, and quickly see the status.</p>
+
+  <a href="<%= @url %>/projects"
+    style="display:block;
+    margin: 0 32px 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background: #EB0183;
+    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">
+    View Your Projects
+  </a>
+
+  <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you because this email was used while creating a project at <%= @url %>.
+  If you feel this email was sent in error please contact us <a href="mailto:<%= @support_email %>">here</a>.</small></p>
+</div>

@@ -5,9 +5,9 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <div class="row expanded small-collapse">
         <!-- Project Info -->
-        <div class="columns small-12 medium-8 large-9" :class="{'pad-small': authUser.role == 'contact'}">
+        <div class="columns small-12 medium-8 large-9" :class="{'pad-small': $auth.check('contact')}">
 
-          <AdminUpdates v-if="authUser.role == 'admin'"></AdminUpdates>
+          <AdminUpdates v-if="$auth.check('admin')"></AdminUpdates>
 
           <div id="projectInfo" class="pad-small pad-in-small">
             <h2 class="banner" :class="{'black-banner':project.archive}">{{project.title}}</h2><br>
@@ -99,10 +99,8 @@
             <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
               <router-link v-if="project.id" class="button expanded" :class="{'disabled' : project.archive}" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
             </nav>
-            <nav v-if="authUser.id">
+            <nav v-if="$auth.check()">
               <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
-              <a v-if="authUser.role == 'admin'" href="/account/edit">Edit User Profile</a>
-              <a v-else="authUser.role == 'contact'" :href="'/contacts/' + authUser.id + '/edit'">Edit Contact Profile</a>
               <a v-if="project.id"
                 id="deleteProject"
                 style="float: right"
@@ -130,9 +128,9 @@
                   <label>Position</label>
                   <span>{{contact.position}}</span>
                 </li>
-                <li v-if="contact.branch">
+                <li v-if="contact.location">
                   <label>Location</label>
-                  <span>{{contact.branch}}</span>
+                  <span>{{contact.location}}</span>
                 </li>
               </ul>
             </div><!--close callout-->
@@ -149,7 +147,6 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import axios from "axios"
   import moment from "moment"
 
   // Mixins
@@ -191,9 +188,19 @@
       }),
     },
     watch: {
-      '$route': 'fetchData',
+      '$route': function() {
+        // Watch if route changers
+        // If it does we are going to re-fetch the data
+        if(this.$auth.check()) {
+          this.fetchData()
+        }
+      },
       'contact.id': function(id) {
         this.$store.dispatch('checkValidUser', id)
+      },
+      'authUser.id': function() {
+        // If we get an authUser fetchData
+        this.fetchData()
       },
     },
     methods: {
@@ -201,11 +208,11 @@
         this.loading = true
         if(this.$route.params.id) {
           this.$Progress.start()
-          axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+          this.axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
             this.$Progress.finish()
             this.setData(response.data)
           }).catch(error => {
-            this.Progress.fail()
+            this.$Progress.fail()
             this.setData(response.data, error)
           })
         } else {
@@ -215,18 +222,21 @@
 
       setData(data, err) {
         // if we have an ID param
-        if(this.authUser.id && !err) {
+        if(!err) {
+          this.$store.dispatch('checkValidUser', data.contact.id)
+        }
+
+        if(this.$auth.check() && !err) {
+          this.loading = false
           // if there is an authUser
           // We make a request with the ID Param
-          if(this.authUser.role == 'contact' && this.authUser.id != data.contact.id) {
+          if(this.$auth.check('contact') && this.authUser.id != data.contact.id) {
             this.$notify({
               title: "Please Log In",
               text: "Either you aren't logged in or don't have access to this page. <br>Please try logging in again.",
               group: 'auth'
             })
           } else {
-            this.loading = false
-
             this.$store.dispatch('setProject', data.project)
             this.$store.dispatch('setProjectMedia', data.project_media.medias)
             this.$store.dispatch('setContact', data.contact)
@@ -238,10 +248,11 @@
 
             this.pageTitle = data.project.title
           }
-        } else if (this.authUser.id && err) {
+        } else if (this.$auth.check() && err) {
+          this.loading = false
           this.$router.push({ name: 'list' })
           console.log(error)
-        } else if (!this.authUser.id && !err) {
+        } else if (!this.$auth.check() && !err) {
           this.loading = false
 
           this.$store.dispatch({
@@ -268,23 +279,10 @@
       }
     },
     created() {
-      this.fetchData()
+      if(this.$auth.check()) {
+        this.fetchData()
+      }
     }
-    // beforeRouteEnter (to,from,next) {
-    //   if(to.params.id) {
-    //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-    //       next(vm => vm.setData(response.data))
-    //     }).catch(error => {
-    //       next(vm => vm.setData(response.data, error))
-    //     })
-    //   } else {
-    //     next({name: '404'})
-    //   }
-    // },
-    // beforeRouteUpdate (to, from, next) {
-    //   this.fetchData()
-    //   next()
-    // }
   }
 </script>
 

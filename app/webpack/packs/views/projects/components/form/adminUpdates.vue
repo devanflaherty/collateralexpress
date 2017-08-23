@@ -31,7 +31,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from "axios"
 import Status from "./status.vue"
 import ProjectSubmission from "../../mixins/projectSubmission.js"
 

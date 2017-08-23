@@ -1,16 +1,13 @@
 import bus from '../../../bus'
-import axios from "axios"
 
 let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
 
 const ProjectSubmission = {
   computed: {
     axiosConfig() {
       return {
         utf8 : "✓",
-        authenticity_token: this.token,
+        authenticity_token: token,
         project : this.project
       }
     }
@@ -55,7 +52,7 @@ const ProjectSubmission = {
     },
 
     postProject() {
-      axios.post('/projects/', this.axiosConfig)
+      this.axios.post('/api/v1/projects/', this.axiosConfig)
       .then(response => {
         // IF SUCCESFUll
         if(this.dzUpload) {
@@ -91,7 +88,7 @@ const ProjectSubmission = {
     },
 
     patchProject() {
-      axios.patch('/projects/' + this.project.id, this.axiosConfig)
+      this.axios.patch('/api/v1/projects/' + this.project.id, this.axiosConfig)
       .then(response => {
         // Successful
 

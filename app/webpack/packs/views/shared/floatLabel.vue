@@ -5,27 +5,30 @@
     <textarea
       v-if="inputType == 'textarea'"
       rows="4"
-      :id="propKey"
-      v-model="model"
+      :id="inputId"
+      :value="value"
       :name="label"
+      @input="emitInput($event.target.value)"
       @focus="floatLabel(true); focusLabel(true)"
-      @blur="floatLabel(false); focusLabel(false); emitInput()">
+      @blur="floatLabel(false); focusLabel(false)">
     </textarea>
 
     <input
       v-else-if="inputType == 'password'"
-      :id="propKey"
-      v-model="model"
+      :id="inputId"
+      :value="value"
       :name="label"
-      @focus="floatLabel(true); focusLabel(true);"
-      @blur="floatLabel(false); focusLabel(false);"
+      @input="emitInput($event.target.value)"
+      @focus="floatLabel(true); focusLabel(true)"
+      @blur="floatLabel(false); focusLabel(false)"
       type="password">
 
     <input v-else-if="!inputType"
-      :id="propKey"
-      v-model="model"
+      :id="inputId"
+      :value="value"
+      @input="emitInput($event.target.value)"
       @focus="floatLabel(true); focusLabel(true)"
-      @blur="floatLabel(false); focusLabel(false); emitInput()"
+      @blur="floatLabel(false); focusLabel(false)"
       :name="label"
       type="text">
 
@@ -39,52 +42,51 @@ import {emitValidationErrors} from './validation'
 export default {
   name: 'floatLabel',
   // mixins: [emitValidationErrors],
-  props: ['attr', 'label', 'propKey', 'obj', 'inputType', 'has-error', 'error-text'],
+  props: ['value', 'label','inputType', 'has-error', 'error-text'],
   data() {
     return {
       float: false,
-      focus: false,
-      model: this.attr,
-      key: this.propKey
+      focus: false
+    }
+  },
+  computed: {
+    inputId() {
+      if(this.value != null) {
+        return this.value.replace(/\s+/g, '-').toLowerCase()
+      }
     }
   },
   watch: {
     '$route': function() {
       this.veeErrors.clear();
     },
-    attr(a) {
-      this.model = a
-    },
-    model(m) {
+    value(m) {
       if(m && m.length > 0 && m != null || m != 'undefined') {
         this.floatLabel()
         this.setParentData()
-        this.emitInput()
       }
     }
   },
   methods: {
     setParentData() {
-      if(this.model != null && this.key != null) {
-        if(this.label == "Other") {
-          this.$emit('updateOther', this.model)
-        } else if(this.obj == "contact") {
-          this.$store.dispatch('setContactProperty', [this.key,this.model])
-        } else if(this.obj == "user") {
-          this.$store.dispatch('setUserProperty', [this.key,this.model])
-        } else {
-          this.$store.dispatch({
-            type: 'setProjectProperty',
-            set: [this.key, this.model]
-          })
-        }
-      }
+      // if(this.model != null && this.key != null) {
+      //   if(this.label == "Other") {
+      //     this.$emit('updateOther', this.model)
+      //   } else if(this.obj == "contact") {
+      //     this.$store.dispatch('setContactProperty', [this.key,this.model])
+      //   } else {
+      //     this.$store.dispatch({
+      //       type: 'setProjectProperty',
+      //       set: [this.key, this.model]
+      //     })
+      //   }
+      // }
     },
-    emitInput() {
-      this.$emit('input', this.model);
+    emitInput(value) {
+      this.$emit('input', value);
     },
     floatLabel(f) {
-      if(this.model && this.model.length > 0 || f) {
+      if(this.value && this.value.length > 0 || f) {
         this.float = true
       } else {
         this.float = false
@@ -100,7 +102,7 @@ export default {
   },
   mounted() {
     this.veeErrors.clear()
-    if(this.model) {
+    if(this.value) {
       this.floatLabel()
     }
   }

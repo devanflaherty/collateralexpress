@@ -14,44 +14,35 @@
           <form v-on:submit.prevent="onSubmit" id="form" class="callout">
             <div class="float-input">
               <FloatLabel
+                v-model="contact.email"
                 v-validate="'required|email'"
-                data-vv-value-path="model"
                 data-vv-name="Contact Email"
                 :has-error="veeErrors.has('Contact Email')"
                 :error-text="veeErrors.first('Contact Email')"
-                :attr="contact.email"
-                obj="contact"
-                label="Contact Email"
-                propKey="email"></FloatLabel>
+                label="Contact Email"></FloatLabel>
             </div>
 
             <div class="row">
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    v-model="contact.first_name"
                     v-validate="'required'"
-                    data-vv-value-path="model"
                     data-vv-name="First Name"
                     :has-error="veeErrors.has('First Name')"
                     :error-text="veeErrors.first('First Name')"
-                    :attr="contact.first_name"
-                    obj="contact"
-                    label="First Name"
-                    propKey="first_name"></FloatLabel>
+                    label="First Name"></FloatLabel>
                 </div>
               </div>
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    v-model="contact.last_name"
                     v-validate="'required'"
-                    data-vv-value-path="model"
                     data-vv-name="Last Name"
                     :has-error="veeErrors.has('Last Name')"
                     :error-text="veeErrors.first('Last Name')"
-                    :attr="contact.last_name"
-                    obj="contact"
-                    label="Last Name"
-                    propKey="last_name"></FloatLabel>
+                    label="Last Name"></FloatLabel>
                 </div>
               </div>
             </div>
@@ -60,28 +51,22 @@
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
+                    v-model="contact.phone"
                     v-validate="'required'"
-                    data-vv-value-path="model"
                     data-vv-name="Phone Number"
                     :has-error="veeErrors.has('Phone Number')"
                     :error-text="veeErrors.first('Phone Number')"
-                    :attr="contact.phone"
-                    obj="contact"
-                    label="Phone Number"
-                    propKey="phone"></FloatLabel>
+                    label="Phone Number"></FloatLabel>
                 </div>
               </div>
               <div class="columns">
                 <div class="float-input">
                   <FloatLabel
-                    data-vv-value-path="model"
+                    v-model="contact.location"
                     data-vv-name="Location"
                     :has-error="veeErrors.has('Location')"
                     :error-text="veeErrors.first('Location')"
-                    :attr="contact.branch"
-                    obj="contact"
-                    label="Location"
-                    propKey="branch"></FloatLabel>
+                    label="Location"></FloatLabel>
                 </div>
               </div>
             </div>
@@ -102,7 +87,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
@@ -152,7 +136,7 @@ export default {
 
 
     clearCookie() {
-      axios.post('/contacts/clear')
+      this.axios.post('/api/v1/contacts/clear')
         .then( response => {
           console.log("cleared contact")
           this.$router.push({name: 'home'})
@@ -168,7 +152,7 @@ export default {
       if(this.$route.name == 'contact-profile') {
         if(this.authUser.role == 'contact') {
           // If they are contact show them their info
-          axios.get('/api/v1/contacts/' + this.authUser.id + '.json').then( response => {
+          this.axios.get('/api/v1/contacts/' + this.authUser.id + '.json').then( response => {
             this.loading = false
             this.$store.dispatch('setUser', response.data)
 
@@ -194,7 +178,7 @@ export default {
           this.$router.push({name: 'contact-profile'})
         } else if (this.authUser.role == 'admin') {
           // If admin give them the ability to edit the contact
-          axios.get('/api/v1/contacts/' + cid + '.json').then( response => {
+          this.axios.get('/api/v1/contacts/' + cid + '.json').then( response => {
             this.loading = false
             this.$store.dispatch('setUser', response.data)
 
@@ -231,7 +215,7 @@ export default {
           // ** if this is a new contact
           console.log('submitted')
           //** if is a new project but contact exist
-          axios.post('/contacts/', axiosConfig)
+          this.axios.post('/api/v1/contacts/', axiosConfig)
           .then(response => {
             // IF SUCCESFUll
             this.$store.dispatch('setMessage', response.data.full_name + " has been saved!")
@@ -260,7 +244,7 @@ export default {
           });
         } else {
           // ** If the contact does exist let's update it
-          axios.patch('/contacts/' + this.contact.id, axiosConfig)
+          this.axios.patch('/api/v1/contacts/' + this.contact.id, axiosConfig)
           .then(response => {
             this.$store.dispatch('setMessage', response.data.full_name + " has been saved!")
 

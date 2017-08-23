@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div v-if="$auth.ready()">
     <LoadScreen v-if="loading"></LoadScreen>
-    <section id="projectList" class="pad-small" v-if="authUser.id">
+    <section id="projectList" class="pad-small">
       <div class="row">
         <div class="columns">
           <h2>Project Requests</h2>
@@ -59,16 +59,11 @@
         </div>
       </div>
     </section>
-
-    <div id="login" v-if="!loading && authUser.role == 'public'">
-      <Login></Login>
-    </div>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
-  import axios from 'axios'
   import Login from '../shared/login/index.vue'
 
   export default {
@@ -98,9 +93,6 @@
       }
     },
     computed: {
-      ...mapGetters({
-        authUser: 'authUser'
-      }),
       queryNext() {
         if(this.scope) {
           return {
@@ -139,7 +131,7 @@
       queryProjects() {
         this.$Progress.start()
         var url = this.resource_url
-        if(this.$route.query) {
+        if(this.$route.query.filter || this.$route.query.page) {
           var url = this.resource_url + "?"
           var filter = null
           var page = null
@@ -160,12 +152,11 @@
             url = url
           }
         }
-        axios.get(url).then( response => {
+        this.axios.get(url).then(response => {
           this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
           this.$Progress.fail()
-          this.$router.push({name: '404'})
         })
       },
 
@@ -188,7 +179,7 @@
       },
 
       deleteProject(project) {
-        axios.delete('/projects/' + project.id, {
+        this.axios.delete('/projects/' + project.id, {
           project : project,
         })
         .then(response => {

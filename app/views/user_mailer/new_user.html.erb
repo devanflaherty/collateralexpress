@@ -1,0 +1,28 @@
+<h1 style="margin: 0 0 32px;"><%= @user.full_name %>, welcome to Collateral Express!</h1>
+
+<div style="
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cecece;
+  ">
+  <p style="padding: 32px 32px 0;">As an admin you have access to all projects at Collateral Express, and can manage and add Users.</p>
+
+  <a href="<%= @url %>/account/"
+    style="display:block;
+    margin: 0 32px 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background: #EB0183;
+    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">
+    Log In
+  </a>
+
+  <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you because an Admin used this email while creating a user at <%= @url %>.
+  If you feel this email was sent in error please contact us <a href="mailto:<%= @support_email %>">here</a>.</small></p>
+</div>

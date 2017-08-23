@@ -42,8 +42,6 @@
 </template>
 
 <script>
-  import axios from "axios"
-
   export default {
     name: 'Status',
     props: ['projectStatus', 'projectArchive', 'projectFlag'],
@@ -94,7 +92,7 @@
     created(){
       this.setInitProject()
       // Get Available tactics
-      axios.get('/api/v1/projects/new.json')
+      this.axios.get('/api/v1/projects/new.json')
         .then( response => {
           this.available_states = response.data.states
         }).catch(error => {

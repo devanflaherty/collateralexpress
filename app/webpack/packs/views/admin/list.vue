@@ -1,13 +1,17 @@
 <template>
-  <div>
+  <div v-if="$auth.ready()">
     <transition name="fade">
       <LoadScreen v-if="loading"></LoadScreen>
     </transition>
-    <div id="accountList">
+    <div id="accountList" v-if="$auth.check('admin')">
       <div class="row">
         <div class="columns">
           <h2>Users</h2>
-
+          <nav class="user-scope-nav">
+            <router-link :to="{ name: 'list-admin'}" :class="{'is-active':!role}">All</router-link>
+            <router-link :to="{ name: 'list-admin', query:{role: 'admin'} }" exact>Admins</router-link>
+            <router-link :to="{ name: 'list-admin', query:{role: 'contact'} }" exact>Contacts</router-link>
+          </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
         </div>
       </div>
@@ -19,6 +23,7 @@
               <tr>
                 <td>Name</td>
                 <td>Email</td>
+                <td>Role</td>
                 <td>Phone Number</td>
                 <td>Actions</td>
               </tr>
@@ -35,6 +40,7 @@
             <tbody>
               <tr v-if="users.length > 0" v-for="user in users" v-bind:key="user">
                 <td>{{user.full_name}}</td>
+                <td>{{user.role}}</td>
                 <td>{{user.email}}</td>
                 <td>{{user.phone}}</td>
                 <td>
@@ -57,7 +63,6 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import axios from 'axios'
 
   export default {
     name: 'AdminList',
@@ -75,23 +80,55 @@
           next: null,
           prev: null,
         },
+        role: null,
         resource_url: '/api/v1/users.json'
       }
     },
     computed: {
       ...mapGetters({
         authUser: 'authUser',
+        validToken: 'validToken',
         users: 'users'
       }),
       token() {
         return document.getElementsByName('csrf-token')[0].getAttribute('content')
       }
     },
+    watch: {
+      '$route': function() {
+        this.queryUsers()
+        this.role = this.$route.query.role
+        if(!this.$route.query.role) {
+          this.role = ""
+        }
+      }
+    },
     methods: {
-      fetchData() {
+      queryUsers() {
         var url = this.resource_url
+        if(this.$route.query.role) {
+          var url = this.resource_url + "?"
+          var role = null
+          var page = null
 
-        axios.get(url).then( response => {
+          if(this.$route.query.role && this.$route.query.role != '') {
+            this.role = this.$route.query.role
+            role = "role=" + this.role
+            url = url + role
+          }
+          // if(this.$route.query.page && this.$route.query.page != '') {
+          //   this.page = this.$route.query.page
+          //   page = "page=" + this.page
+          //   url = url + page
+          // }
+          // if(role != '') {
+          //   url = url + page + "&" + role
+          // } else {
+          //   url = url
+          // }
+        }
+
+        this.axios.get(url).then( response => {
           this.setData(response.data)
         }).catch(error => {
           this.$router.push({name: '404'})
@@ -102,13 +139,17 @@
           this.loading = false
           this.$store.dispatch('setUsers', data.users)
           this.message = "Succesfully found all users."
-          // this.pagination.next = data.next_page
-          // this.pagination.prev = data.prev_page
-          // this.pagination.current = data.current_page
+          if(data.users.length < 1) {
+            if(this.role) {
+              this.message = "You have no '" + this.role + "' users."
+            } else {
+              this.message = "You have no saved users."
+            }
+          }
         }
       },
       deleteUser(user) {
-        axios.delete('/users/' + user.id, {
+        this.axios.delete('/api/v1/users/' + user.id, {
           authenticity_token: this.token,
           user : user,
         })
@@ -118,30 +159,15 @@
             title: response.data.flash[0][1],
             group: 'app'
           })
-          this.fetchData()
+          this.queryUsers()
         })
         .catch(function (error) {
           console.log(error)
         });
       },
     },
-    mounted(){
-
-    },
-    beforeRouteEnter(to, from, next) {
-      // var page = to.query.page
-      // var filter = to.query.filter
-      var url = '/api/v1/users.json'
-
-      axios.get(url).then( response => {
-        next(vm => vm.setData(response.data))
-      }).catch(error => {
-        console.log('Not authenticated')
-      })
-    },
-    beforeRouteUpdate (to, from, next) {
-      this.fetchData()
-      next()
+    created(){
+      this.queryUsers()
     }
   }
 </script>

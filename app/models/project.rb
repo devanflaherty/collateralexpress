@@ -12,8 +12,10 @@ class Project < ApplicationRecord
 
   mount_uploader :asset, AssetUploader
 
-  belongs_to :contact, optional: true
-  belongs_to :user
+  # belongs_to :contact, optional: true
+  # belongs_to :user
+  belongs_to :user, :class_name => 'User', :foreign_key => 'user_id'
+  belongs_to :contact, :class_name => 'User', :foreign_key => 'contact_id', optional: true
   has_many :comments
   has_many :medias
 

@@ -1,4 +1,4 @@
-class MediaController < ApplicationController
+class Api::V1::MediaController < ApiController
 
   def create
     @allMedia = Array.new

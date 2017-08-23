@@ -21,7 +21,7 @@
       enctype="multipart/form-data"
       ref="dropzoneUploader"
       id="dropzoneUploader"
-      url="/media"
+      url="/api/v1/media"
       :auto-process-queue="false"
       :showRemoveLink="true"
       :upload-multiple="true"
@@ -88,7 +88,7 @@
       removeMedia(id) {
         var filteredMedia = this.projectMedia.filter(m => m.id !== id)
 
-        axios.delete('/media/' + id,{
+        axios.delete('/api/v1/media/' + id,{
           utf8 : "✓",
           authenticity_token: this.token,
           project : this.project.id

@@ -4,6 +4,8 @@ import router from '../router'
 import axios from 'axios'
 Vue.use(Vuex)
 
+var jwtDecode = require('jwt-decode');
+
 // modules
 import {projectModule} from './projectModule'
 import {contactModule} from './contactModule'
@@ -19,8 +21,10 @@ export const store = new Vuex.Store({
   state: {
     authUser: {
       id: null,
+      email: null,
       role: null
     },
+    validToken: localStorage.getItem("default_auth_token"),
     message: "Update Form",
     flash: [],
     reveal: {
@@ -60,6 +64,9 @@ export const store = new Vuex.Store({
     authUser(state) {
       return state.authUser
     },
+    validToken(state) {
+      return state.validToken
+    },
     message(state) {
       return state.message
     },
@@ -86,9 +93,13 @@ export const store = new Vuex.Store({
     }
   },
   mutations: {
-    setAuth(state, payload) {
-      state.authUser.id = payload.id
-      state.authUser.role = payload.role
+    setAuth(state, user) {
+      state.authUser.id = user.id
+      state.authUser.email = user.email
+      state.authUser.role = user.role
+    },
+    setToken(state, token) {
+      state.validToken = token
     },
     setMessage(state, message) {
       state.message = message
@@ -119,16 +130,36 @@ export const store = new Vuex.Store({
   actions: {
     // Global actions
     setAuth({commit, dispatch}, payload) {
-      if(payload) {
+      if(payload != '') {
         commit('setAuth', payload)
         dispatch('setLinks', payload.role)
       } else {
-        var emptyAuth = {id: null,role: 'public'}
+        var emptyAuth = {id: null, role: 'public'}
         commit('setAuth', emptyAuth)
         dispatch('setLinks')
       }
     },
-    setContactSession({commit}, id) {
+    setAuthViaToken({commit, dispatch}, payload) {
+      if(payload != '') {
+        var userData = jwtDecode(payload)
+        var user = {
+          id: userData.sub,
+          email: userData.email,
+          role: userData.role
+        }
+        commit('setAuth', user)
+        dispatch('setLinks', user.role)
+      } else {
+        var emptyAuth = {id: null, role: 'public'}
+        commit('setAuth', emptyAuth)
+        dispatch('setLinks')
+      }
+    },
+    setToken({commit, dispatch}, token) {
+      commit('setToken', token)
+      dispatch('setAuthViaToken', token)
+    },
+    setContactSession({commit, state, dispatch}, id) {
       if(id) {
         commit('setContactSession', id)
       } else {
@@ -139,7 +170,7 @@ export const store = new Vuex.Store({
           while (c.charAt(0)==' ') c = c.substring(1,c.length);
           if (c.indexOf(nameEQ) == 0) {
             var contactId = c.substring(nameEQ.length,c.length)
-            commit('setContactSession', id)
+            commit('setContactSession', contactId)
           }
         }
       }
@@ -178,16 +209,11 @@ export const store = new Vuex.Store({
       }
     },
     setLinks({commit, state}, linkType) {
-      if(linkType == 'admin') {
+      if(linkType == 'admin' || linkType == 'contact') {
         var admin_links = [...state.defaultLinks]
         admin_links.splice(2, 0, { name: "All Projects", url: "list" })
         admin_links.push( { name: "Profile", url: "account"})
         commit('setLinks', admin_links)
-      } else if (linkType == 'contact') {
-        var contact_links = [...state.defaultLinks]
-        contact_links.splice(2, 0, { name: "All Projects", url: "list" })
-        contact_links.push( { name: "Profile", url: "contact-profile"})
-        commit('setLinks', contact_links)
       } else {
         commit('setLinks', state.defaultLinks)
       }

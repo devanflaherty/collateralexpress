@@ -1,54 +1,66 @@
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></pre>
-<h1>Your project '<%= @project.title %>' was created succesfully</h1>
+<h1 style="margin: 0 0 32px;">Your project <strong>'<%= @project.title %>'</strong> was created succesfully</h1>
 
-<p>Attached is a summary of your Project Request '<%= @project.title %>' you submitted on <%= @project.created_at %>.
-  To view your full request click the link below.</p>
+<div style="
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cecece;
+  ">
+  <p style="padding: 32px 32px 0;">Attached is a summary of your Project Request '<%= @project.title %>' you submitted on <%= @project.created_at.strftime("%B %d, %Y") %>.
+    To view your full request click the link below.</p>
 
-<p>As this project's status is changed you will be notified via email.</p>
+  <p style="padding: 0 32px;">As this project's status is changed you will be notified via email.</p>
 
-<a href="http://localhost:3000/project/<%= @project.slug %>"
-  style="display:block; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; background: #EB0183; background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
+  <a href="<%= @url %>/project/<%= @project.slug %>"
+    style="display:block;
+    margin: 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background: #EB0183;
+    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">
+    View project</a>
 
-<hr>
+  <hr style="border: none;
+    height: 1px;
+    background: #cecece;">
+  <div style="padding: 32px">
 
-<h3><%= @project.title %></h3>
-<span style="border-radius: 12px; background-color: #EB0183"><%= @project.existing ? "Existing Project" : "New Project" %></span>
+    <h1 style="margin: 0 0 16px;display: inline-block; padding: 8px; background:black; color: white;"><strong><%= @project.title %></strong></h1><br>
 
-<% if @project.status %>
-  <h4>Status</h4>
-  <p><%= @project.status %></p>
-<% end %>
+    <span style="border-radius: 30px; background-color: #f7f7f7; display: inline-block; padding: 4px 12px; color: black; box-shadow: 0 1px 3px rgba(0,0,0,0.09), 0 1px 2px rgba(0,0,0,0.18);"><%= @project.existing ? "Existing Project" : "New Project" %></span>
 
-<% if @project.due_date %>
-  <h4>Target Due Date</h4>
-  <p><%= @project.due_date %></p>
-<% end %>
-
-<% if @project.description %>
-  <h4>Project Description</h4>
-  <p><%= @project.description %></p>
-<% end %>
-
-<% if @project.due_date %>
-  <h4>Target Due Date</h4>
-  <p><%= @project.due_date %></p>
-<% end %>
-
-<% if @project.tactic %>
-  <h4>Project Tactics</h4>
-  <p>
-  <% @project.tactic.each do |t| %>
-    <% if t != "other" %>
-      <span><%= t %></span>
+    <% if @project.status %>
+      <h4>Status</h4>
+      <p><%= @project.status %></p>
     <% end %>
-  <% end %>
-  </p>
-<% end %>
 
-<a href="localhost:3000/project/<%= @project.slug %>"
-  style="display:block; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; background: #EB0183; background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
+    <% if @project.due_date %>
+      <h4>Target Due Date</h4>
+      <p><%= @project.due_date.strftime("%B %d, %Y") %></p>
+    <% end %>
 
-<hr>
+    <% if @project.description %>
+      <h4>Project Description</h4>
+      <p><%= @project.description %></p>
+    <% end %>
 
-<p><small>This email was sent out to you, because you are the contact associated to this project request.
-If you would like to change your contact information please go here <a href="http://localhost:3000/contact/<%= @project.contact_id %>/edit">.</small></p>
+    <% if @project.tactic.length > 0 %>
+      <h4>Project Tactics</h4>
+      <p>
+      <% @project.tactic.each do |t| %>
+        <% if t != "other" %>
+          <span><%= t %></span>
+        <% end %>
+      <% end %>
+      </p>
+    <% end %>
+  </div>
+
+  <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you, because you are the contact associated to this project request.
+  If you would like to change your contact information please go <a href="<%= @url %>/account">here</a>.</small></p>
+</div>

@@ -1,5 +1,5 @@
 <template>
-  <div id="accountLogin">
+  <div id="accountLogin" v-if="$auth.ready()">
     <div class="flex space-between">
       <div>
         <h2 class="banner">Login</h2>
@@ -8,29 +8,23 @@
     <form v-on:submit.prevent="onSubmit" id="form" class="callout">
       <div class="float-input">
         <FloatLabel
+          v-model="user.email"
           v-validate="'required|email'"
-          data-vv-value-path="model"
           data-vv-name="User Email"
           :has-error="veeErrors.has('User Email')"
           :error-text="veeErrors.first('User Email')"
-          :attr="user.email"
-          obj="user"
-          label="User Email"
-          propKey="email"></FloatLabel>
+          label="User Email"></FloatLabel>
       </div>
 
       <div class="float-input">
         <FloatLabel
+          v-model="user.password"
           v-validate="'required'"
-          data-vv-value-path="model"
           data-vv-name="User Password"
           :has-error="veeErrors.has('User Password')"
           :error-text="veeErrors.first('User Password')"
-          :attr="user.password"
-          obj="user"
           input-type="password"
-          label="User Password"
-          propKey="password"></FloatLabel>
+          label="User Password"></FloatLabel>
       </div>
 
       <input type="submit" value="submit" class="button gradient">
@@ -42,7 +36,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import bus from "../../bus"
-import axios from "axios"
 
 import { onValidation } from '../shared/validation'
 import FloatLabel from "../shared/floatLabel.vue"
@@ -64,34 +57,39 @@ export default {
   computed: {
     ...mapGetters({
       authUser: 'authUser',
+      validToken: 'validToken',
       user: 'user'
     }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
   },
+  created() {
+  },
   methods: {
     onSubmit: function () {
-      axios.post('/users/sign_in', {
-        utf8 : "✓",
-        authenticity_token: this.token,
-        user: this.user
-      })
-      .then(response => {
-        this.$notify({
-          title: 'Succesfully signed in ' + this.user.email,
-          type: 'success',
-          group: 'auth'
-        })
-        this.$router.push({name: 'list'})
-      })
-      .catch(error => {
-        this.$notify({
-          title: 'Error signing in ' + this.user.email,
-          type: 'alert',
-          group: 'auth'
-        })
-      })
+      this.$auth.login({
+          url: '/api/v1/user_token',
+          data: {
+            auth: {email: this.user.email, password: this.user.password}
+          },
+          success: function (response) {
+            this.$notify({
+              title: 'Succesfully signed in ' + this.user.email,
+              type: 'success',
+              group: 'auth'
+            })
+            this.$store.dispatch('setToken', response.data.jwt)
+          },
+          error: function (error) {
+            this.$notify({
+              title: 'Error signing in ' + this.user.email,
+              type: 'alert',
+              group: 'auth'
+            })
+          },
+          rememberMe: true,
+      });
     }
   }
 }

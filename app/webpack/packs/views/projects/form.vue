@@ -5,7 +5,7 @@
       <LoadScreen v-if="loading"></LoadScreen>
       <form v-on:submit.prevent="onSubmit" id="form">
         <div id="formContainer" class="row expand align-center">
-          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || authUser.id, 'medium-12 large-10': !project && !authUser.id }">
+          <div class="form-panel small-12 columns" :class="{'medium-8 large-7': project && project.id || $auth.check(), 'medium-12 large-10': !project && !$auth.check() }">
 
             <header>
               <div class="row">
@@ -22,26 +22,22 @@
                 <div class="fieldset">
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.title"
                       v-validate="'required'"
-                      data-vv-value-path="model"
                       data-vv-name="Project Title"
                       :has-error="veeErrors.has('Project Title')"
                       :error-text="veeErrors.first('Project Title')"
-                      :attr="project.title"
-                      label="*Project Title"
-                      propKey="title"></FloatLabel>
+                      label="*Project Title"></FloatLabel>
                   </div>
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.description"
                       v-validate="'required'"
-                      data-vv-value-path="model"
                       data-vv-name="Project Description"
                       :has-error="veeErrors.has('Project Description')"
                       :error-text="veeErrors.first('Project Description')"
-                      :attr="project.description"
                       label="*Project Description"
-                      propKey="description"
                       inputType='textarea'></FloatLabel>
                   </div>
 
@@ -91,10 +87,8 @@
                       <div class="columns small-6">
                         <div class="float-input">
                           <FloatLabel
-                            data-vv-value-path="model"
+                            v-model="other"
                             data-vv-name="other"
-                            :attr="tactic_other"
-                            propKey="tactic_other"
                             label="Other"
                             @updateOther="setTactics"></FloatLabel>
                         </div>
@@ -134,14 +128,12 @@
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.reference"
                       v-validate="'url'"
-                      data-vv-value-path="model"
                       data-vv-name="Asset Reference"
                       :has-error="veeErrors.has('Asset Reference')"
                       :error-text="veeErrors.first('Asset Reference')"
-                      :attr="project.reference"
-                      label="Asset Reference"
-                      propKey="reference"></FloatLabel>
+                      label="Asset Reference"></FloatLabel>
                     <p class="hint">http://tmap.com/link/to/asset</p>
                   </div>
 
@@ -149,26 +141,22 @@
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.business_unit"
                       v-validate=""
-                      data-vv-value-path="model"
                       data-vv-name="Business Unit"
                       :has-error="veeErrors.has('Business Unit')"
                       :error-text="veeErrors.first('Business Unit')"
-                      :attr="project.business_unit"
-                      label="Business Unit"
-                      propKey="business_unit"></FloatLabel>
+                      label="Business Unit"></FloatLabel>
                   </div>
 
                   <div class="float-input">
                     <FloatLabel
+                      v-model="project.target"
                       v-validate=""
-                      data-vv-value-path="model"
                       data-vv-name="Target Audience"
                       :has-error="veeErrors.has('Target Audience')"
                       :error-text="veeErrors.first('Target Audience')"
-                      :attr="project.target"
-                      label="Target Audience"
-                      propKey="target"></FloatLabel>
+                      label="Target Audience"></FloatLabel>
                   </div>
                 </div>
 
@@ -176,14 +164,13 @@
             </div>
           </div><!-- form panel part 1 -->
 
-          <div v-if="$route.params.id || authUser.id" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
+          <div v-if="$route.params.id || $auth.check()" id="infoPanel" class="small-12 medium-8 large-3 columns show-for-medium">
             <aside id="projectSidebar">
-              <nav v-if="authUser.id">
+              <nav v-if="$auth.check()">
                 <router-link v-if="$route.params.id" class="button expanded" :to="{ name: 'show', params: { id: $route.params.id} }">View Project</router-link>
                 <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
                 <router-link v-if="$route.params.id" class="button hollow secondary expanded" :to="{name: 'new'}">Add New Project</router-link>
-                <router-link v-if="authUser.role == 'admin'" :to="{name: 'account'}">Update your Account</router-link>
-                <router-link v-if="authUser.role == 'contact'" :to="{name: 'contact-profile'}">Update your Profile</router-link>
+                <router-link :to="{name: 'account'}">Update your Profile</router-link>
               </nav>
             </aside>
             <a v-if="project && project.id"
@@ -246,7 +233,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from "axios"
 import bus from '../../bus'
 
 import Datepicker from 'vuejs-datepicker';
@@ -327,6 +313,10 @@ export default {
       // If validation fails we don't show them the page
       this.$store.dispatch('checkValidUser', id)
     },
+    'authUser.id':function() {
+      // If we get an authUser fetchData
+      this.fetchData()
+    },
     contactSession(id) {
       // Generally will only run on a few instances
       // First time vue instance is being loaded & First time a contactUser is logging in
@@ -341,7 +331,7 @@ export default {
       this.loading = true
       this.$Progress.start()
       if(this.$route.name == "edit") {
-        axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
+        this.axios.get('/api/v1/projects/' + this.$route.params.id  + '.json').then( response => {
           this.$Progress.finish()
           this.setData(response.data)
         }).catch(error => {
@@ -349,7 +339,7 @@ export default {
           this.setData(response.data, error)
         })
       } else {
-        axios.get('/api/v1/projects/new.json').then( response => {
+        this.axios.get('/api/v1/projects/new.json').then( response => {
           this.$Progress.finish()
           this.setNewData(response.data)
         }).catch(error => {
@@ -361,10 +351,11 @@ export default {
 
     setData(data, err) {
       // if we have an ID param
-      if(this.authUser.id && !err) {
+      if(this.$auth.check() && !err) {
         // if there is an authUser
         // We make a request with the ID Param
-        if(this.authUser.role == 'contact' && this.authUser.id != data.project.contact_id) {
+        this.loading = false
+        if(this.$auth.check('contact') && this.authUser.id != data.project.contact_id) {
           // If the contact id is not equal to what is returned
           this.$store.dispatch({
             type: 'setReveal',
@@ -374,7 +365,6 @@ export default {
           })
         } else {
           // If contactSession is valid or is authorized
-          this.loading = false
           this.$validator.clean();
           this.$store.dispatch('setProject', data.project)
           this.$store.dispatch('setProjectMedia', data.project_media.medias)
@@ -383,22 +373,24 @@ export default {
           this.contactQuery = data.project.contact_id
           this.pageTitle = "Edit " + data.project.title
         }
-      } else if (this.authUser.id && err) {
+      } else if (this.$auth.check() && err) {
+        this.loading = false
         this.$router.push({ name: 'new' })
         console.log(err)
-      } else if (!this.authUser.id && !err) {
+      } else if (!this.$auth.check() && !err) {
         this.loading = false
-        this.$store.dispatch({
-          type: 'setProjectProperty',
-          project: {
-            id: data.project.id,
-            title: data.project.title,
-            contact_id: data.project.contact_id
-          }
-        })
+        // this.$store.dispatch({
+        //   type: 'setProjectProperty',
+        //   project: {
+        //     id: data.project.id,
+        //     title: data.project.title,
+        //     contact_id: data.project.contact_id
+        //   }
+        // })
 
         this.pageTitle = data.project.title
       } else {
+        this.loading = false
         this.$store.dispatch({
           type: 'setFlash',
           title: "We couldn/'t get your project.",
@@ -461,28 +453,6 @@ export default {
       this.dzUpload = bool
     })
   },
-  // beforeRouteEnter (to,from,next) {
-  //   // Before we hit the page we will fetch Data
-  //   if(to.name == "edit") {
-  //     axios.get('/api/v1/projects/' + to.params.id  + '.json').then( response => {
-  //       next(vm => vm.setData(response.data))
-  //     }).catch(error => {
-  //       next(vm => vm.setData(response.data, error))
-  //     })
-  //   } else {
-  //     axios.get('/api/v1/projects/new.json').then( response => {
-  //       next(vm => vm.setNewData(response.data))
-  //     }).catch(error => {
-  //       next(vm => vm.setNewData(response.data, error))
-  //     })
-  //   }
-  // },
-  // beforeRouteUpdate (to, from, next) {
-  //   // Once the route has updated we will fetch Data
-  //   // Will run if route ID changes but we stay on this page
-  //   this.fetchData()
-  //   next()
-  // },
   beforeRouteLeave (to, from, next) {
     // Before we leave the current page
     bus.$emit('progressEmit', 0)

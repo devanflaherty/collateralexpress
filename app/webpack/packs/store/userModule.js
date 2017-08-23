@@ -10,6 +10,7 @@ export const userModule = {
       first_name: null,
       last_name: null,
       full_name: null,
+      location: null,
       phone: null
     },
     users: []

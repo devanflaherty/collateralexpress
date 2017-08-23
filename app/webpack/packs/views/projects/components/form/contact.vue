@@ -7,16 +7,14 @@
         <hr class="hide-for-medium no-margin">
         <div class="float-input">
           <FloatLabel
+            v-model="contact.email"
             v-if="!contact.id"
             v-validate="'required|email'"
-            data-vv-value-path="model"
             data-vv-name="Contact Email"
             label="Contact Email"
             :has-error="veeErrors.has('Contact Email')"
             :error-text="veeErrors.first('Contact Email')"
-            :attr="contact.email"
-            propKey="email"
-            obj="contact"></FloatLabel>
+            ></FloatLabel>
             <div v-else class="callout">
               <span class="subheader">Contact Email</span>
               <h5 class="contact-email">{{contact.email}}</h5>
@@ -26,54 +24,42 @@
         <div class="row">
           <div class="columns float-input">
             <FloatLabel
+              v-model="contact.first_name"
               v-validate="'required'"
-              data-vv-value-path="model"
               data-vv-name="First Name"
               label="First Name"
               :has-error="veeErrors.has('First Name')"
-              :error-text="veeErrors.first('First Name')"
-              :attr="contact.first_name"
-              propKey="first_name"
-              obj="contact"></FloatLabel>
+              :error-text="veeErrors.first('First Name')"></FloatLabel>
           </div>
           <div class="columns float-input">
             <FloatLabel
+              v-model="contact.last_name"
               v-validate="'required'"
-              data-vv-value-path="model"
               data-vv-name="Last Name"
               label="Last Name"
               :has-error="veeErrors.has('Last Name')"
-              :error-text="veeErrors.first('Last Name')"
-              :attr="contact.last_name"
-              propKey="last_name"
-              obj="contact"></FloatLabel>
+              :error-text="veeErrors.first('Last Name')"></FloatLabel>
           </div>
         </div>
 
         <div class="row">
           <div class="columns float-input">
             <FloatLabel
+              v-model="contact.phone"
               v-validate="'required'"
-              data-vv-value-path="model"
               data-vv-name="Phone Number"
               label="Phone Number"
               :has-error="veeErrors.has('Phone Number')"
-              :error-text="veeErrors.first('Phone Number')"
-              :attr="contact.phone"
-              propKey="phone"
-              obj="contact"></FloatLabel>
+              :error-text="veeErrors.first('Phone Number')"></FloatLabel>
           </div>
           <div class="columns float-input">
             <FloatLabel
-              v-validate=""
-              data-vv-value-path="model"
+              v-model="contact.location"
               data-vv-name="Location"
               label="Location"
               :has-error="veeErrors.has('Location')"
               :error-text="veeErrors.first('Location')"
-              :attr="contact.branch"
-              propKey="branch"
-              obj="contact"></FloatLabel>
+              ></FloatLabel>
           </div>
         </div>
       </div>
@@ -124,9 +110,9 @@
             <label>Position</label>
             <span>{{contact.position}}</span>
           </li>
-          <li v-if="contact.branch">
+          <li v-if="contact.location">
             <label>Location</label>
-            <span>{{contact.branch}}</span>
+            <span>{{contact.location}}</span>
           </li>
         </ul>
       </div>
@@ -140,11 +126,6 @@ import { mapGetters } from 'vuex'
 import bus from '../../../../bus'
 import {emitValidationErrors} from '../../../shared/validation.js'
 import FloatLabel from '../../../shared/floatLabel.vue'
-import axios from "axios"
-
-let token = document.getElementsByName('csrf-token')[0].getAttribute('content')
-axios.defaults.headers.common['X-CSRF-Token'] = token
-axios.defaults.headers.common['Accept'] = 'application/json'
 
 export default {
   name: 'contact',
@@ -161,6 +142,9 @@ export default {
   },
   computed: {
     ...mapGetters(['contact', 'contacts']),
+    token(){
+      return document.getElementsByName('csrf-token')[0].getAttribute('content')
+    }
   },
   watch: {
     'contact.email': function(newEmail, oldEmail) {
@@ -184,15 +168,20 @@ export default {
 
     //contact methods
     postContact(id) {
+      // Set Default Password for contact
+      var contactUser = {...this.contact}
+      contactUser.password = this.contact.email
+      contactUser.password_confirmation = this.contact.email
+
       var axiosConfig = {
         utf8 : "✓",
-        authenticity_token: token,
-        contact : this.contact,
+        authenticity_token: this.token,
+        contact : contactUser,
         project : this.projectId
       }
       if(!id || id == null || id == undefined) {
         // If contact doesn't exist
-        axios.post('/contacts/', axiosConfig)
+        this.axios.post('/api/v1/contacts/', axiosConfig)
         .then(response => {
           // IF SUCCESFUll
           this.$emit("contactEmit", response.data.contact)
@@ -200,10 +189,14 @@ export default {
             title: response.data.contact.first_name + " created"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
+
+          if(!this.$auth.check()) {
+            this.loginContact()
+          }
         })
       } else if (id) {
         //If contact exists
-        axios.patch('/contacts/' + id, axiosConfig)
+        this.axios.patch('/api/v1/contacts/' + id, axiosConfig)
         .then(response => {
           // IF SUCCESFUll
           this.$emit("contactEmit", response.data.contact)
@@ -211,6 +204,10 @@ export default {
             title: response.data.contact.first_name + " updated"
           })
           bus.$emit('submitProjectForm', response.data.contact.id)
+
+          if(!this.$auth.check()) {
+            this.loginContact()
+          }
         })
       }
     },
@@ -218,7 +215,7 @@ export default {
 
     fetchContact() {
       if(this.contactQuery != null) {
-        axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
+        this.axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
         .then( response => {
           this.$store.dispatch('setContact', response.data)
           this.makeContactEditable(false)
@@ -260,20 +257,49 @@ export default {
         type: 'setContactProperty',
         contact: {
           email: null,
-          id: '',
-          first_name: '',
-          full_name: '',
-          last_name: '',
-          phone: '',
-          branch: ''
+          id: null,
+          first_name: null,
+          full_name: null,
+          last_name: null,
+          phone: null,
+          location: null
         }
       })
       this.makeContactEditable(true)
+    },
+
+
+    loginContact() {
+      this.$auth.login({
+        url: '/api/v1/user_token',
+        data: {
+          auth: {email: this.contact.email, password: this.contact.email}
+        },
+        success: function (response) {
+          this.$notify({
+            title: 'Succesfully signed in ' + this.email,
+            type: 'success',
+            group: 'auth'
+          })
+          this.$store.dispatch('setToken', response.data.jwt)
+          this.$store.dispatch('setContactSession')
+        },
+        error: function (error) {
+          this.$notify({
+            title: 'Error signing in ' + this.email,
+            text: 'We could not find a contact with that email.',
+            type: 'alert',
+            group: 'auth'
+          })
+        },
+        redirect: this.$route.path,
+        rememberMe: false,
+      });
     }
   },
   created() {
     // Form contacts array with all contacts on creation
-    axios.get('/api/v1/contacts.json').then( response => {
+    this.axios.get('/api/v1/contacts.json').then( response => {
       this.$store.dispatch('setContacts', response.data.contact)
     })
 
