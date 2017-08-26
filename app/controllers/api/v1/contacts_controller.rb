@@ -70,6 +70,16 @@ class Api::V1::ContactsController < ApiController
     end
   end
 
+  def clear
+    if cookies[:current_contact_id]
+      cookies.delete :current_contact_id
+      flash[:notice] = "Removed saved contact."
+      respond_to do |format|
+        format.json { render :json => {flash: flash} }
+      end
+    end
+  end
+
   private
 
     def contact_params

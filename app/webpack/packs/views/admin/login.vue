@@ -8,7 +8,7 @@
     <form v-on:submit.prevent="onSubmit" id="form" class="callout">
       <div class="float-input">
         <FloatLabel
-          v-model="user.email"
+          v-model="email"
           v-validate="'required|email'"
           data-vv-name="User Email"
           :has-error="veeErrors.has('User Email')"
@@ -17,8 +17,8 @@
       </div>
 
       <div class="float-input">
-        <FloatLabel
-          v-model="user.password"
+        <FloatLabel v-if="admin"
+          v-model="password"
           v-validate="'required'"
           data-vv-name="User Password"
           :has-error="veeErrors.has('User Password')"
@@ -30,6 +30,17 @@
       <input type="submit" value="submit" class="button gradient">
 
     </form>
+
+    <hr>
+    <div v-if="!admin">
+      <p>If you are an admin user click the link below to login.</p>
+      <a href="#adminLogin" @click.prevent="switchForm">Admin Login</a>
+    </div>
+    <div v-else>
+      <p>If you are contact user click the link below to login.</p>
+      <a href="#contactLogin" @click.prevent="switchForm">Contact Login</a>
+    </div>
+
   </div>
 </template>
 
@@ -52,30 +63,39 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      email: null,
+      password: null,
+      // True for admin, false for contact
+      admin: false
+    }
   },
   computed: {
     ...mapGetters({
       authUser: 'authUser',
       validToken: 'validToken',
-      user: 'user'
     }),
     token() {
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     },
   },
-  created() {
-  },
   methods: {
+    switchForm() {
+      this.admin = !this.admin
+    },
     onSubmit: function () {
+      if(this.admin == false) {
+        // if this is a contact we will secretly send their password, which is just their email
+        this.password = this.email
+      }
       this.$auth.login({
           url: '/api/v1/user_token',
           data: {
-            auth: {email: this.user.email, password: this.user.password}
+            auth: {email: this.email, password: this.password}
           },
           success: function (response) {
             this.$notify({
-              title: 'Succesfully signed in ' + this.user.email,
+              title: 'Succesfully signed in ' + this.email,
               type: 'success',
               group: 'auth'
             })
@@ -83,7 +103,7 @@ export default {
           },
           error: function (error) {
             this.$notify({
-              title: 'Error signing in ' + this.user.email,
+              title: 'Error signing in ' + this.email,
               type: 'alert',
               group: 'auth'
             })
