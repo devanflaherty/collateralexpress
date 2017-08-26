@@ -30,6 +30,7 @@ class Project < ApplicationRecord
 
   # Scopes
   scope :flagged, -> { where(flag: true) }
+  scope :open, -> { where(archive: false) }
   scope :archived, -> { where(archive: true) }
   scope :exists, -> { where(existing: true) }
 

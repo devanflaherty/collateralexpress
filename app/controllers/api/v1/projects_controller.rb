@@ -135,9 +135,9 @@ class Api::V1::ProjectsController < ApiController
         end
       else
         if @authUser
-          @projects = @authUser.projects.page(page).per(10)
+          @projects = @authUser.projects.open.page(page).per(10)
         else
-          @projects = Project.page(page).per(10)
+          @projects = Project.open.page(page).per(10)
         end
       end
       @pagination = {

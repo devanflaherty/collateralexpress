@@ -10,6 +10,7 @@
             <router-link :to="{ name: 'list'}" :class="{'is-active':!scope}">All</router-link>
             <router-link :to="{ name: 'list', query:{filter: 'complete'} }" exact>Complete</router-link>
             <router-link :to="{ name: 'list', query:{filter: 'flagged'} }" exact>Flagged</router-link>
+            <router-link v-if="$auth.check('admin')" :to="{ name: 'list', query:{filter: 'archived'} }" exact>Archived</router-link>
           </nav>
           <hr class="no-margin" style="margin-bottom:1.25rem">
           <div v-if="projects.length < 1">
@@ -34,16 +35,19 @@
             <tbody>
               <tr v-for="project in projects" v-bind:key="project">
                 <td width="20%">{{project.title}}</td>
-                <td width="30%">{{project.description}}</td>
+                <td width="30%">{{limit(project.description, '30')}}</td>
                 <td width="10%">
                   <span class="tag flagged expanded" v-if="project.flagged">Flagged</span>
                   <span class="tag expanded" v-if="project.status" :class="{open: project.status == 'open', complete: project.status == 'complete',alert: project.status == 'need info'}">{{project.status}}</span>
                 </td>
                 <td width="20%">{{project.contact ? project.contact.name : ""}}</td>
-                <td width="20%">
-                  <router-link :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
-                  <router-link :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
-                  <button id="deleteProject" @click="deleteProject(project)" v-if="project.id">Delete</button>
+                <td width="20%" id="listActions">
+                  <div class="button-group small expanded primaryAlt">
+                    <router-link class="button" :to="{ name: 'show', params: { id: project.id} }">Show</router-link>
+                    <router-link class="button" v-if="$auth.check('admin')" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+                    <button class="button" id="archiveProject" @click="archiveProject(project)" v-if="$auth.check('admin') && !project.archive">Archive</button>
+                    <button class="button" id="openProject" @click="archiveProject(project)" v-if="$auth.check('admin') && project.archive">Open</button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -93,6 +97,9 @@
       }
     },
     computed: {
+      token() {
+        return document.getElementsByName('csrf-token')[0].getAttribute('content')
+      },
       queryNext() {
         if(this.scope) {
           return {
@@ -178,8 +185,26 @@
         }
       },
 
+      archiveProject(project) {
+        this.axios.put('/api/v1/projects/' + project.id, {
+          authenticity_token: this.token,
+          project : {'archive': !project.archive},
+        })
+        .then(response => {
+          this.$store.dispatch({
+            type: 'setFlash',
+            title: response.data.flash[0][1],
+            group: 'app'
+          })
+          this.queryProjects()
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+      },
+
       deleteProject(project) {
-        this.axios.delete('/projects/' + project.id, {
+        this.axios.delete('/api/v1/projects/' + project.id, {
           project : project,
         })
         .then(response => {
@@ -196,8 +221,15 @@
         })
         .catch(function (error) {
           console.log(error)
-        });
+        })
       },
+      limit(string, value) {
+        if (string.length > value) {
+  	      return string.substring(0, value) + '...'
+        } else {
+          return string
+        }
+      }
     },
     created() {
       this.queryProjects()
@@ -239,7 +271,24 @@
     }
   }
 }
-
+.tag {
+  box-shadow: none;
+  border: solid 1px #e6e6e6;
+}
+#listActions {
+  .button-group {
+    margin-bottom: 0;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #e6e6e6;
+    .button {
+      margin-bottom: 0;
+      &:nth-child(3) {
+        margin-right: 0;
+      }
+    }
+  }
+}
 // Pagination
 #pagination {
   height:38px;

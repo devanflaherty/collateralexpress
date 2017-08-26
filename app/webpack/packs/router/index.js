@@ -24,54 +24,6 @@ import AdminAccount from '../views/admin/edit.vue'
 import AdminCreate from '../views/admin/new.vue'
 import AdminList from '../views/admin/list.vue'
 
-// const authRequest = function(to, from, next) {
-//   const directToLogin = function() {
-//     if(
-//       to.name == 'account' ||
-//       to.name == 'edit-admin' ||
-//       to.name == 'list-admin' ||
-//       to.name == 'new-admin'
-//     ) {
-//       router.push({name: 'login'})
-//     }
-//   }
-//
-//   axios.get('/api/v1/authenticate.json')
-//   .then(function (response) {
-//     if (response.data.user) {
-//       store.dispatch({
-//         type: 'setAuth',
-//         id: response.data.user.id,
-//         role: response.data.role
-//       })
-//
-//       if(response.data.role == 'contact') {
-//         store.dispatch('setContactSession', response.data.user.id)
-//       } else {
-//         store.dispatch('setContactSession')
-//       }
-//
-//       bus.$emit('updateLinks')
-//       // Redirects
-//
-//       if(response.data.role == 'admin' && to.name == 'login') {
-//         router.push({name: 'account'})
-//       } else if(response.data.role != 'admin') {
-//         directToLogin()
-//       } else {
-//         next()
-//       }
-//     } else {
-//       store.dispatch('setAuth')
-//       store.dispatch('setContactSession')
-//       directToLogin()
-//     }
-//   }).catch(function (error) {
-//     console.log('Trouble authentication user.')
-//     next()
-//   })
-// }
-
 const router = new VueRouter ({
   mode: 'history',
   linkExactActiveClass: 'is-active',
@@ -147,7 +99,7 @@ const router = new VueRouter ({
         component: ProjectForm,
         meta: {
           title: 'Edit Project',
-          // auth: true
+          auth: 'admin'
         }
       }
     ]
@@ -158,16 +110,7 @@ const router = new VueRouter ({
     component: ContactEdit,
     meta: {
       title: 'Edit Contact',
-      auth: ['admin']
-    }
-  },
-  {
-    name: 'contact-profile',
-    path:'/profile',
-    component: ContactEdit,
-    meta: {
-      title: 'Profile',
-      // auth: ['admin','contact']
+      auth: 'admin'
     }
   },
   {

@@ -96,12 +96,12 @@
         <!-- Contact Info -->
         <aside id="contact" class="columns small-12 medium-4 large-3">
           <div class="aside-container">
-            <nav id="projectnav" v-if="project.id" class="flex" style="justify-content: space-between">
-              <router-link v-if="project.id" class="button expanded" :class="{'disabled' : project.archive}" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
+            <nav id="projectnav" v-if="project.id && $auth.check('admin')" class="flex" style="justify-content: space-between">
+              <router-link class="button expanded" :class="{'disabled' : project.archive}" :to="{ name: 'edit', params: { id: project.id} }">Edit</router-link>
             </nav>
             <nav v-if="$auth.check()">
               <router-link class="button hollow expanded" :to="{name: 'list'}">All Projects</router-link>
-              <a v-if="project.id"
+              <a v-if="project.id && $auth.check('admin')"
                 id="deleteProject"
                 style="float: right"
                 class="delete-project"
