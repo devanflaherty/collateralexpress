@@ -55,10 +55,10 @@
           <div class="columns float-input">
             <FloatLabel
               v-model="contact.location"
-              data-vv-name="Location"
-              label="Location"
-              :has-error="veeErrors.has('Location')"
-              :error-text="veeErrors.first('Location')"
+              data-vv-name="State or Region"
+              label="State or Region"
+              :has-error="veeErrors.has('State or Region')"
+              :error-text="veeErrors.first('State or Region')"
               ></FloatLabel>
           </div>
         </div>
@@ -111,7 +111,7 @@
             <span>{{contact.position}}</span>
           </li>
           <li v-if="contact.location">
-            <label>Location</label>
+            <label>State or Region</label>
             <span>{{contact.location}}</span>
           </li>
         </ul>

@@ -129,7 +129,7 @@
                   <span>{{contact.position}}</span>
                 </li>
                 <li v-if="contact.location">
-                  <label>Location</label>
+                  <label>State or Region</label>
                   <span>{{contact.location}}</span>
                 </li>
               </ul>
