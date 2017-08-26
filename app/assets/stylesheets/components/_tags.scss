@@ -22,10 +22,6 @@
     color: $white;
     background-image: linear-gradient(90deg, #EB0101 0%, #FF5B30 100%);
   }
-  &.open {
-    color: $white;
-    background-image: linear-gradient(90deg, #EB0183 0%, #FF3068 100%);
-  }
   &.complete {
     color: $white;
     background-image: linear-gradient(-90deg, #61B600 0%, #AECE00 100%);

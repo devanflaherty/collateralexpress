@@ -47,29 +47,15 @@
     props: ['projectStatus', 'projectArchive', 'projectFlag'],
     data() {
       return {
-        status: '',
-        archive: '',
-        flag: '',
+        status: this.projectStatus,
+        archive: this.projectArchive,
+        flag: this.projectFlag,
         available_states: []
       }
     },
     watch: {
-      projectStatus() {
-        this.setInitProject()
-      }
     },
     methods: {
-      setInitProject() {
-        if(this.projectStatus) {
-          this.status = this.projectStatus
-        }
-        if(this.projectArchive) {
-          this.archive = this.projectArchive
-        }
-        if(this.projectFlag) {
-          this.flag = this.projectFlag
-        }
-      },
       setStatus() {
         this.$store.dispatch({
           type: 'setProjectProperty',
@@ -90,7 +76,6 @@
       }
     },
     created(){
-      this.setInitProject()
       // Get Available tactics
       this.axios.get('/api/v1/projects/new.json')
         .then( response => {

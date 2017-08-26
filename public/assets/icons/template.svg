@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="294px" height="202px" viewBox="0 0 294 202" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>template</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="58.0958084" height="142.899563" rx="6"></rect>
+        <filter x="-10.3%" y="-4.2%" width="120.7%" height="108.4%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="12" dy="0" in="SourceAlpha" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <rect id="path-3" x="0" y="0" width="201.57485" height="202" rx="6"></rect>
+    </defs>
+    <g id="Views" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="template">
+            <g id="Group-5-Copy" transform="translate(235.904192, 29.991266)">
+                <g id="Rectangle-19">
+                    <use fill="#3B3B3B" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                </g>
+                <rect id="Rectangle-20" fill="#F2127B" x="11.9082185" y="13.7283423" width="34.2486207" height="34.3208558" rx="3"></rect>
+                <rect id="Rectangle-20-Copy-3" fill="#DADADA" x="12.3233533" y="54.6899563" width="34.2486207" height="9.36023341"></rect>
+                <rect id="Rectangle-20-Copy-10" fill="#DADADA" x="12.3233533" y="94.3842795" width="34.2486207" height="9.36023341"></rect>
+                <rect id="Rectangle-20-Copy-4" fill="#DADADA" x="12.3233533" y="69.6855895" width="26.1371052" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-11" fill="#DADADA" x="12.3233533" y="109.379913" width="26.1371052" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-5" fill="#DADADA" x="12.3233533" y="80.2707424" width="12.0170599" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-12" fill="#DADADA" x="12.3233533" y="119.965066" width="12.0170599" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-6" fill="#DADADA" x="28.1676647" y="80.2707424" width="5.77803912" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-13" fill="#DADADA" x="28.1676647" y="119.965066" width="5.77803912" height="3.74409336"></rect>
+            </g>
+            <g id="Group-5-Copy-2" transform="translate(0.000000, 29.991266)">
+                <rect id="Rectangle-19" fill="#F2127B" x="0" y="0" width="46.7026645" height="142.899563" rx="6"></rect>
+                <rect id="Rectangle-20-Copy" fill="#FFFFFF" x="11.4431138" y="11.4672489" width="73.8198229" height="34.3208558" rx="3"></rect>
+                <rect id="Rectangle-20-Copy-14" fill="#FFFFFF" x="11.4431138" y="113.790393" width="16.7245509" height="5.29257642" rx="2.64628821"></rect>
+                <rect id="Rectangle-20-Copy-15" fill="#FFFFFF" x="31.6886228" y="113.790393" width="16.7245509" height="5.29257642" rx="2.64628821"></rect>
+                <rect id="Rectangle-20-Copy-3" fill="#DADADA" x="11.316267" y="54.2893537" width="73.8198229" height="9.36023341"></rect>
+                <rect id="Rectangle-20-Copy-4" fill="#DADADA" x="11.316267" y="69.8897428" width="56.3361806" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-8" fill="#DADADA" x="11.4431138" y="89.9737991" width="56.3361806" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-5" fill="#DADADA" x="11.316267" y="79.8739917" width="25.9016923" height="3.74409336"></rect>
+                <rect id="Rectangle-20-Copy-9" fill="#DADADA" x="11.4431138" y="99.6768559" width="12.4540439" height="3.74409336"></rect>
+                <path d="M1.7571384,141.135148 C2.8449716,142.224376 4.34875104,142.899563 6.00994689,142.899563 L40.6927177,142.899563 C44.0239849,142.899563 46.7026645,140.211688 46.7026645,136.896027 L46.7026645,6.00353654 C46.7026645,2.69556693 44.0119197,0 40.6927177,0 L6.00994689,0 C2.67867968,0 0,2.68787487 0,6.00353654 L0,136.896027 C0,138.548422 0.671393969,140.048011 1.7571384,141.135148 C2.84332349,142.225671 4.34341854,142.899563 6.00037787,142.899563 L31.2175814,142.899563 C34.5413354,142.899563 37.2179593,140.211688 37.2179593,136.896027 L37.2179593,6.00353654 C37.2179593,2.69556693 34.5314986,0 31.2175814,0 L6.00037787,0 C2.67662385,0 0,2.68787487 0,6.00353654 L0,136.896027 C0,138.550011 0.67161458,140.050894 1.75746856,141.138282 Z" id="Combined-Shape" fill-opacity="0.599999964" fill="#6C153E"></path>
+            </g>
+            <g id="Group-5" transform="translate(41.371257, 0.000000)">
+                <g id="Rectangle-19">
+                    <use fill="#F6F6F6" fill-rule="evenodd" xlink:href="#path-3"></use>
+                    <rect stroke="#E8E8E8" stroke-width="2" x="1" y="1" width="199.57485" height="200" rx="6"></rect>
+                </g>
+                <rect id="Rectangle-20" fill="#F2127B" x="18.3613915" y="19.4061135" width="163.848189" height="48.5152838" rx="3"></rect>
+                <rect id="Rectangle-20-Copy" fill="#F2127B" x="133.796407" y="76.7423581" width="48.4131737" height="48.5152838" rx="3"></rect>
+                <rect id="Rectangle-20-Copy-3" fill="#DADADA" x="18.4850299" y="76.7423581" width="104.350244" height="13.231441"></rect>
+                <rect id="Rectangle-20-Copy-7" fill="#DADADA" x="18.4850299" y="134.078603" width="104.350244" height="13.231441"></rect>
+                <rect id="Rectangle-20-Copy-4" fill="#DADADA" x="18.4850299" y="98.7947598" width="79.6357122" height="5.29257642"></rect>
+                <rect id="Rectangle-20-Copy-8" fill="#DADADA" x="18.4850299" y="156.131004" width="79.6357122" height="5.29257642"></rect>
+                <rect id="Rectangle-20-Copy-5" fill="#DADADA" x="18.4850299" y="112.908297" width="36.6141205" height="5.29257642"></rect>
+                <rect id="Rectangle-20-Copy-9" fill="#DADADA" x="18.4850299" y="170.244541" width="36.6141205" height="5.29257642"></rect>
+                <rect id="Rectangle-20-Copy-6" fill="#DADADA" x="66.0179641" y="112.908297" width="17.6047904" height="5.29257642"></rect>
+                <rect id="Rectangle-20-Copy-2" fill="#F2127B" x="133.796407" y="134.078603" width="48.4131737" height="48.5152838" rx="3"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -26,27 +26,100 @@
       padding-top: 2rem;
     }
     .toggle-inputs {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        @include flex-grid-row;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      @include flex-grid-row;
+      .check-input {
+        @include flex-grid-column(12, 0);
+        label {
+          display: block;
+        }
+      }
+      @include breakpoint(medium){
         .check-input {
           @include flex-grid-column(12, 0);
+        }
+      }
+      @include breakpoint(780px){
+        .check-input {
           label {
-            display: block;
+            display: inline-block;
           }
         }
-        @include breakpoint(medium){
-          .check-input {
-            @include flex-grid-column(12, 0);
-          }
+      }
+    }
+  }
+}
+
+// Project selected
+#projectSelector {
+  .select-cards {
+    padding: 2rem 0;
+    > .columns {
+      @include breakpoint(small only) {
+        margin-bottom: 2rem;
+      }
+    }
+  }
+  .select-col:first-of-type {
+    @include breakpoint(small only){
+      img {
+        width: 25%!important;
+      }
+    }
+  }
+  .card {
+    height: 290px;
+    width: 290px;
+    position: relative;
+    border-radius: 6px;
+    border:none;
+    padding: 2rem;
+    margin: 0 1rem 2rem;
+    box-shadow: 0px 6px 30px rgba(0,0,0,0.1);
+    @include breakpoint(medium){
+      padding: 3rem;
+      height: 370px;
+      width: 370px;
+    }
+    .select-image {
+      width: auto;
+      height: auto;
+      img {
+        display: block;
+        margin: 0 auto;
+        width: 66%;
+        @include breakpoint(small only){
+          width: 50%;
         }
-        @include breakpoint(780px){
-          .check-input {
-            label {
-              display: inline-block;
-            }
-          }
-        }
+      }
+    }
+    h4 {
+      margin-bottom: 0;
+    }
+    &:hover, &.active-project-type {
+      transform: translate(0, -8px) scale(1.0125);
+      box-shadow: 0px 16px 30px rgba(0,0,0,0.1)
+    }
+  }
+  &.minimize {
+    .card {
+      height: 100px;
+      width: 100px;
+      padding: 1rem;
+      margin: 0 1rem 1rem;
+      border-radius: 100px;
+      opacity: 0.75;
+      box-shadow: 0px 3px 8px rgba(0,0,0,0.05);
+      @include flex-align(center,middle);
+      img {
+        width: 100%;
+      }
+      &:hover, &.active-project-type {
+        opacity: 1;
+        transform: translate(0,0) scale(1.0125);
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+      }
     }
   }
 }
