@@ -83,7 +83,7 @@ class Api::V1::ContactsController < ApiController
   private
 
     def contact_params
-      params.require(:contact).permit(:first_name, :last_name, :password, :password_confirmation, :email, :phone, :location, :position, :avatar)
+      params.require(:contact).permit(:first_name, :last_name, :password, :password_confirmation, :email, :phone, :location, :superior, :avatar)
     end
 
     def save_to_project

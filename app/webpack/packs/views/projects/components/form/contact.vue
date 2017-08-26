@@ -43,7 +43,7 @@
         </div>
 
         <div class="row">
-          <div class="columns float-input">
+          <div class="columns float-input small-12 medium-expand">
             <FloatLabel
               v-model="contact.phone"
               v-validate="'required'"
@@ -52,7 +52,16 @@
               :has-error="veeErrors.has('Phone Number')"
               :error-text="veeErrors.first('Phone Number')"></FloatLabel>
           </div>
-          <div class="columns float-input">
+          <div class="columns float-input small-6 medium-expand">
+            <FloatLabel
+              v-model="contact.superior"
+              data-vv-name="Superior"
+              label="Superior"
+              :has-error="veeErrors.has('Superior')"
+              :error-text="veeErrors.first('Superior')"
+              ></FloatLabel>
+          </div>
+          <div class="columns float-input small-6 medium-expand">
             <FloatLabel
               v-model="contact.location"
               data-vv-name="State or Region"
@@ -109,6 +118,10 @@
           <li v-if="contact.position">
             <label>Position</label>
             <span>{{contact.position}}</span>
+          </li>
+          <li v-if="contact.superior">
+            <label>Superior</label>
+            <span>{{contact.superior}}</span>
           </li>
           <li v-if="contact.location">
             <label>State or Region</label>

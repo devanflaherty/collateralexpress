@@ -57,6 +57,30 @@
           </div>
         </div>
 
+        <div class="row" v-if="$auth.check('contact') || $route.name == 'contact-edit'">
+          <div class="columns">
+            <div class="float-input">
+              <FloatLabel
+                v-model="user.location"
+                data-vv-name="State or Region"
+                :has-error="veeErrors.has('State or Region')"
+                :error-text="veeErrors.first('State or Region')"
+                label="State or Region"></FloatLabel>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="float-input">
+              <FloatLabel
+                v-model="user.superior"
+                v-validate="'required'"
+                data-vv-name="Superior"
+                :has-error="veeErrors.has('Superior')"
+                :error-text="veeErrors.first('Superior')"
+                label="Superior"></FloatLabel>
+            </div>
+          </div>
+        </div>
+
         <div class="float-input">
           <FloatLabel
             v-model="password"

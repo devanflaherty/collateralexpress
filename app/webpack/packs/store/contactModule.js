@@ -11,7 +11,8 @@ export const contactModule = {
       last_name: null,
       full_name: null,
       phone: null,
-      location: null
+      location: null,
+      superior: null
     },
     contacts: []
   },

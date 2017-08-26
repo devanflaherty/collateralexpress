@@ -128,6 +128,10 @@
                   <label>Position</label>
                   <span>{{contact.position}}</span>
                 </li>
+                <li v-if="contact.superior">
+                  <label>Superior</label>
+                  <span>{{contact.superior}}</span>
+                </li>
                 <li v-if="contact.location">
                   <label>State or Region</label>
                   <span>{{contact.location}}</span>

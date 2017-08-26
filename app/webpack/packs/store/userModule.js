@@ -11,7 +11,8 @@ export const userModule = {
       last_name: null,
       full_name: null,
       location: null,
-      phone: null
+      phone: null,
+      superior: null
     },
     users: []
   },
