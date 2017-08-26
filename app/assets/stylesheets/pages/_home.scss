@@ -1,6 +1,5 @@
 #welcome {
   @include aspect-ratio(3, 1);
-  position: relative;
   overflow: hidden;
   margin-bottom: 4rem;
   & > div {

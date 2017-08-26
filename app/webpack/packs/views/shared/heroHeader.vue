@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="title">
-      <section id="heroHeader" class="cover" :style="'background-image: url(' + image + ')'">
+      <section id="heroHeader" class="cover" :class="{'authorized' : $auth.check()}" :style="'background-image: url(' + image + ')'">
         <slot></slot>
         <div class="overlay"></div>
         <div class="row align-middle" v-if="title">
@@ -13,7 +13,7 @@
       </section>
     </template>
     <template v-else>
-      <section id="welcome" class="cover" :style="'background-image: url(' + image + ')'">
+      <section id="welcome" class="cover" :class="{'authorized' : $auth.check()}" :style="'background-image: url(' + image + ')'">
         <slot></slot>
         <div class="overlay"></div>
       </section>
@@ -24,9 +24,17 @@
 <script>
   export default {
     name: 'HeroHeader',
-    props: ['title','image']
+    props: ['title','image'],
+    data() {
+      return {
+
+      }
+    }
   }
 </script>
 
 <style scoped lang="scss">
+.authorized {
+  margin-bottom: 0!important;
+}
 </style>

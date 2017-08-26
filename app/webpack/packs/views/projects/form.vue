@@ -42,6 +42,10 @@
         </div>
       </section>
 
+      <section id="existingForm" v-if="projectType == 'existing'">
+
+      </section>
+
       <!-- TEMPLATE FORM -->
       <section id="templateForm" v-if="projectType == 'template'">
         <form v-on:submit.prevent="onSubmit" id="form">
@@ -327,6 +331,9 @@ export default {
       // Watch if route changers
       // If it does we are going to re-fetch the data
       this.fetchData()
+      if(this.$route.query.type) {
+        this.projectType = this.$route.query.type
+      }
     },
     tactic_other(other) {
       // When the other_input field has been updated
@@ -378,14 +385,15 @@ export default {
     },
 
     showForm(type) {
+      this.projectType = type
+      this.$router.push({name: 'new', query: { type: type}})
+
       if(type == "existing") {
-        this.projectType = "existing";
         this.$store.dispatch({
           type: 'setProjectProperty',
           project: { existing: 1 }
         })
       } else if(type == "template") {
-        this.projectType = "template";
         this.$store.dispatch({
           type: 'setProjectProperty',
           project: { existing: 0 }
@@ -441,7 +449,6 @@ export default {
       if(!err) {
         bus.$emit('emptyFloats')
         this.pageTitle = "New Project"
-        this.projectType = null
         this.loading = false
 
         this.$store.dispatch('setMessage','New Project')
@@ -476,6 +483,9 @@ export default {
     this.fetchData()
   },
   mounted() {
+    if(this.$route.query.type) {
+      this.showForm(this.$route.query.type)
+    }
     // We set contactQuery to contactSession
     // This will set contactQuery first before any other method
     // Allowing our contact component to default load the contactSession
