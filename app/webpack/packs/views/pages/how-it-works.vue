@@ -1,7 +1,7 @@
 <template>
   <div id="how-it-works" v-once>
 
-    <HeroHeader :title="'<p>How<br><strong>It Works</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
+    <HeroHeader :title="'<p>How<br><strong>It Works</strong></p>'" :image="'http://collateralexpress.s3.amazonaws.com/img/slide-5.jpg'"></HeroHeader>
 
     <section id="whyVideo" class="white-bg">
       <div class="row align-center align-middle">

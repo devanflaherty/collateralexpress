@@ -3,7 +3,7 @@
 
     <HeroHeader
       :title="'<p>Believe your eyes<br><strong>We made all this here</strong></p>'"
-      :image="'https://unsplash.it/g/1200/720'">
+      :image="'http://collateralexpress.s3.amazonaws.com/img/slide-4.jpg'">
     </HeroHeader>
 
     <div class="row pad-small">

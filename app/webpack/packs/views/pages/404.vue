@@ -1,6 +1,6 @@
 <template>
   <div id="404" v-once>
-    <HeroHeader :title="'<p>Page doesn\'t exist<br><strong>404</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
+    <HeroHeader :title="'<p>Page doesn\'t exist<br><strong>404</strong></p>'" :image="'http://collateralexpress.s3.amazonaws.com/img/slide-3.jpg'"></HeroHeader>
 
     <section id="copy" class="pad white-bg">
       <div class="row align-center">

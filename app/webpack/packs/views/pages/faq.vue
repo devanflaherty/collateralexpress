@@ -1,6 +1,6 @@
 <template>
   <div id="faq" v-once>
-    <HeroHeader :title="'<p>If you’ve got questions<br><strong>We\'ve got your FAQ</strong></p>'" :image="'https://unsplash.it/g/1200/720'"></HeroHeader>
+    <HeroHeader :title="'<p>If you’ve got questions<br><strong>We\'ve got your FAQ</strong></p>'" :image="'http://collateralexpress.s3.amazonaws.com/img/slide-5.jpg'"></HeroHeader>
 
     <section id="faqContainer" class="pad white-bg">
       <div class="row align-center">
