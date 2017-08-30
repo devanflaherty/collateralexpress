@@ -47,6 +47,7 @@ const emitValidationErrors = {
 
     // Watch if veeErrors.updates
     this.$watch(() => this.veeErrors.errors, (newValue, oldValue) => {
+
       const newErrors = newValue.filter(error =>
         find(propEq('field', error.field))(oldValue)
       )

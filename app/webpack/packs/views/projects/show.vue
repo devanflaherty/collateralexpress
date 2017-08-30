@@ -158,7 +158,7 @@
 
   // Components
   import Login from "../shared/login/index.vue"
-  import AdminUpdates from "./components/form/adminUpdates.vue"
+  import AdminUpdates from "./components/adminUpdates.vue"
 
   export default {
     name: 'Show',

@@ -48,7 +48,7 @@
   import Dropzone from 'vue2-dropzone'
 
   // App Components
-  import bus from '../../../../bus'
+  import bus from '../../../bus'
 
   export default {
     name: 'MediaUploader',

@@ -8,41 +8,7 @@
       </transition>
     </HeroHeader>
 
-    <section v-if="$auth.check()" id="projectSelector" class="pad-small gradient-bg">
-      <div class="text-center">
-        <h2>Create a Project</h2>
-        <p class="text-center">Select one of the options below to get started.</p>
-      </div>
-
-      <div class="select-cards row align-center align-middle" style="margin-bottom: 1rem;">
-        <div class="select-col text-center">
-          <router-link class="card space-between" :to="{ name: 'new', query: { type: 'existing'}}">
-            <div class="select-image">
-              <img src="/assets/icons/modify.png" >
-            </div>
-            <div>
-              <h4>Modify Existing Asset</h4>
-              <p>
-                Share with us the existing asset and we'll make your requested modifications.
-              </p>
-            </div>
-          </router-link>
-        </div>
-
-        <div class="select-col text-center">
-          <router-link class="card space-between" :to="{ name: 'new', query: { type: 'template'}}">
-            <div class="select-image">
-              <img src="/assets/icons/template.png" >
-            </div>
-            <div>
-              <h4>Create from Template</h4>
-              <p>Fill us in on the details and choose from a template.</p>
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </section>
-
+    <ProjectSelector v-if="$auth.check()"></ProjectSelector>
 
     <section id="homeSteps" v-if="!$auth.check()">
       <div class="row">
@@ -124,6 +90,7 @@
 
 <script>
 import HeroHeader from "../shared/heroHeader.vue"
+import ProjectSelector from "../projects/components/projectSelector.vue"
 
 export default {
   name: 'Home',
@@ -133,7 +100,8 @@ export default {
     }
   },
   components: {
-    HeroHeader
+    HeroHeader,
+    ProjectSelector
   },
   data() {
     return {

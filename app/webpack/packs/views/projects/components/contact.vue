@@ -136,9 +136,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import bus from '../../../../bus'
-import {emitValidationErrors} from '../../../shared/validation.js'
-import FloatLabel from '../../../shared/floatLabel.vue'
+import bus from '../../../bus'
+import {emitValidationErrors} from '../../shared/validation.js'
+import FloatLabel from '../../shared/floatLabel.vue'
 
 export default {
   name: 'contact',
