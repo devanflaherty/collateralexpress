@@ -36,7 +36,7 @@ export default {
       overlay: false
     }
   },
-  computed: mapGetters(['links']),
+  computed: mapGetters(['links', 'navContrast']),
   watch: {
     '$route': function() {
       this.overlayHeader()
@@ -55,12 +55,16 @@ export default {
     }
   },
   mounted() {
+    console.log(this.navContrast)
     this.overlayHeader()
   }
 }
 </script>
 
 <style scoped lang="scss">
+  .contrast a {
+    color: black!important
+  }
   p {
     font-size: 12em;
     text-align: center;

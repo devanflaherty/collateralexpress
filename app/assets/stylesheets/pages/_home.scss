@@ -2,10 +2,20 @@
   @include aspect-ratio(3, 1);
   overflow: hidden;
   margin-bottom: 4rem;
-  & > div {
+  & > * {
     position: absolute;
-    left: 0;
+  }
+  #headline {
+    position: absolute;
     top: 0;
+    left: 4rem;
+    padding-top: 80px;
+    height: 100%;
+    @include flex;
+    @include flex-align(center, middle);
+    h4 {
+      margin-top: 2rem;
+    }
   }
 }
 

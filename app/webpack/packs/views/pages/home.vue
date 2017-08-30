@@ -1,10 +1,10 @@
 <template>
   <div id="home">
 
-    <HeroHeader>
+    <HeroHeader title="Your tools. Your sales. Your wins." :contrast="selectedHero.contrast">
       <transition name="fade" in-out>
-        <div key="fade" class="rellax-image fade" v-if="fadeHero" :style="'background-image: url(' + fadeHero + ')'"></div>
-        <div key="hero" id="hero" class="rellax-image" v-else :style="'background-image: url(' + selectedHero + ')'"></div>
+        <!-- <div key="fade" class="rellax-image fade" v-if="fadeHero != ''" :style="'background-image: url(' + fadeHero.image + ')'"></div> -->
+        <div key="hero" id="hero" class="rellax-image" :style="'background-image: url(' + selectedHero.image + ')'"></div>
       </transition>
     </HeroHeader>
 
@@ -137,32 +137,66 @@ export default {
   },
   data() {
     return {
-      selectedHero: "",
-      fadeHero: "",
+      selectedHero: {
+        image: "",
+        contrast: false
+      },
+      fadeHero: {
+        image: "",
+        contrast: false
+      },
       heroImages: [
-        "http://collateralexpress.s3.amazonaws.com/img/welcome-hero.png"
+        {
+          image: "http://collateralexpress.s3.amazonaws.com/img/slide-1.jpg",
+          contrast: false
+        },
+        {
+          image: "http://collateralexpress.s3.amazonaws.com/img/slide-2.jpg",
+          contrast: true
+        },
+        {
+          image: "http://collateralexpress.s3.amazonaws.com/img/slide-3.jpg",
+          contrast: true
+        },
+        {
+          image: "http://collateralexpress.s3.amazonaws.com/img/slide-4.jpg",
+          contrast: true
+        },
+        {
+          image: "http://collateralexpress.s3.amazonaws.com/img/slide-5.jpg",
+          contrast: true
+        },
       ]
+    }
+  },
+  watch: {
+    'selectedHero.image': function() {
+      this.$store.dispatch('setNavContrast', this.selectedHero.contrast)
     }
   },
   created() {
     var vm = this
     if(vm.heroImages.length > 1) {
       var randomImage = Math.floor(Math.random() * vm.heroImages.length);
-      this.selectedHero = this.heroImages[randomImage]
-
-      setInterval(function() {
-        vm.fadeHero = vm.selectedHero
-
-        setTimeout(function(){
-          randomImage = Math.floor(Math.random() * vm.heroImages.length);
-          vm.selectedHero = vm.heroImages[randomImage]
-          vm.fadeHero = null
-        }, 1)
-
-      }, 30000)
+      vm.selectedHero = vm.heroImages[randomImage]
+      vm.$store.dispatch('setNavContrast', this.selectedHero.contrast)
+      console.log(this.selectedHero.contrast)
+      // setInterval(function() {
+      //   vm.fadeHero = vm.selectedHero
+      //
+      //   setTimeout(function(){
+      //     randomImage = Math.floor(Math.random() * vm.heroImages.length);
+      //     vm.selectedHero = vm.heroImages[randomImage]
+      //     vm.fadeHero = ""
+      //   }, 0.1)
+      //
+      // }, 30000)
     } else {
       vm.selectedHero = vm.heroImages[0]
     }
+  },
+  beforeDestroy() {
+    this.$store.dispatch('setNavContrast', false)
   }
 }
 

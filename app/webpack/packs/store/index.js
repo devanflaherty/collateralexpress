@@ -58,6 +58,7 @@ export const store = new Vuex.Store({
       }
     ],
     links: [],
+    navContrast: false,
     mobileNav: false
   },
   getters: {
@@ -87,6 +88,9 @@ export const store = new Vuex.Store({
     },
     links(state) {
       return state.links
+    },
+    navContrast(state) {
+      return state.navContrast
     },
     mobileNav(state) {
       return state.mobileNav
@@ -122,6 +126,9 @@ export const store = new Vuex.Store({
     },
     setLinks(state, payload) {
       state.links = payload
+    },
+    setNavContrast(state, bool) {
+      state.navContrast = bool
     },
     toggleMobileNav(state, payload) {
       state.mobileNav = payload
@@ -217,6 +224,9 @@ export const store = new Vuex.Store({
       } else {
         commit('setLinks', state.defaultLinks)
       }
+    },
+    setNavContrast({commit}, bool) {
+      commit('setNavContrast', bool)
     },
     toggleMobileNav({commit}, payload) {
       commit('toggleMobileNav', payload)
