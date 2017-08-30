@@ -1,7 +1,7 @@
 <template>
   <div id="how-it-works" v-once>
 
-    <HeroHeader :title="'<p>How<br><strong>It Works</strong></p>'" :image="'http://collateralexpress.s3.amazonaws.com/img/slide-5.jpg'"></HeroHeader>
+    <HeroHeader :title="'<p>How<br><strong>It Works</strong></p>'" :image="'http://collateralexpress.s3.amazonaws.com/img/slide-3.jpg'"></HeroHeader>
 
     <section id="whyVideo" class="white-bg">
       <div class="row align-center align-middle">
@@ -69,19 +69,22 @@
                   </p>
                 </div>
                 <div class="columns small-10 medium-3 show-for-medium">
-                  <img src="/assets/slides/airplane.png" data-swiper-parallax="-500">
                 </div>
+                <img class="show-for-large" style="position:absolute;opacity: 0.75; right: -23%; top: 0; bottom: 0; margin: auto 0; height: 100%;"
+                src="/assets/slides/brandmuscle.png" data-swiper-parallax="500">
+                <img class="show-for-medium hide-for-large" style="position:absolute;opacity: 0.75; right: -38%; top: 0; bottom: 0; margin: auto 0; height: 100%;"
+                src="/assets/slides/brandmuscle.png" data-swiper-parallax="500">
               </div>
-              <div class="hide-for-medium" style="position: absolute; opacity: 0.66; bottom: -25%;" data-swiper-parallax="-500">
-                <img src="/assets/slides/airplane.png">
+              <div class="hide-for-medium" style="position: absolute; opacity: 1; bottom: 10%; left: 0;" data-swiper-parallax="-500">
+                <img src="/assets/slides/mobile-brandmuscle.png">
               </div>
             </div>
 
-            <div class="swiper-slide gradient-bg" data-key="2">
+            <div class="swiper-slide" data-key="2" style="background: black">
               <div class="row align-center">
                 <div class="columns small-10 medium-6">
                   <blockquote data-swiper-parallax="-200">
-                    <p class="white-banner">
+                    <p>
                       Bring your genius to us<br>
                       <strong>at Collateral Express.</strong>
                     </p>
@@ -91,14 +94,16 @@
                 <div class="columns small-10 medium-3 show-for-medium">
                   <img src="/assets/slides/airplane.png" data-swiper-parallax="-500">
                 </div>
+                <div class="hide-for-medium" style="position: absolute; opacity: 0.66; bottom: -25%;" data-swiper-parallax="-500">
+                  <img src="/assets/slides/airplane.png">
+                </div>
               </div>
             </div>
 
-            <div class="swiper-slide" data-key="3" style="background-image: url(https://unsplash.it/g/1200/720)">
+            <div class="swiper-slide cover" data-key="3" style="background-image: url(http://collateralexpress.s3.amazonaws.com/img/slide-3.jpg)">
               <div class="overlay"></div>
               <div class="row align-center">
                 <div class="columns small-10 medium-3 show-for-medium">
-                  <img src="/assets/slides/airplane.png" data-swiper-parallax="-500">
                 </div>
                 <div class="columns small-10 medium-7">
                   <blockquote data-swiper-parallax="-200">
@@ -106,7 +111,7 @@
                       Relax and watch the magic happen.
                     </p>
                   </blockquote>
-                  <p class="step-desc" style="width: 320px; margin-left: 2rem">We may have follow up questions for you—so don’t be surprised if we contact you after you get approval.</p>
+                  <p class="step-desc" style="width: 320px;">We may have follow up questions for you—so don’t be surprised if we contact you after you get approval.</p>
                 </div>
               </div>
             </div>

@@ -62,7 +62,7 @@
 
     <section id="assets" class="flex align-middle">
       <div class="rellax-image"
-        style="background-image: url(https://unsplash.it/g/600/900)"></div>
+        style="background-image: url(http://collateralexpress.s3.amazonaws.com/img/slide-3.jpg)"></div>
       <div class="overlay"></div>
 
       <div class="row align-center">

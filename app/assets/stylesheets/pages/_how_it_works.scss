@@ -28,7 +28,8 @@
   width: 100vw;
   height: 500px;
   @include breakpoint(small only) {
-    height: 100vh;
+    height: 50vh;
+    min-height: 500px;
   }
   &:hover {
     .swiper-button-prev, .swiper-button-next {
