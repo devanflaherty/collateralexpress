@@ -54,20 +54,20 @@
           </div>
           <div class="columns float-input small-6 medium-expand">
             <FloatLabel
-              v-model="contact.superior"
-              data-vv-name="Superior"
-              label="Superior"
-              :has-error="veeErrors.has('Superior')"
-              :error-text="veeErrors.first('Superior')"
-              ></FloatLabel>
-          </div>
-          <div class="columns float-input small-6 medium-expand">
-            <FloatLabel
               v-model="contact.location"
               data-vv-name="State or Region"
               label="State or Region"
               :has-error="veeErrors.has('State or Region')"
               :error-text="veeErrors.first('State or Region')"
+              ></FloatLabel>
+          </div>
+          <div class="columns float-input small-6 medium-expand">
+            <FloatLabel
+              v-model="contact.superior"
+              data-vv-name="Regional Director"
+              label="Regional Director"
+              :has-error="veeErrors.has('Regional Director')"
+              :error-text="veeErrors.first('Regional Director')"
               ></FloatLabel>
           </div>
         </div>
@@ -115,17 +115,13 @@
             <label>Phone</label>
             <span>{{contact.phone}}</span>
           </li>
-          <li v-if="contact.position">
-            <label>Position</label>
-            <span>{{contact.position}}</span>
-          </li>
-          <li v-if="contact.superior">
-            <label>Superior</label>
-            <span>{{contact.superior}}</span>
-          </li>
           <li v-if="contact.location">
             <label>State or Region</label>
             <span>{{contact.location}}</span>
+          </li>
+          <li v-if="contact.superior">
+            <label>Regional Director</label>
+            <span>{{contact.superior}}</span>
           </li>
         </ul>
       </div>

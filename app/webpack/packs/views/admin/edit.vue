@@ -73,10 +73,10 @@
               <FloatLabel
                 v-model="user.superior"
                 v-validate="'required'"
-                data-vv-name="Superior"
-                :has-error="veeErrors.has('Superior')"
-                :error-text="veeErrors.first('Superior')"
-                label="Superior"></FloatLabel>
+                data-vv-name="Regional Director"
+                :has-error="veeErrors.has('Regional Director')"
+                :error-text="veeErrors.first('Regional Director')"
+                label="Regional Director"></FloatLabel>
             </div>
           </div>
         </div>
