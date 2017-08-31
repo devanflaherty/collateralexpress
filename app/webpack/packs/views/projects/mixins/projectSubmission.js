@@ -28,6 +28,11 @@ const ProjectSubmission = {
           if(this.project.contact_id) {
             // Let set what Contact ID we send to contact Submission
             // Since we found an ID we send it on and will patch that contact
+            // this.$store.dispatch("myAction").then(response => {
+            //     console.log("Got some data, now lets show something in this component")
+            // }, error => {
+            //     console.error("Got nothing from server. Prompt user to check internet connection and try again")
+            // })
             bus.$emit('postContact', this.project.contact_id)
           } else {
             // Else we will send nothing and create a new contact

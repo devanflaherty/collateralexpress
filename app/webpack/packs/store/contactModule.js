@@ -52,6 +52,48 @@ export const contactModule = {
     },
     setContacts({commit}, payload) {
       commit('setContacts', payload)
-    }
+    },
+    // postContact(context, payload) {
+    //   return new Promise((resolve, reject) => {
+    //     var contactUser = {...context.getters.contact}
+    //     contactUser.password = context.getters.contact.email
+    //     contactUser.password_confirmation = context.getters.contact.email
+    //
+    //     var axiosConfig = {
+    //       utf8 : "✓",
+    //       authenticity_token: context.getters.token,
+    //       contact : contactUser
+    //     }
+    //     Vue.axios.post('/api/v1/contacts/', axiosConfig).then(response => {
+    //       // IF SUCCESFUll
+    //       resolve(response)
+    //     }).catch(error => {
+    //       reject(error);
+    //     })
+    //   })
+    // },
+    // patchContact(context, payload) {
+    //   var contactUser = {...context.getters.contact}
+    //   contactUser.password = context.getters.contact.email
+    //   contactUser.password_confirmation = context.getters.contact.email
+    //
+    //   var axiosConfig = {
+    //     utf8 : "✓",
+    //     authenticity_token: context.getters.token,
+    //     headers: {
+    //       'Authorization' : 'Bearer' + context.getters.validToken
+    //     },
+    //     contact : contactUser
+    //   }
+    //
+    //   return new Promise((resolve, reject) => {
+    //     axios.patch('/api/v1/contacts/' + context.getters.contact.id, axiosConfig).then(response => {
+    //       // IF SUCCESFUll
+    //       resolve(response)
+    //     }).catch(error => {
+    //       reject(error)
+    //     })
+    //   })
+    // }
   }
 }
