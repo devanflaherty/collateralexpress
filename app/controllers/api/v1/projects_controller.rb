@@ -1,34 +1,24 @@
-class Api::V1::ProjectsController < ApplicationController
-  before_action :define_project_lexicon, only: [:new, :edit]
+class Api::V1::ProjectsController < ApiController
+  # before_action :authenticate_user, only: [:index, :show, :edit]
+  skip_before_action :verify_authenticity_token, :only => [:destroy]
+  before_action :find_contact
+  before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 
   def index
-    if user_signed_in?
-      query_projects
-      if query_projects == false
-        @projects = Project.all
-      end
-      @user = current_user
-      @userProjects = @user.projects
-    elsif cookies[:current_contact_id]
-      @contact = Contact.find_by_id(cookies[:current_contact_id])
-      query_projects
-      if query_projects == false
-        @projects = @contact.projects
-      end
-    else
-      @projects = Project.all
-    end
+    query_projects
   end
 
   def show
-    if user_signed_in?
-      @user = current_user
-    end
+    @user = current_user
     @project = Project.friendly.find(params[:id])
   end
 
   def new
     @project = Project.new
+    @project[:status] = "open"
+    @project[:title] = nil
+    @project[:user_id] = 1
+    @project[:deliverables] = "0"
   end
 
   def edit
@@ -38,23 +28,152 @@ class Api::V1::ProjectsController < ApplicationController
     @project = Project.friendly.find(params[:id])
   end
 
+  def create
+    @project = Project.new(project_params)
+    respond_to do |format|
+      if @project.save
+        ProjectMailer.new_project(@project).deliver_later
+        ProjectMailer.new_project_to_admin(@project).deliver_later
+
+        flash.now[:notice] = "Project '#{@project.title}' created succesfully."
+
+        format.json { render json: { project: @project, flash: flash} }
+      else
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
+      end
+    end
+  end
+
+  def update
+    @project = Project.friendly.find(params[:id])
+    status = @project.status
+    flag = @project.flag
+    respond_to do |format|
+      if @project.update_attributes(project_params)
+        if @project.status != status
+          ProjectMailer.status_update(@project).deliver_later
+        end
+        if @project.flag == true && flag != true
+          ProjectMailer.flagged_project(@project).deliver_later
+        end
+        session[:current_contact_id] = @project.contact_id
+
+        flash.now[:notice] = "Project '#{@project.title}' updated succesfully."
+
+        format.json { render json: { project: @project, flash: flash} }
+      else
+        flash[:error] = "Project '#{@project.title}' failed to update."
+        format.json { render json: { errors: @project.errors.messages }, status: 422}
+      end
+    end
+  end
+
+  def destroy
+    @project = Project.friendly.find(params[:id])
+    @project.medias.each do |m|
+      m.destroy
+    end
+    @project.destroy
+    flash.now[:notice] = "Project '#{@project.title}' deleted succesfully."
+    respond_to do |format|
+      format.json { render json: {project: @project, flash: flash} }
+    end
+  end
+
+  # Uneeded routes because actions are handled via VUE
+  # def show
+  #   @project = Project.friendly.find(params[:id])
+  # end
+  #
+  # def new
+  #   @project = Project.new
+  # end
+  #
+  # def edit
+  #   @project = Project.friendly.find(params[:id])
+  # end
+
   private
 
     def query_projects
+      if current_user.role == 'contact'
+        @authUser = current_user
+      end
+
       query = request.query_parameters
-      if query.keys.count > 0
+
+      if query[:page]
+        page = query[:page]
+      else
+        page = 1
+      end
+      if query[:q]
         if query[:q] == "flagged"
-          @projects = Project.flagged.all
+          if @authUser
+            @projects = @authUser.projects.flagged.page(page).per(10)
+          else
+            @projects = Project.flagged.page(page).per(10)
+          end
         elsif query[:q] == "complete"
-          @projects = Project.complete.all
+          if @authUser
+            @projects = @authUser.projects.complete.page(page).per(10)
+          else
+            @projects = Project.complete.page(page).per(10)
+          end
         elsif query[:q] == "archived"
-          @projects = Project.archived.all
+          if @authUser
+            @projects = @authUser.projects.archived.page(page).per(10)
+          else
+            @projects = Project.archived.page(page).per(10)
+          end
         elsif query[:q] == "duefirst"
-          @projects = Project.due_first.all
+          if @authUser
+            @projects = @authUser.projects.due_first.page(page).per(10)
+          else
+            @projects = Project.due_first.page(page).per(10)
+          end
         end
       else
-        return false
+        if @authUser
+          @projects = @authUser.projects.open.page(page).per(10)
+        else
+          @projects = Project.open.page(page).per(10)
+        end
       end
+      @pagination = {
+        current_page: @projects.current_page,
+        last_page: @projects.total_pages,
+        next_page: @projects.next_page,
+        next_page_url: @projects.next_page,
+        prev_page: @projects.prev_page,
+        prev_page_url: @projects.prev_page,
+      }
+    end
+
+    def find_contact
+      @current_contact = session[:current_contact_id]
+    end
+
+    def project_params
+      params.require(:project).permit(
+        :id,
+        :title,
+        :status,
+        :description,
+        :due_date,
+        :contact_id,
+        :user_id,
+        :archive,
+        :flag,
+        :asset,
+        :reference,
+        :deliverables,
+        :existing,
+        :business_unit,
+        :target,
+        :legal_review,
+        { :tactic => [] }
+        )
     end
 
     def define_project_lexicon

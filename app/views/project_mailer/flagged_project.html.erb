@@ -1,0 +1,27 @@
+<h3 style="margin: 0 0 8px;"><strong><%= @project.title %></strong></h3>
+<h1 style="margin: 0 0 16px;display: inline-block; padding: 8px; background: #cc4b37; color: white;">Flagged</strong></h1>
+
+<div style="
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cecece;
+  ">
+  <p style="padding: 32px 32px;">Your project has been marked as 'flagged' and progress has been halted. Most commonly this happens because the team assigned to the project found a potential duplicate or error in your request. They will be with you shortly with more information on what is needed to continue progress on your project.</a>.</p>
+
+  <a href="<%= @url %>/project/<%= @project.slug %>"
+    style="display:block;
+    margin: 0 32px 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background: #EB0183;
+    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
+
+  <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you, because you are the contact associated to this project.
+  If you would like to change your contact information please go <a href="<%= @url %>/account">here</a>.</small></p>
+</div>

@@ -1,0 +1,21 @@
+<header id="header">
+  <div class="row">
+    <div class="columns flex align-middle">
+      <a href="/" id="logo"><img src="/assets/logo.png"></a>
+    </div>
+    <div class="small-3 medium-9 columns" id="navBar">
+      <nav id="links" class="show-for-navbreak">
+        <a href="/" class="show-for-large">Home</a>
+        <% @links.each do |link| %>
+          <a href="<%= link[:url] %>"><%= link[:name] %></a>
+        <% end %>
+      </nav>
+      <%= content_tag :div,
+        id: "toggle",
+        data: {
+          links: @links,
+        }.to_json do %>
+      <% end %>
+    </div>
+  </div>
+</header>

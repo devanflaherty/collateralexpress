@@ -1,89 +1,208 @@
 import Vue from 'vue'
-import Axios from 'axios'
+import axios from 'axios'
+import {store} from '../store'
+
 import bus from '../bus'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 // Import Components
 
-import ProjectIndex from '../projects/list.vue'
-import ProjectForm from '../projects/form.vue'
-import ProjectShow from '../projects/show.vue'
-
-const authRequest = function(to, from, next) {
-  Axios.get('/authenticate.json')
-  .then(function (response) {
-    if (response.data.user.id) {
-      next()
-    } else if (response.data.contact.id) {
-      next()
-    } else {
-      window.location.href = "/account/login"
-    }
-  }).catch(function (error) {
-    window.location.href = "/account/login"
-  })
-}
+import Home from '../views/pages/home.vue'
+import How from '../views/pages/how-it-works.vue'
+import Faq from '../views/pages/faq.vue'
+import Gallery from '../views/pages/gallery.vue'
+import FourOhFour from '../views/pages/404.vue'
+import Projects from '../views/projects/index.vue'
+import ProjectList from '../views/projects/list.vue'
+import ProjectForm from '../views/projects/form.vue'
+import ProjectShow from '../views/projects/show.vue'
+import ContactEdit from '../views/admin/edit.vue'
+import Admin from '../views/admin/index.vue'
+import AdminLogin from '../views/admin/login.vue'
+import AdminAccount from '../views/admin/edit.vue'
+import AdminCreate from '../views/admin/new.vue'
+import AdminList from '../views/admin/list.vue'
 
 const router = new VueRouter ({
   mode: 'history',
+  linkExactActiveClass: 'is-active',
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  },
   routes: [
   {
-    name: 'list',
+    name: 'home',
+    path:'/',
+    component: Home,
+    meta: {title: 'Home', header:true}
+  },
+  {
+    name: 'how',
+    path:'/how-it-works',
+    component: How,
+    meta: {title: 'How It Works', header:true}
+  },
+  {
+    name: 'faq',
+    path:'/faq',
+    component: Faq,
+    meta: {title: 'FAQ', header:true}
+  },
+  {
+    name: 'gallery',
+    path:'/gallery',
+    component: Gallery,
+    meta: {title: 'Gallery', header:true}
+  },
+  {
+    name: 'contact',
+    path:'/contact',
+    component: Home,
+    meta: {title: 'Home'}
+  },
+  {
     path:'/projects/',
-    component: ProjectIndex,
+    component: Projects,
     meta: {title: 'Projects'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
+    children: [
+      {
+        name: 'list',
+        path:'',
+        component: ProjectList,
+        meta: {
+          title: 'Projects',
+          auth: true
+        }
+      },
+      {
+        name: 'new',
+        path:'new',
+        component: ProjectForm,
+        meta: {title: 'New Project'}
+      },
+      {
+        name: 'show',
+        path:':id',
+        component: ProjectShow,
+        meta: {
+          // auth: true
+        }
+      },
+      {
+        name: 'edit',
+        path:':id/edit',
+        component: ProjectForm,
+        meta: {
+          title: 'Edit Project',
+          auth: 'admin'
+        }
+      }
+    ]
+  },
+  {
+    name: 'contact-edit',
+    path:'/contacts/:id/edit',
+    component: ContactEdit,
+    meta: {
+      title: 'Edit Contact',
+      auth: 'admin'
     }
   },
   {
-    name: 'edit',
-    path:'/projects/:id/edit',
-    component: ProjectForm,
-    meta: {title: 'Edit Project'},
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    component: Admin,
+    path:'/account/',
+    meta: {title: 'Login'},
+    children: [
+      {
+        name: 'account',
+        component: AdminAccount,
+        path:'',
+        meta: {
+          title: 'Update Account',
+          auth: true
+        }
+      },
+      {
+        name: 'login',
+        component: AdminLogin,
+        path:'login',
+        meta: {
+          title: 'Login'
+        },
+         beforeEnter: (to, from, next) => {
+          if(store.getters.authUser.id != null) {
+            next({name: 'account'})
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        name: 'edit-admin',
+        component: AdminAccount,
+        path:':id/edit',
+        meta: {
+          title: 'Edit User',
+          auth: 'admin'
+        }
+      },
+      {
+        name: 'new-admin',
+        component: AdminCreate,
+        path:'new',
+        meta: {
+          title: 'Add an Admin',
+          auth: 'admin'
+        }
+      },
+      {
+        name: 'list-admin',
+        component: AdminList,
+        path:'list',
+        meta: {
+          title: 'All Users',
+          auth: 'admin'
+        }
+      }
+    ]
   },
   {
-    name: 'new',
-    path:'/projects/new',
-    component: ProjectForm,
-    meta: {title: 'New Project'}
-  },
-  {
-    name: 'show',
-    path:'/project/:id',
-    component: ProjectShow,
-    beforeEnter: (to, from, next) => {
-      authRequest(to, from, next)
-    }
+    name: '404',
+    path:'*',
+    component: FourOhFour,
+    meta: {title: '404'}
   }]
 })
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
-  Axios.get('/authenticate.json')
-  .then(function (response) {
-    if (response.data.user.id) {
-      bus.$emit('authEmit', response.data.user.id)
-    }
-  }).catch(function (error) {
-    console.log('Trouble authneticating user')
-  })
-  var vueTitle = to.meta.title
-  // if page has a set title do
-  if (vueTitle) {
-    console.log(to.meta.title)
-    document.title = vueTitle + " | Collateral Express"
+  store.dispatch('setContactSession')
+
+  if (localStorage.getItem('default_auth_token')) {
+    var token = localStorage.getItem('default_auth_token')
+    store.dispatch('setAuthViaToken', token)
+  }
+  // else if(store.getters.contactSession && store.getters.authUser.role != 'admin'){
+  //   store.dispatch({
+  //     type: 'setAuth',
+  //     id: store.getters.contactSession,
+  //     role: 'contact'
+  //   })
+  // }
+  else {
+    store.dispatch('setAuth', '')
+  }
+
+  if(store.getters.mobileNav == true) {
+    store.dispatch('toggleMobileNav', false)
   }
 
   next()
-})
-
-router.afterEach((to, from) => {
-  //$('#reveal').foundation();
 })
 
 export default router

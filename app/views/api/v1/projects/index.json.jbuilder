@@ -1,5 +1,10 @@
+json.current_page(@pagination[:current_page])
+json.last_page(@pagination[:last_page])
+json.next_page(@pagination[:next_page])
+json.next_page_url(@pagination[:next_page_url])
+json.prev_page(@pagination[:prev_page])
 json.projects @projects do |project|
-  json.(project, :id, :title, :description, :status)
+  json.(project, :id, :title, :description, :status, :archive)
 
   if project.contact
     json.contact do
@@ -8,16 +13,4 @@ json.projects @projects do |project|
       json.email project.contact.email
     end
   end
-  #
-  # json.assigned_user do
-  #   json.id project.user.id
-  #   json.name project.user.full_name
-  #   json.email project.user.email
-  # end
-  #
-  # json.comments project.comments do |comment|
-  #   json.id comment.author.id
-  #   json.author comment.author.full_name
-  #   json.(comment, :content, :created_at)
-  # end
 end

@@ -1,9 +1,27 @@
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></pre>
-<h3>There has been a status update</h3>
-<h1>'<%= @project.title %>' is <strong><%= @project.status %></strong></h1>
-<h2><%= @project.description %></h2>
-<pre>
-<%= @contact.full_name %>
+<h3 style="margin: 0 0 8px;"><strong><%= @project.title %></strong></h3>
+<h1 style="margin: 0 0 16px;display: inline-block; padding: 8px; background:#EB0183; color: white;">Status: <strong><%= @project.status %></strong></h1>
 
-This email was sent out to you, because you are subscribed to the postbox-mailing-list.
-If you want to unscribscribe, please use this url: <%= @url %>.
+<div style="
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cecece;
+  ">
+  <p style="padding: 32px 32px;">The team assigned to your project has updated it's status. If you have any questions about the status of your project please get in contact with <a href="mailto:<%= @project.user.email %>"><%= @project.user.full_name %></a>.</p>
+
+  <a href="<%= @url %>/project/<%= @project.slug %>"
+    style="display:block;
+    margin: 0 32px 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background: #EB0183;
+    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
+
+  <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you, because you are the contact associated to this project.
+  If you would like to change your contact information please go <a href="<%= @url %>/account">here</a>.</small></p>
+</div>

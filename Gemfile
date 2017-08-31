@@ -25,7 +25,7 @@ gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+# gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.6'
 # User Carrierwave for image uploads and processing
@@ -49,9 +49,9 @@ gem 'friendly_id', '~> 5.2', '>= 5.2.1'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #  02. Authentication
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+gem 'knock'
 # Use devise as the user authentication handler
-gem 'devise', '~> 4.2'
+# gem 'devise', '~> 4.2'
 # User roles management
 gem 'rolify', '~> 5.1'
 

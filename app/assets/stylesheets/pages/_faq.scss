@@ -20,6 +20,9 @@
         font-family: 'fontAwesome'
       }
     }
+    &.is-active .accordion-title {
+      background: rgba($light-gray, 0.33);
+    }
     &.is-active .accordion-title::before {
       content:"\f068";
       font-family: 'fontAwesome';

@@ -1,0 +1,17 @@
+.reveal-overlay {
+  background-image: linear-gradient(-180deg, rgba(#EB0183,.85) 0%, rgba(#FF3068, 0.85) 100%);
+}
+.reveal {
+  border-radius: 6px;
+  border:none;
+  outline: none;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.1);
+  transition: all 0.5s ease;
+
+  @include breakpoint(small only) {
+    width: 90%;
+    margin: 0 auto;
+    height: auto;
+    min-height: auto;
+  }
+}

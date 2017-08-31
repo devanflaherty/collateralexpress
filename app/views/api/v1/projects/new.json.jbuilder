@@ -1,4 +1,4 @@
-json.(@project,
+json.project(@project,
   :id,
   :title,
   :slug,
@@ -8,11 +8,16 @@ json.(@project,
   :tactic,
   :target,
   :business_unit,
+  :deliverables,
   :existing,
   :archive,
   :flag,
   :contact_id,
-  :user_id)
+  :user_id,
+  :translation,
+  :reference,
+  :created_at,
+  :legal_review)
 
 json.states(@states)
 json.tactics(@tactics)

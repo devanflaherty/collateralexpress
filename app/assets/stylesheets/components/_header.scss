@@ -1,4 +1,4 @@
-body > header#header {
+header#header {
   height: 6rem;
   @include flex;
   @include flex-align(center, middle);
@@ -27,6 +27,7 @@ body > header#header {
     top:0;
     width: 100%;
     z-index: 100;
+    background: rgba(0,0,0,0.25);
     #navBar {
       #links {
         a {
@@ -40,7 +41,7 @@ body > header#header {
   }
 }
 
-#heroHeader {
+#heroHeader, #welcome {
   padding-top: 6rem;
   padding-bottom: 3rem;
   .overlay {
@@ -53,5 +54,11 @@ body > header#header {
   }
   > .row {
     position: relative;
+  }
+}
+
+#welcome {
+  .overlay {
+    background: rgba(0,0,0,0.25);
   }
 }

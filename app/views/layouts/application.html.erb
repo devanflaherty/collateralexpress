@@ -9,7 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'main' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
 
     <script>
       (function(d) {
@@ -24,13 +26,9 @@
   </head>
 
   <body>
-    <%= render 'shared/header_nav' %>
 
     <%= yield %>
 
-    <footer id="footer"></footer>
-    <%= javascript_pack_tag 'app.js'%>
-    <%= javascript_pack_tag 'projects/main.js'%>
-    <%= javascript_pack_tag 'contacts/main.js'%>
+    <%= javascript_pack_tag 'main.js'%>
   </body>
 </html>

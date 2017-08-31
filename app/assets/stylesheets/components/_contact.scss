@@ -1,0 +1,48 @@
+#contactForm, #contact{
+  .subheader {
+    color: $primary-color;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .contact-email {
+    color: $black;
+    font-size: 2rem;
+  }
+  .contact-info {
+    margin-top: 2rem;
+    font-size: .9rem;
+    color: $medium-gray;
+  }
+  #contactCard {
+    h3 {
+      @include breakpoint(medium only) {
+        margin-bottom: 2rem
+      }
+    }
+    .contact-help {
+      padding-bottom: 1rem;
+      @include breakpoint(large) {
+        padding-top: 5rem;
+        padding-bottom: 0;
+      }
+    }
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      li {
+        margin-bottom: .25rem;
+        label {
+          color: $form-gray;
+          font-family: $sans-bold;
+          margin-bottom: 0;
+          line-height: 1rem;
+        }
+        span {
+          font-size: 1.25rem;
+        }
+      }
+    }
+  }
+}
