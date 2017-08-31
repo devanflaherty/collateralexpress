@@ -181,19 +181,10 @@ const router = new VueRouter ({
 
 // Set Document Title
 router.beforeEach((to, from, next) => {
-  store.dispatch('setContactSession')
-
   if (localStorage.getItem('default_auth_token')) {
     var token = localStorage.getItem('default_auth_token')
     store.dispatch('setAuthViaToken', token)
   }
-  // else if(store.getters.contactSession && store.getters.authUser.role != 'admin'){
-  //   store.dispatch({
-  //     type: 'setAuth',
-  //     id: store.getters.contactSession,
-  //     role: 'contact'
-  //   })
-  // }
   else {
     store.dispatch('setAuth', '')
   }

@@ -295,7 +295,6 @@ export default {
             group: 'auth'
           })
           this.$store.dispatch('setToken', response.data.jwt)
-          this.$store.dispatch('setContactSession')
         },
         error: function (error) {
           this.$notify({

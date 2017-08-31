@@ -16,8 +16,6 @@ class Api::V1::ContactsController < ApiController
 
     respond_to do |format|
       if @contact.save
-        #using cookies so we can access ID via javascript
-        cookies[:current_contact_id] = @contact.id
         UserMailer.new_contact(@contact).deliver_later
 
         # Set Responses
@@ -33,9 +31,6 @@ class Api::V1::ContactsController < ApiController
   def update
     @contact = User.find(params[:id])
     respond_to do |format|
-      # Using cookies so we can access ID via javascript
-      puts "---Cookie Set---"
-      cookies[:current_contact_id] = @contact.id
       if @contact.update_attributes(contact_params)
         # Find project if updated from project form
         # If project found we will save the updated contact to the found project
@@ -59,14 +54,6 @@ class Api::V1::ContactsController < ApiController
     flash[:notice] = "Contact '#{@contact.full_name}' deleted succesfully."
     respond_to do |format|
       format.json { render json: {flash: flash} }
-    end
-  end
-
-  def edit
-    if cookies[:current_contact_id] == params[:id]
-      @contact = User.find(params[:id])
-    else
-      redirect_to '/'
     end
   end
 

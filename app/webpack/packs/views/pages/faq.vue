@@ -7,7 +7,7 @@
         <div class="columns small-11 medium-3">
           <h2>FAQ's</h2>
           <p>Can’t find your answer here? Found a bug? Give support a shout. They’ve got your back in a big way.</p>
-          <a href="mailto:hello@saltagency.co?subject=Collateral%20Express%20Support" class="button hollow">Contact Support</a>
+          <a href="mailto:coexdemo@gmail.com?subject=Collateral%20Express%20Support" class="button hollow">Contact Support</a>
         </div>
         <div class="columns small-11 medium-8 medium-offset-1">
           <ul id="accordion" class="accordion" data-accordion>

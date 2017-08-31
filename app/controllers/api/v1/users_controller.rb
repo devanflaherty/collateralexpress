@@ -28,7 +28,6 @@ class Api::V1::UsersController < ApiController
 
     respond_to do |format|
       if @user.save
-        cookies[:current_contact_id] = @user.id
         UserMailer.new_user(@user).deliver_later
 
         flash[:notice] = "User '#{@user.full_name}' created succesfully."
@@ -64,7 +63,6 @@ class Api::V1::UsersController < ApiController
   def destroy
     @user = User.find(params[:id])
     @user.destroy
-    cookies.delete :current_contact_id
     flash[:notice] = "User '#{@user.full_name}' deleted succesfully."
     respond_to do |format|
       format.json { render json: {user: @user, flash: flash} }

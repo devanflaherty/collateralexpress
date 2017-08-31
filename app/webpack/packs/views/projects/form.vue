@@ -163,7 +163,6 @@ export default {
   computed: {
     ...mapGetters({
       authUser: 'authUser',
-      contactSession: 'contactSession',
       validUser: 'validUser',
       project: 'project',
       projectMedia: 'projectMedia',
@@ -197,11 +196,7 @@ export default {
     'authUser.id':function() {
       // If we get an authUser fetchData
       this.fetchData()
-    },
-    contactSession(id) {
-      // Generally will only run on a few instances
-      // First time vue instance is being loaded & First time a contactUser is logging in
-      this.contactQuery = id
+      this.contactQuery = this.authUser.id
     }
   },
   methods: {
@@ -245,12 +240,12 @@ export default {
             msg: "Sorry, you don't have access to this project. Please try logging in again.",
           })
         } else {
-          // If contactSession is valid or is authorized
+          // If user is valid or is authorized
           this.$validator.clean();
           this.$store.dispatch('setProject', data.project)
           this.$store.dispatch('setProjectMedia', data.project_media.medias)
           // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
-          // That way we are getting the project.contact rather than contactSession
+          // That way we are getting the project.contact rather than authUser
           this.contactQuery = data.project.contact_id
           this.pageTitle = "Edit " + data.project.title
           this.projectType = data.project.existing ? "existing" : "template"
@@ -313,11 +308,11 @@ export default {
     this.fetchData()
   },
   mounted() {
-    // We set contactQuery to contactSession
+    // We set contactQuery to authUser
     // This will set contactQuery first before any other method
-    // Allowing our contact component to default load the contactSession
-    if(this.contactSession) {
-      this.contactQuery = this.contactSession
+    // Allowing our contact component to default load the user
+    if(this.authUser) {
+      this.contactQuery = this.authUser.id
     }
 
     bus.$on('readyDZ', (bool) => {

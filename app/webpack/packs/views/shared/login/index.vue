@@ -100,7 +100,6 @@
               group: 'auth'
             })
             this.$store.dispatch('setToken', response.data.jwt)
-            this.$store.dispatch('setContactSession')
 
             if(this.validUser == false) {
               this.access_message = "You've succesfully logged in with the email " + this.contact_email + ", but you don't have access to this project."
