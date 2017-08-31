@@ -8,7 +8,7 @@
       </transition>
     </HeroHeader>
 
-    <ProjectSelector v-if="$auth.check()"></ProjectSelector>
+    <ProjectSelector></ProjectSelector>
 
     <section id="homeSteps" v-if="!$auth.check()">
       <div class="row">
