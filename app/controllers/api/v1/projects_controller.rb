@@ -191,6 +191,7 @@ class Api::V1::ProjectsController < ApiController
         "Flyer",
         "Promotional Flyer",
         "Newsletter Template",
+        "Brochure",
         "OFT Email",
         "Editable PDF",
         "Editable Web Form",
