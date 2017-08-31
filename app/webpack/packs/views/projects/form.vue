@@ -78,7 +78,7 @@
               <div class="small-12 large-10 column">
                 <div class="fieldset">
                   <contact
-                    :contact-query="contactQuery"
+
                     :project-id="project.id"
                     @contactEmit="updateContact"
                   ></contact>
@@ -158,7 +158,6 @@ export default {
       pageTitle: '',
       projectType: null,
       formError: true,
-      contactQuery: null,
       dzUpload: false,
     }
   },
@@ -198,7 +197,6 @@ export default {
     'authUser.id':function() {
       // If we get an authUser fetchData
       this.fetchData()
-      this.contactQuery = this.authUser.id
     }
   },
   methods: {
@@ -246,9 +244,6 @@ export default {
           this.$validator.clean();
           this.$store.dispatch('setProject', data.project)
           this.$store.dispatch('setProjectMedia', data.project_media.medias)
-          // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
-          // That way we are getting the project.contact rather than authUser
-          this.contactQuery = data.project.contact_id
           this.pageTitle = "Edit " + data.project.title
           this.projectType = data.project.existing ? "existing" : "template"
         }
@@ -303,9 +298,6 @@ export default {
         type: 'setProjectProperty',
         set: ['contact_id', contact.id]
       })
-      // This would be the last time(s) the contactQuery is set in it's life span
-      // It inherits the ID found in the contact Component
-      this.contactQuery = contact.id
     },
 
     setProjectType(type) {
@@ -322,14 +314,6 @@ export default {
     }
   },
   mounted() {
-    // We set contactQuery to authUser
-    // This will set contactQuery first before any other method
-    // Allowing our contact component to default load the user
-
-    if(this.authUser) {
-      this.contactQuery = this.authUser.id
-    }
-
     bus.$on('readyDZ', (bool) => {
       // Sets wether Dropzone should upload files or not
       this.dzUpload = bool

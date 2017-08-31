@@ -142,15 +142,15 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['contactQuery'],
   data() {
     return {
       message: "",
       edit_contact: true,
+      contactQuery: null
     }
   },
   computed: {
-    ...mapGetters(['contact', 'contacts']),
+    ...mapGetters(['contact', 'contacts', 'authUser', 'project']),
     token(){
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     }
@@ -159,12 +159,20 @@ export default {
     'contact.email': function(newEmail, oldEmail) {
       if(newEmail != oldEmail && this.contact.email != null) {
         this.findContact(newEmail)
+        this.fetchContact()
       }
-      this.fetchContact()
     },
     contactQuery() {
       if (this.contactQuery != null) {
         this.fetchContact()
+      }
+    },
+    'project.contact_id':function(id) {
+      this.contactQuery = id
+    },
+    'authUser.id':function() {
+      if(this.project.contact_id == null) {
+        this.contactQuery = this.authUser.id
       }
     }
   },
@@ -244,7 +252,7 @@ export default {
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
         // Will find contact based on email entered in watched input
-        // Once it has been found it will emit an update to the contact_id
+        // Once it has been found it will emit an update to the project.contact_id
 
         this.contacts.find(c => {
           if (c.email == email) {
@@ -271,9 +279,11 @@ export default {
           full_name: null,
           last_name: null,
           phone: null,
-          location: null
+          location: null,
+          superior: null
         }
       })
+      this.$validator.clean()
       this.makeContactEditable(true)
     },
 
@@ -311,6 +321,11 @@ export default {
       this.$store.dispatch('setContacts', response.data.contact)
     })
 
+    if(this.project.contact_id) {
+      this.contactQuery = this.project.contact_id
+    } else if(this.authUser && this.project.contact_id == null) {
+      this.contactQuery = this.authUser.id
+    }
     this.fetchContact()
   },
   mounted() {
