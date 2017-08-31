@@ -93,7 +93,7 @@
       <div class="contact-help" v-if="edit_contact && !contact.id">
         <h5>Stay Connected</h5>
         <p>Your contact info will allow us to communicate with you when the status of your project has changed,
-          make sure you are using a real '@tmobile.com' address that you have access to.</p>
+          make sure you are using a real '@T-Mobile.com' address that you have access to.</p>
         <h5>Use a previously created contact</h5>
         <p>If you have created a contact on a previous 'Project Request' just type the email of that contact in the form and we'll find it for you.</p>
         <p>It's that easy!</p>
