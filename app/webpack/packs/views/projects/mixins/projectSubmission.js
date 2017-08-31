@@ -25,15 +25,13 @@ const ProjectSubmission = {
           bus.$emit('submitProjectForm')
         } else {
           // If there are no errors we continue
-          if(this.contactQuery || this.project.contact_id || this.contactSession) {
+          if(this.contactQuery || this.project.contact_id) {
             // Let set what Contact ID we send to contact Submission
             var cid = null
             if (this.contactQuery != null) {
               cid = this.contactQuery
             } else if (this.project.contact_id != null) {
               cid = this.project.contact_id
-            } else if (this.contactSession) {
-              cid = this.contactSession
             }
             // Since we found an ID we send it on and will patch that contact
             bus.$emit('postContact', cid)

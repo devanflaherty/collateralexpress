@@ -9,8 +9,6 @@
         <h3 v-if="$auth.check('admin')">Admin Actions</h3>
         <h3 v-else>Contact Actions</h3>
 
-        <a v-if="!$auth.check()">login</a>
-        <a v-if="$auth.check()" @click="logout">logout</a>
         <hr class="no-margin">
         <nav v-if="$auth.check('admin')">
           <div class="flex">
@@ -60,16 +58,6 @@ export default {
         title: "Succefully signed out.",
         group: 'auth'
       })
-
-      this.removeContactCookie()
-    },
-    removeContactCookie() {
-      this.axios.post('/api/v1/contacts/clear')
-        .then( response => {
-          console.log("cleared contact")
-        }).catch(error => {
-          console.log(error)
-        })
     }
   }
 }
