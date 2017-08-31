@@ -17,6 +17,8 @@
     </transition-group>
 
     <h3>Add Files</h3>
+    <p>Your file will be added when you click on the submit button, below.</p>
+
     <Dropzone
       enctype="multipart/form-data"
       ref="dropzoneUploader"
