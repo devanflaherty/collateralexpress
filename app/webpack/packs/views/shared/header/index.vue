@@ -10,7 +10,7 @@
       <div class="small-3 medium-9 columns" id="navBar">
         <nav id="links" class="show-for-navbreak">
           <router-link v-for="link in links" class="" :to="{name: link.url}" :key="link.url">{{link.name}}</router-link>
-          <a href="#launchContact" @click.prevent="launchContact">Contact</a>
+          <a href="mailto:coexdemo@gmail.com?subject=Collateral%20Express%20Contact">Contact</a>
         </nav>
         <toggle class="hide-for-navbreak" :class="{'white-toggle': overlay}"></toggle>
         <MobileNav :links="links" class="hide-for-navbreak"></MobileNav>
