@@ -11,7 +11,6 @@ Rails.application.routes.draw do
       resources :users, :except => [:new, :edit]
       put 'users' => 'users#update'
       resources :contacts
-      post 'contacts/clear', to: 'contacts#clear', method: :post
       resources :projects
 
       resources :media, only: [:create, :delete, :destroy]

@@ -46,7 +46,6 @@ export default {
       message: 'message',
       reveal: 'reveal',
       flash: 'flash',
-      contactSession: 'contactSession'
     })
   },
   watch: {
