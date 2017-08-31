@@ -50,6 +50,10 @@
               </div>
             </div>
 
+            <div class="columns small-12" style="padding: 0px">
+              <hr class="no-margin"/>
+            </div>
+
             <div class="form-panel small-12 medium-10 large-10 columns">
 
               <div class="fieldset">
@@ -69,7 +73,7 @@
             </div><!-- close form panel 2-->
           </template>
 
-          <div class="form-panel small-12 columns" style="padding: 0;" v-if="projectType">
+          <div class="form-panel small-12 columns" v-if="projectType">
             <div class="row align-center" id="contactForm">
               <div class="small-12 large-10 column">
                 <div class="fieldset">

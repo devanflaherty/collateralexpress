@@ -51,6 +51,22 @@ export default {
     ...mapGetters(['project', 'availableTactics']),
   },
   watch: {
+    'project.tactic': function() {
+      // Find the count of the tactic array
+      var count = this.project.tactic.length
+      if(this.project.tactic.includes('Other')) {
+        // If Other is selected let's not count "other" as a deliverable
+        --count
+      } else {
+        // If other is unselected let's make sure the field is empty
+        this.tactic_other = ''
+      }
+      // Dispatch Deliverable count to store
+      this.$store.dispatch({
+        type: 'setProjectProperty',
+        project: { deliverables: count }
+      })
+    },
     tactic_other(other) {
       // When the other_input field has been updated
       // Run the setTactics Method passing in the other_input's value
