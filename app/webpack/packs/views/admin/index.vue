@@ -60,16 +60,6 @@ export default {
         title: "Succefully signed out.",
         group: 'auth'
       })
-
-      this.removeContactCookie()
-    },
-    removeContactCookie() {
-      this.axios.post('/api/v1/contacts/clear')
-        .then( response => {
-          console.log("cleared contact")
-        }).catch(error => {
-          console.log(error)
-        })
     }
   }
 }
