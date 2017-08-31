@@ -8,19 +8,24 @@
   ">
   <p style="padding: 32px 32px;">Your project has been marked as 'flagged' and progress has been halted. Most commonly this happens because the team assigned to the project found a potential duplicate or error in your request. They will be with you shortly with more information on what is needed to continue progress on your project.</a>.</p>
 
-  <a href="<%= @url %>/project/<%= @project.slug %>"
-    style="display:block;
-    margin: 0 32px 32px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 6px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 6px;
-    background: #EB0183;
-    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">View project</a>
+  <div style="margin: 0 32px 32px;">
+    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+      <tr>
+        <td bgcolor="#EB0183" width="100%"
+          style="padding: 6px;
+          -webkit-border-radius:6px;
+          border-radius:6px;
+          tect-align:center;" align="center">
+
+          <a href="<%= @url %>/project/<%= @project.slug %>" target="_blank"
+            style="color: #ffffff; font-weight: 600; letter-spacing: 1px; text-align:center; text-transform: uppercase; text-decoration: none; display: inline-block;">
+            View Project &rarr;
+          </a>
+
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you, because you are the contact associated to this project.
   If you would like to change your contact information please go <a href="<%= @url %>/account">here</a>.</small></p>

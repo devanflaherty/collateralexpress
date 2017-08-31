@@ -10,20 +10,25 @@
 
   <p style="padding: 0 32px;">As this project's status is changed you will be notified via email.</p>
 
-  <a href="<%= @url %>/project/<%= @project.slug %>"
-    style="display:block;
-    margin: 32px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 6px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 6px;
-    background: #EB0183;
-    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">
-    View project</a>
+
+  <div style="margin: 0 32px 32px;">
+    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+      <tr>
+        <td bgcolor="#EB0183" width="100%"
+          style="padding: 6px;
+          -webkit-border-radius:6px;
+          border-radius:6px;
+          tect-align:center;" align="center">
+
+          <a href="<%= @url %>/project/<%= @project.slug %>" target="_blank"
+            style="color: #ffffff; font-weight: 600; letter-spacing: 1px; text-align:center; text-transform: uppercase; text-decoration: none; display: inline-block;">
+            View Project &rarr;
+          </a>
+
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <hr style="border: none;
     height: 1px;
