@@ -193,8 +193,7 @@ export default {
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: this.token,
-        contact : contactUser,
-        project : this.projectId
+        contact : contactUser
       }
       if(!id || id == null || id == undefined) {
         // If contact doesn't exist

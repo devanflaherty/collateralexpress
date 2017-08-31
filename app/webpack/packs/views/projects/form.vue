@@ -77,11 +77,7 @@
             <div class="row align-center" id="contactForm">
               <div class="small-12 large-10 column">
                 <div class="fieldset">
-                  <contact
-
-                    :project-id="project.id"
-                    @contactEmit="updateContact"
-                  ></contact>
+                  <contact @contactEmit="updateContact"></contact>
                 </div>
               </div>
             </div>

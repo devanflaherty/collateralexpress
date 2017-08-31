@@ -32,10 +32,6 @@ class Api::V1::ContactsController < ApiController
     @contact = User.find(params[:id])
     respond_to do |format|
       if @contact.update_attributes(contact_params)
-        # Find project if updated from project form
-        # If project found we will save the updated contact to the found project
-        # save_to_project
-
         # Set our responses
         flash[:notice] = "Contact '#{@contact.full_name}' updated succesfully."
 
@@ -72,17 +68,5 @@ class Api::V1::ContactsController < ApiController
     def contact_params
       params.require(:contact).permit(:first_name, :last_name, :password, :password_confirmation, :email, :phone, :location, :superior, :avatar)
     end
-
-    def save_to_project
-      if params[:project]
-        @project = Project.friendly.find(params[:project])
-        @project.contact = @contact
-        @project.save
-      end
-    end
-
-
-
-
 
 end
