@@ -9,7 +9,7 @@
           <FloatLabel
             v-model="contact.email"
             v-if="!contact.id"
-            v-validate="'required|email'"
+            v-validate="'required|isTmobile|email'"
             data-vv-name="Contact Email"
             label="Contact Email"
             :has-error="veeErrors.has('Contact Email')"

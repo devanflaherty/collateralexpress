@@ -48,11 +48,24 @@ Vue.use(VueAuth, {
 
 
 import VeeValidate from 'vee-validate';
+const isTmobile = {
+  getMessage(field, params, data) {
+      return (data && data.message) || 'You must provide an authentic @T-Mobile.com address';
+  },
+  validate(value) {
+    return new Promise(resolve => {
+      resolve({
+        valid: value.substr(value.length -13) !== "@t-mobile.com" ? false : !! value,
+        data: value.substr(value.length -13) !== '@t-mobile.com' ? undefined : { message: 'Incorrect email.' }
+      });
+    });
+  }
+};
 const veeConfig = {
   errorBagName: 'veeErrors'
 }
-
 Vue.use(VeeValidate, veeConfig);
+VeeValidate.Validator.extend('isTmobile', isTmobile)
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon.vue'
