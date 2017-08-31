@@ -14,7 +14,7 @@
             <h5>{{project.title}}</h5>
           </header>
 <!-- EXISTING FORM -->
-          <template v-if="$route.query.type == 'existing'">
+          <template v-if="$route.query.type == 'existing' || projectType == 'existing'">
             <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Modify an Existing Project</h2>
@@ -41,7 +41,7 @@
             </div><!-- form panel part 1 -->
           </template>
 <!-- TEMPLATE FORM -->
-          <template v-if="$route.query.type == 'template'">
+          <template v-if="$route.query.type == 'template' || projectType == 'template'">
             <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Create From a Template</h2>
@@ -180,11 +180,11 @@ export default {
     '$route': function() {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      if(this.$route.name != 'new') {
-        this.fetchData()
-      }
+      this.fetchData()
       if(this.$route.query.type) {
         this.projectType = this.$route.query.type
+      } else {
+        this.projectType = null
       }
     },
     'project.contact_id': function(id) {
@@ -279,8 +279,15 @@ export default {
 
         this.$store.dispatch('setMessage','New Project')
         this.$store.dispatch('setProject', data.project)
+
+        if(this.$route.query.type == "existing") {
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            project: { existing: true }
+          })
+        }
+
         this.$store.dispatch('setProjectMedia', [])
-        this.$validator.clean();
       } else {
         this.$router.push({ name: '404' })
         console.log(err)
@@ -308,11 +315,17 @@ export default {
   created() {
     this.pageTitle = this.$route.meta.title
     this.fetchData()
+    if(this.$route.name == 'new') {
+      if(this.$route.query.type == null || this.$route.query.type == "") {
+        this.projectType = null
+      }
+    }
   },
   mounted() {
     // We set contactQuery to authUser
     // This will set contactQuery first before any other method
     // Allowing our contact component to default load the user
+
     if(this.authUser) {
       this.contactQuery = this.authUser.id
     }
