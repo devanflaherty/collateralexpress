@@ -3,6 +3,21 @@ footer {
   @include breakpoint(small only){
     padding: 1rem;
   }
+  img {
+    width: 50%;
+    padding: 1rem;
+    @include breakpoint(medium) {
+      width: 200px;
+      padding: 2rem 1rem;
+    }
+  }
+  #footerWrap {
+    @include flex;
+    @include flex-align(left, middle);
+    @include breakpoint(medium) {
+      @include flex-align(right, middle);
+    }
+  }
   #footerNav {
     @include flex;
     @include flex-align(left, middle);

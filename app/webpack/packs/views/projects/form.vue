@@ -15,7 +15,7 @@
           </header>
 <!-- EXISTING FORM -->
           <template v-if="$route.query.type == 'existing'">
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Modify an Existing Project</h2>
                 <h5>For when you just need simple updates made to already existing material.</h5>
@@ -32,7 +32,7 @@
               </div>
             </div><!-- close form panel 2-->
 
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset">
                 <ProjectDetails></ProjectDetails>
                 <ProjectTactics></ProjectTactics>
@@ -42,7 +42,7 @@
           </template>
 <!-- TEMPLATE FORM -->
           <template v-if="$route.query.type == 'template'">
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Create From a Template</h2>
                 <h5>For when you need new material created from a pre-made template.</h5>
@@ -54,7 +54,7 @@
               <hr class="no-margin"/>
             </div>
 
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div class="form-panel small-12 medium-12 large-10 columns">
 
               <div class="fieldset">
                 <ProjectDetails></ProjectDetails>
@@ -118,8 +118,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import bus from '../../bus'
-
-import ExistingForm from "./_existingForm.vue"
 
 // App Mixins
 import ProjectSubmission from "./mixins/projectSubmission.js"

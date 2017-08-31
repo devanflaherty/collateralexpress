@@ -74,7 +74,7 @@
       </div>
 
       <div v-if="contact.id" class="contact-info">
-        <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
+        <p>A contact associated with "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
         <button class="button gradient" @click.prevent="makeContactEditable(!edit_contact)">
           {{edit_contact ? "Finish Editing" : "Edit Contact"}}
