@@ -1,6 +1,6 @@
 class Api::V1::ContactsController < ApiController
   skip_before_action :verify_authenticity_token, :only => [:clear]
-  before_action :authenticate_user, :only => [:update, :destroy]
+  before_action :authenticate_user, :only => [:destroy]
 
   def index
     @contacts = User.contacts
