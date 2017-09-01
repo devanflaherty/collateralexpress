@@ -159,7 +159,6 @@ export default {
       if (this.contact.id != null) {
         this.$emit("contactEmit", {id: this.contact.id})
         this.fetchContact(this.contact.id)
-        console.log(this.contact.id)
       }
     },
     'contact.email': function(newEmail, oldEmail) {
