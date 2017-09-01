@@ -171,13 +171,6 @@ export const store = new Vuex.Store({
     },
     closeReveal({commit}) {
       $('#reveal').foundation('close');
-      var emptyReveal = {
-        reveal_type: null,
-        title: null,
-        msg: null,
-        pid: null
-      }
-      commit('setReveal', emptyReveal)
     },
     checkValidUser({commit, state}, id) {
       if(state.authUser.role == 'admin') {

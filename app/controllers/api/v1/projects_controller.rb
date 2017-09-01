@@ -2,7 +2,7 @@ class Api::V1::ProjectsController < ApiController
   # before_action :authenticate_user, only: [:index, :show, :edit]
   skip_before_action :verify_authenticity_token, :only => [:destroy]
   before_action :find_contact
-  before_action :authenticate_user, only: [:index, :edit, :update, :destroy]
+  before_action :authenticate_user, only: [:index, :edit, :update]
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 
   def index

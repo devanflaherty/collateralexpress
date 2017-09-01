@@ -16,6 +16,7 @@ import VueAuth from '@websanova/vue-auth'
 import AuthBearer from '@websanova/vue-auth'
 Vue.router = router
 
+axios.defaults.headers.common['authorization'] = `Bearer ${store.getters.validToken}`;
 const bearer = {
   request: function (req, token) {
     this.options.http._setHeaders.call(this, req, {Authorization: 'Bearer ' + token});

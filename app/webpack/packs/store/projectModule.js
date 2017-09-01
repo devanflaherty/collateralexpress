@@ -97,10 +97,15 @@ export const projectModule = {
       commit('pushProjectMedia', media)
     },
     deleteProject(context, id) {
-      axios.delete('/projects/' + id)
+      var config = {
+        headers: {
+          'Authorization' : 'Bearer' + context.getters.validToken
+        }
+      }
+      axios.delete('/api/v1/projects/' + id, config)
       .then(response => {
-        context.dispatch('closeReveal', null, { root: true })
-        context.dispatch('setFlash', response.data.flash[0][1], { root: true })
+        context.dispatch('closeReveal')
+        context.dispatch('setFlash', response.data.flash[0][1])
 
         // If Delete is succesfull we route to the list page
         router.push({ name: 'list' })
