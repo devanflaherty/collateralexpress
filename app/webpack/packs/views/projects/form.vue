@@ -174,10 +174,13 @@ export default {
     }
   },
   watch: {
-    '$route': function() {
+    '$route': function(to, from) {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      this.fetchData()
+      if(from.name != 'new') {
+        this.fetchData()
+      }
+
       if(this.$route.query.type) {
         this.projectType = this.$route.query.type
       } else {
