@@ -10,12 +10,14 @@
       <!-- TEMPLATE FORM -->
       <form v-on:submit.prevent="onSubmit" id="form">
         <section id="formContainer" class="row expand align-center">
-          <header v-if="project && project.id" class="form-panel small-12 medium-10 large-10 columns">
-            <h5>{{project.title}}</h5>
+          <header v-if="project && project.id" class="form-panel small-12 medium-12 large-10 columns">
+            <div class="fieldset" style="padding-bottom:0;">
+              <h2 class="banner">{{project.title}}</h2>
+            </div>
           </header>
 <!-- EXISTING FORM -->
           <template v-if="$route.query.type == 'existing' || projectType == 'existing'">
-            <div class="form-panel small-12 medium-12 large-10 columns">
+            <div v-if="$route.name != 'edit'" class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Modify an Existing Project</h2>
                 <h5>For when you just need simple updates made to already existing material.</h5>
@@ -42,7 +44,7 @@
           </template>
 <!-- TEMPLATE FORM -->
           <template v-if="$route.query.type == 'template' || projectType == 'template'">
-            <div class="form-panel small-12 medium-12 large-10 columns">
+            <div v-if="$route.name != 'edit'" class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Create From a Template</h2>
                 <h5>For when you need new material created from a pre-made template.</h5>
@@ -50,7 +52,7 @@
               </div>
             </div>
 
-            <div class="columns small-12" style="padding: 0px">
+            <div v-if="$route.name != 'edit'" class="columns small-12" style="padding: 0px">
               <hr class="no-margin"/>
             </div>
 

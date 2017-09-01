@@ -109,6 +109,36 @@ export const projectModule = {
         // if it fails we just console log an error for now
         console.log(error)
       })
+    },
+
+    postProject(context, payload) {
+      var token = document.getElementsByName('csrf-token')[0].getAttribute('content')
+
+      var axiosConfig = {
+        utf8 : "✓",
+        authenticity_token: token,
+        headers: {
+          'Authorization' : 'Bearer' + context.getters.validToken
+        },
+        project : context.getters.project
+      }
+      if(!context.getters.project.id) {
+        return new Promise((resolve, reject) => {
+          axios.post('/api/v1/projects/', axiosConfig).then(response => {
+            resolve(response)
+          }).catch(error => {
+            reject(error)
+          })
+        })
+      } else if(context.getters.project.id) {
+        return new Promise((resolve, reject) => {
+          axios.patch('/api/v1/projects/' + context.getters.project.id, axiosConfig).then(response => {
+            resolve(response)
+          }).catch(error => {
+            reject(error)
+          })
+        })
+      }
     }
   }
 }

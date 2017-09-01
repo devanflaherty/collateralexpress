@@ -1,5 +1,6 @@
 class Api::V1::ContactsController < ApiController
   skip_before_action :verify_authenticity_token, :only => [:clear]
+  before_action :authenticate_user, :only => [:update, :destroy]
 
   def index
     @contacts = User.contacts
@@ -20,7 +21,7 @@ class Api::V1::ContactsController < ApiController
 
         # Set Responses
         flash[:notice] = "Contact '#{@contact.full_name}' added succesfully."
-        format.json { render json: { contact: @contact, flash: flash} }
+        format.json { render json: { contact: @contact, flash: flash, status: "created"} }
       else
         flash[:error] = "Contact '#{@contact.full_name}' failed to be saved."
         format.json { render json: { errors: @contact.errors.messages }, status: 422}
@@ -34,9 +35,7 @@ class Api::V1::ContactsController < ApiController
       if @contact.update_attributes(contact_params)
         # Set our responses
         flash[:notice] = "Contact '#{@contact.full_name}' updated succesfully."
-
-        # Set our responses
-        format.json { render json: { contact: @contact, flash: flash} }
+        format.json { render json: { contact: @contact, flash: flash, status: "updated"} }
       else
         flash[:error] = "Contact '#{@contact.full_name}' failed to update."
         format.json { render json: { errors: @contact.errors.messages }, status: 422}

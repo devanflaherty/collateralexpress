@@ -146,7 +146,6 @@ export default {
     return {
       message: "",
       edit_contact: true,
-      contactQuery: null
     }
   },
   computed: {
@@ -156,23 +155,21 @@ export default {
     }
   },
   watch: {
+    'contact.id': function(id) {
+      if (this.contact.id != null) {
+        this.$emit("contactEmit", {id: this.contact.id})
+        this.fetchContact(this.contact.id)
+        console.log('hi')
+      }
+    },
     'contact.email': function(newEmail, oldEmail) {
       if(newEmail != oldEmail && this.contact.email != null) {
         this.findContact(newEmail)
-        this.fetchContact()
-      }
-    },
-    contactQuery() {
-      if (this.contactQuery != null) {
-        this.fetchContact()
       }
     },
     'project.contact_id':function(id) {
-      this.contactQuery = id
-    },
-    'authUser.id':function() {
-      if(this.project.contact_id == null) {
-        this.contactQuery = this.authUser.id
+      if(id != null) {
+        this.$store.dispatch('setContactProperty', ['id', id])
       }
     }
   },
@@ -182,56 +179,9 @@ export default {
       this.edit_contact = bool
     },
 
-
-    //contact methods
-    postContact(id) {
-      // Set Default Password for contact
-      var contactUser = {...this.contact}
-      contactUser.password = this.contact.email
-      contactUser.password_confirmation = this.contact.email
-
-      var axiosConfig = {
-        utf8 : "✓",
-        authenticity_token: this.token,
-        contact : contactUser
-      }
-      if(!id || id == null || id == undefined) {
-        // If contact doesn't exist
-        this.axios.post('/api/v1/contacts/', axiosConfig)
-        .then(response => {
-          // IF SUCCESFUll
-          this.$emit("contactEmit", response.data.contact)
-          this.$notify({
-            title: response.data.contact.first_name + " created"
-          })
-          bus.$emit('submitProjectForm', response.data.contact.id)
-
-          if(!this.$auth.check()) {
-            this.loginContact()
-          }
-        })
-      } else if (id) {
-        //If contact exists
-        this.axios.patch('/api/v1/contacts/' + id, axiosConfig)
-        .then(response => {
-          // IF SUCCESFUll
-          this.$emit("contactEmit", response.data.contact)
-          this.$notify({
-            title: response.data.contact.first_name + " updated"
-          })
-          bus.$emit('submitProjectForm', response.data.contact.id)
-
-          if(!this.$auth.check()) {
-            this.loginContact()
-          }
-        })
-      }
-    },
-
-
-    fetchContact() {
-      if(this.contactQuery != null) {
-        this.axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
+    fetchContact(id) {
+      if(id != null) {
+        this.axios.get('/api/v1/contacts/' + id  + '.json')
         .then( response => {
           this.$store.dispatch('setContact', response.data)
           this.makeContactEditable(false)
@@ -242,12 +192,11 @@ export default {
       }
     },
 
-
     findContact(email) {
       var found = false
       if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
         this.message = 'Please enter a valid email address'
-      } else if (this.contactQuery == null) {
+      } else if (this.contact.id == null) {
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
         // Will find contact based on email entered in watched input
@@ -262,7 +211,7 @@ export default {
           }
         })
 
-        this.fetchContact()
+        this.fetchContact(this.contact.id)
       }
     },
 
@@ -321,19 +270,10 @@ export default {
     })
 
     if(this.project.contact_id) {
-      this.contactQuery = this.project.contact_id
+      this.fetchContact(this.project.contact_id)
     } else if(this.authUser && this.project.contact_id == null) {
-      this.contactQuery = this.authUser.id
+      this.fetchContact(this.authUser.id)
     }
-    this.fetchContact()
-  },
-  mounted() {
-    bus.$on('postContact', (id) => {
-      this.postContact(id)
-    })
-  },
-  beforeDestroy() {
-    bus.$off('postContact')
   }
 }
 </script>
