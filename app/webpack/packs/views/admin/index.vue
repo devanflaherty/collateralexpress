@@ -10,7 +10,7 @@
         <h3 v-else>Contact Actions</h3>
 
         <hr class="no-margin">
-        <a v-if="$auth.check()" style="float: right" @click.prevent="logout">logout</a>
+        <a v-if="$auth.check('contact')" style="float: right" @click.prevent="logout">logout</a>
 
         <nav v-if="$auth.check('admin')">
           <div class="flex">
