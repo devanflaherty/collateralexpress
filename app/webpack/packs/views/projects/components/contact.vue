@@ -155,9 +155,17 @@ export default {
     }
   },
   watch: {
+    '$route': function() {
+      if(this.project.contact_id) {
+        this.$store.dispatch('setContactProperty', ['id', this.project.contact_id])
+      } else if (this.contact.id) {
+        this.$store.dispatch('setContactProperty', ['id', this.contact.id])
+      } else if (this.authUser.id) {
+        this.$store.dispatch('setContactProperty', ['id', this.authUser.id])
+      }
+    },
     'contact.id': function(id) {
       if (this.contact.id != null) {
-        this.$emit("contactEmit", {id: this.contact.id})
         this.fetchContact(this.contact.id)
       }
     },
@@ -205,7 +213,6 @@ export default {
           if (c.email == email) {
             console.log('find contact ' + email)
             this.$store.dispatch('setContactProperty', ['id', c.id])
-            this.$emit("contactEmit", {id: c.id})
             this.makeContactEditable(false)
           }
         })
@@ -216,7 +223,6 @@ export default {
 
 
     resetContact() {
-      this.$emit('contactEmit', {id: null})
       this.$store.dispatch({
         type: 'setContactProperty',
         contact: {
@@ -273,6 +279,9 @@ export default {
     } else if(this.authUser && this.project.contact_id == null) {
       this.fetchContact(this.authUser.id)
     }
+  },
+  beforeDestroy() {
+    this.resetContact()
   }
 }
 </script>

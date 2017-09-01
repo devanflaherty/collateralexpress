@@ -55,15 +55,21 @@ export const contactModule = {
     },
     postContact(context, payload) {
       var contactUser = {...context.getters.contact}
+      if(context.getters.authUser.id != context.getters.contact.id || context.getters.contact.id == null) {
+        contactUser.password = context.getters.contact.email
+        contactUser.password_confirmation = context.getters.contact.email
+      }
       var token = document.getElementsByName('csrf-token')[0].getAttribute('content')
 
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: token,
-        headers: {
-          'Authorization' : 'Bearer' + context.getters.validToken
-        },
         contact : contactUser
+      }
+      if(context.getters.authUser.id) {
+        axiosConfig.headers = {
+          'Authorization' : 'Bearer' + context.getters.validToken
+        }
       }
       if(context.getters.contact.id) {
         return new Promise((resolve, reject) => {
@@ -75,10 +81,6 @@ export const contactModule = {
           })
         })
       } else {
-        if(context.getters.authUser.id != context.getters.contact.id) {
-          contactUser.password = context.getters.contact.email
-          contactUser.password_confirmation = context.getters.contact.email
-        }
         return new Promise((resolve, reject) => {
           axios.post('/api/v1/contacts/', axiosConfig).then(response => {
             // IF SUCCESFUll

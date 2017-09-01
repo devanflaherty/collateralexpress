@@ -117,10 +117,12 @@ export const projectModule = {
       var axiosConfig = {
         utf8 : "✓",
         authenticity_token: token,
-        headers: {
-          'Authorization' : 'Bearer' + context.getters.validToken
-        },
         project : context.getters.project
+      }
+      if(context.getters.authUser.id) {
+        axiosConfig.headers = {
+          'Authorization' : 'Bearer' + context.getters.validToken
+        }
       }
       if(!context.getters.project.id) {
         return new Promise((resolve, reject) => {

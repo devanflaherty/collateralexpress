@@ -158,6 +158,33 @@ const ProjectSubmission = {
         });
         console.log('Error', msg);
       }
+    },
+
+    loginContact() {
+      this.$auth.login({
+        url: '/api/v1/user_token',
+        data: {
+          auth: {email: this.contact.email, password: this.contact.email}
+        },
+        success: function (response) {
+          this.$notify({
+            title: 'Succesfully signed in ' + this.contact.email,
+            type: 'success',
+            group: 'auth'
+          })
+          this.$store.dispatch('setToken', response.data.jwt)
+        },
+        error: function (error) {
+          this.$notify({
+            title: 'Error signing in ' + this.contact.email,
+            text: 'We could not find a contact with that email.',
+            type: 'alert',
+            group: 'auth'
+          })
+        },
+        redirect: this.$route.path,
+        rememberMe: false,
+      });
     }
   },
   mounted() {

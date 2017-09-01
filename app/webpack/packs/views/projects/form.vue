@@ -79,7 +79,7 @@
             <div class="row align-center" id="contactForm">
               <div class="small-12 large-10 column">
                 <div class="fieldset">
-                  <contact @contactEmit="updateContact"></contact>
+                  <contact></contact>
                 </div>
               </div>
             </div>
@@ -164,6 +164,7 @@ export default {
       authUser: 'authUser',
       validUser: 'validUser',
       project: 'project',
+      contact: 'contact',
       projectMedia: 'projectMedia',
     }),
     token() {
@@ -198,6 +199,12 @@ export default {
     'authUser.id':function() {
       // If we get an authUser fetchData
       this.fetchData()
+    },
+    'contact.id':function() {
+      this.$store.dispatch({
+        type: 'setProjectProperty',
+        set: ['contact_id', this.contact.id]
+      })
     }
   },
   methods: {
@@ -219,6 +226,10 @@ export default {
         this.axios.get('/api/v1/projects/new.json').then( response => {
           this.$Progress.finish()
           this.setNewData(response.data)
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            set: ['contact_id', this.contact.id]
+          })
         }).catch(error => {
           this.$Progress.fail()
           this.setNewData(response.data, error)
@@ -289,18 +300,6 @@ export default {
         console.log(err)
       }
     },
-
-    updateContact(contact) {
-      // Called from contactEmit
-      // When the contact component finds an existing contact, or
-      // There is a new contact we will update the project with that contact
-      // Will either be null or the contacts ID
-      this.$store.dispatch({
-        type: 'setProjectProperty',
-        set: ['contact_id', contact.id]
-      })
-    },
-
     setProjectType(type) {
       this.projectType = type
     }
