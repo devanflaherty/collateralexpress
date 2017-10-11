@@ -33,7 +33,6 @@ export const store = new Vuex.Store({
       msg: null,
       project_id: null
     },
-    contactSession: null,
     validUser: false,
     defaultLinks: [
       {
@@ -77,9 +76,6 @@ export const store = new Vuex.Store({
     reveal(state) {
       return state.reveal
     },
-    contactSession(state) {
-      return state.contactSession
-    },
     validUser(state) {
       return state.validUser
     },
@@ -117,9 +113,6 @@ export const store = new Vuex.Store({
       state.reveal.title = payload.title
       state.reveal.msg = payload.msg
       state.reveal.project_id = payload.pid
-    },
-    setContactSession(state, id) {
-      state.contactSession = id
     },
     toggleValidUser(state, bool) {
       state.validUser = bool
@@ -166,22 +159,6 @@ export const store = new Vuex.Store({
       commit('setToken', token)
       dispatch('setAuthViaToken', token)
     },
-    setContactSession({commit, state, dispatch}, id) {
-      if(id) {
-        commit('setContactSession', id)
-      } else {
-        var nameEQ = "current_contact_id="
-        var ca = document.cookie.split(';')
-        for(var i=0;i < ca.length;i++) {
-          var c = ca[i];
-          while (c.charAt(0)==' ') c = c.substring(1,c.length);
-          if (c.indexOf(nameEQ) == 0) {
-            var contactId = c.substring(nameEQ.length,c.length)
-            commit('setContactSession', contactId)
-          }
-        }
-      }
-    },
     setMessage({commit}, message) {
       commit('setMessage', message)
     },
@@ -194,13 +171,6 @@ export const store = new Vuex.Store({
     },
     closeReveal({commit}) {
       $('#reveal').foundation('close');
-      var emptyReveal = {
-        reveal_type: null,
-        title: null,
-        msg: null,
-        pid: null
-      }
-      commit('setReveal', emptyReveal)
     },
     checkValidUser({commit, state}, id) {
       if(state.authUser.role == 'admin') {

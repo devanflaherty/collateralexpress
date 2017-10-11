@@ -8,7 +8,7 @@
       </transition>
     </HeroHeader>
 
-    <ProjectSelector v-if="$auth.check()"></ProjectSelector>
+    <ProjectSelector></ProjectSelector>
 
     <section id="homeSteps" v-if="!$auth.check()">
       <div class="row">
@@ -26,7 +26,7 @@
               <p>Browse existing assets and find exactly what you need.</p>
 
               <div class="card-buttons">
-                <a href="#" class="button hollow">Go to Brand Muscle</a>
+                <a href="http://tmobilev5.brandmuscle.net/Login/Login.aspx" target="_blank" class="button hollow">Go to Brand Muscle</a>
               </div>
           </div>
         </div>
@@ -81,7 +81,7 @@
             Can't find it on Brand Muscle?  No problem. Tell us what you need by emailing us <a href="mailto:coexdemo@gmail.com">here</a>. We'll help out in a jiff.
           </p>
 
-          <a href="#" class="button hollow">Brand Muscle</a>
+          <a href="http://tmobilev5.brandmuscle.net/Login/Login.aspx" target="_blank" class="button hollow">Brand Muscle</a>
         </div>
       </div>
     </section>

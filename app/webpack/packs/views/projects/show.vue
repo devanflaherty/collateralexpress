@@ -129,7 +129,7 @@
                   <span>{{contact.position}}</span>
                 </li>
                 <li v-if="contact.superior">
-                  <label>Superior</label>
+                  <label>Regional Director</label>
                   <span>{{contact.superior}}</span>
                 </li>
                 <li v-if="contact.location">

@@ -2,6 +2,7 @@ class Api::V1::ProjectsController < ApiController
   # before_action :authenticate_user, only: [:index, :show, :edit]
   skip_before_action :verify_authenticity_token, :only => [:destroy]
   before_action :find_contact
+  before_action :authenticate_user, only: [:index, :edit, :update]
   before_action :define_project_lexicon, only: [:new, :create, :edit, :update]
 
   def index
@@ -35,9 +36,8 @@ class Api::V1::ProjectsController < ApiController
         ProjectMailer.new_project(@project).deliver_later
         ProjectMailer.new_project_to_admin(@project).deliver_later
 
-        flash.now[:notice] = "Project '#{@project.title}' created succesfully."
-
-        format.json { render json: { project: @project, flash: flash} }
+        flash[:notice] = "Project '#{@project.title}' created succesfully."
+        format.json { render json: { project: @project, flash: flash, status: "created"} }
       else
         format.json { render json: { errors: @project.errors.messages }, status: 422}
       end
@@ -58,9 +58,8 @@ class Api::V1::ProjectsController < ApiController
         end
         session[:current_contact_id] = @project.contact_id
 
-        flash.now[:notice] = "Project '#{@project.title}' updated succesfully."
-
-        format.json { render json: { project: @project, flash: flash} }
+        flash[:notice] = "Project '#{@project.title}' updated succesfully."
+        format.json { render json: { project: @project, flash: flash, status: "updated"} }
       else
         flash[:error] = "Project '#{@project.title}' failed to update."
         format.json { render json: { errors: @project.errors.messages }, status: 422}
@@ -191,6 +190,7 @@ class Api::V1::ProjectsController < ApiController
         "Flyer",
         "Promotional Flyer",
         "Newsletter Template",
+        "Brochure",
         "OFT Email",
         "Editable PDF",
         "Editable Web Form",

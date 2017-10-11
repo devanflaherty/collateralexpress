@@ -42,20 +42,23 @@ export default {
   props: ['projectType', 'pageTitle'],
   data: () => ({
   }),
+  watch: {
+    '$route': function() {
+      this.showForm(this.$route.query.type)
+    }
+  },
   methods: {
     showForm(type) {
       this.$emit('typeEmit', type)
-      this.$router.push({name: 'new', query: { type: type}})
-
       if(type == "existing") {
         this.$store.dispatch({
           type: 'setProjectProperty',
-          project: { existing: 1 }
+          project: { existing: true }
         })
       } else if(type == "template") {
         this.$store.dispatch({
           type: 'setProjectProperty',
-          project: { existing: 0 }
+          project: { existing: false }
         })
       }
     },

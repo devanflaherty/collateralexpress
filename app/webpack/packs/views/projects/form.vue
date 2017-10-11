@@ -10,12 +10,14 @@
       <!-- TEMPLATE FORM -->
       <form v-on:submit.prevent="onSubmit" id="form">
         <section id="formContainer" class="row expand align-center">
-          <header v-if="project && project.id" class="form-panel small-12 medium-10 large-10 columns">
-            <h5>{{project.title}}</h5>
+          <header v-if="project && project.id" class="form-panel small-12 medium-12 large-10 columns">
+            <div class="fieldset" style="padding-bottom:0;">
+              <h2 class="banner">{{project.title}}</h2>
+            </div>
           </header>
 <!-- EXISTING FORM -->
-          <template v-if="$route.query.type == 'existing'">
-            <div class="form-panel small-12 medium-10 large-10 columns">
+          <template v-if="$route.query.type == 'existing' || projectType == 'existing'">
+            <div v-if="$route.name != 'edit'" class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Modify an Existing Project</h2>
                 <h5>For when you just need simple updates made to already existing material.</h5>
@@ -32,7 +34,7 @@
               </div>
             </div><!-- close form panel 2-->
 
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset">
                 <ProjectDetails></ProjectDetails>
                 <ProjectTactics></ProjectTactics>
@@ -41,8 +43,8 @@
             </div><!-- form panel part 1 -->
           </template>
 <!-- TEMPLATE FORM -->
-          <template v-if="$route.query.type == 'template'">
-            <div class="form-panel small-12 medium-10 large-10 columns">
+          <template v-if="$route.query.type == 'template' || projectType == 'template'">
+            <div v-if="$route.name != 'edit'" class="form-panel small-12 medium-12 large-10 columns">
               <div class="fieldset" style="margin-top:2rem;">
                 <h2>Create From a Template</h2>
                 <h5>For when you need new material created from a pre-made template.</h5>
@@ -50,7 +52,11 @@
               </div>
             </div>
 
-            <div class="form-panel small-12 medium-10 large-10 columns">
+            <div v-if="$route.name != 'edit'" class="columns small-12" style="padding: 0px">
+              <hr class="no-margin"/>
+            </div>
+
+            <div class="form-panel small-12 medium-12 large-10 columns">
 
               <div class="fieldset">
                 <ProjectDetails></ProjectDetails>
@@ -69,15 +75,11 @@
             </div><!-- close form panel 2-->
           </template>
 
-          <div class="form-panel small-12 columns" style="padding: 0;" v-if="projectType">
+          <div class="form-panel small-12 columns" v-if="projectType">
             <div class="row align-center" id="contactForm">
               <div class="small-12 large-10 column">
                 <div class="fieldset">
-                  <contact
-                    :contact-query="contactQuery"
-                    :project-id="project.id"
-                    @contactEmit="updateContact"
-                  ></contact>
+                  <contact></contact>
                 </div>
               </div>
             </div>
@@ -114,8 +116,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import bus from '../../bus'
-
-import ExistingForm from "./_existingForm.vue"
 
 // App Mixins
 import ProjectSubmission from "./mixins/projectSubmission.js"
@@ -156,7 +156,6 @@ export default {
       pageTitle: '',
       projectType: null,
       formError: true,
-      contactQuery: null,
       dzUpload: false,
     }
   },
@@ -165,6 +164,7 @@ export default {
       authUser: 'authUser',
       validUser: 'validUser',
       project: 'project',
+      contact: 'contact',
       projectMedia: 'projectMedia',
     }),
     token() {
@@ -175,14 +175,17 @@ export default {
     }
   },
   watch: {
-    '$route': function() {
+    '$route': function(to, from) {
       // Watch if route changers
       // If it does we are going to re-fetch the data
-      if(this.$route.name != 'new') {
+      if(from.name != 'new') {
         this.fetchData()
       }
+
       if(this.$route.query.type) {
         this.projectType = this.$route.query.type
+      } else {
+        this.projectType = null
       }
     },
     'project.contact_id': function(id) {
@@ -196,7 +199,12 @@ export default {
     'authUser.id':function() {
       // If we get an authUser fetchData
       this.fetchData()
-      this.contactQuery = this.authUser.id
+    },
+    'contact.id':function() {
+      this.$store.dispatch({
+        type: 'setProjectProperty',
+        set: ['contact_id', this.contact.id]
+      })
     }
   },
   methods: {
@@ -218,6 +226,10 @@ export default {
         this.axios.get('/api/v1/projects/new.json').then( response => {
           this.$Progress.finish()
           this.setNewData(response.data)
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            set: ['contact_id', this.contact.id]
+          })
         }).catch(error => {
           this.$Progress.fail()
           this.setNewData(response.data, error)
@@ -244,9 +256,6 @@ export default {
           this.$validator.clean();
           this.$store.dispatch('setProject', data.project)
           this.$store.dispatch('setProjectMedia', data.project_media.medias)
-          // This will update the contactQuery generally third overRiding the contactQuery saved in the mounted() hook
-          // That way we are getting the project.contact rather than authUser
-          this.contactQuery = data.project.contact_id
           this.pageTitle = "Edit " + data.project.title
           this.projectType = data.project.existing ? "existing" : "template"
         }
@@ -277,28 +286,20 @@ export default {
 
         this.$store.dispatch('setMessage','New Project')
         this.$store.dispatch('setProject', data.project)
+
+        if(this.$route.query.type == "existing") {
+          this.$store.dispatch({
+            type: 'setProjectProperty',
+            project: { existing: true }
+          })
+        }
+
         this.$store.dispatch('setProjectMedia', [])
-        this.$validator.clean();
       } else {
         this.$router.push({ name: '404' })
         console.log(err)
       }
     },
-
-    updateContact(contact) {
-      // Called from contactEmit
-      // When the contact component finds an existing contact, or
-      // There is a new contact we will update the project with that contact
-      // Will either be null or the contacts ID
-      this.$store.dispatch({
-        type: 'setProjectProperty',
-        set: ['contact_id', contact.id]
-      })
-      // This would be the last time(s) the contactQuery is set in it's life span
-      // It inherits the ID found in the contact Component
-      this.contactQuery = contact.id
-    },
-
     setProjectType(type) {
       this.projectType = type
     }
@@ -306,15 +307,13 @@ export default {
   created() {
     this.pageTitle = this.$route.meta.title
     this.fetchData()
+    if(this.$route.name == 'new') {
+      if(this.$route.query.type == null || this.$route.query.type == "") {
+        this.projectType = null
+      }
+    }
   },
   mounted() {
-    // We set contactQuery to authUser
-    // This will set contactQuery first before any other method
-    // Allowing our contact component to default load the user
-    if(this.authUser) {
-      this.contactQuery = this.authUser.id
-    }
-
     bus.$on('readyDZ', (bool) => {
       // Sets wether Dropzone should upload files or not
       this.dzUpload = bool

@@ -9,7 +9,7 @@
           <FloatLabel
             v-model="contact.email"
             v-if="!contact.id"
-            v-validate="'required|email'"
+            v-validate="'required|isTmobile|email'"
             data-vv-name="Contact Email"
             label="Contact Email"
             :has-error="veeErrors.has('Contact Email')"
@@ -54,15 +54,6 @@
           </div>
           <div class="columns float-input small-6 medium-expand">
             <FloatLabel
-              v-model="contact.superior"
-              data-vv-name="Superior"
-              label="Superior"
-              :has-error="veeErrors.has('Superior')"
-              :error-text="veeErrors.first('Superior')"
-              ></FloatLabel>
-          </div>
-          <div class="columns float-input small-6 medium-expand">
-            <FloatLabel
               v-model="contact.location"
               data-vv-name="State or Region"
               label="State or Region"
@@ -70,11 +61,20 @@
               :error-text="veeErrors.first('State or Region')"
               ></FloatLabel>
           </div>
+          <div class="columns float-input small-6 medium-expand">
+            <FloatLabel
+              v-model="contact.superior"
+              data-vv-name="Regional Director"
+              label="Regional Director"
+              :has-error="veeErrors.has('Regional Director')"
+              :error-text="veeErrors.first('Regional Director')"
+              ></FloatLabel>
+          </div>
         </div>
       </div>
 
       <div v-if="contact.id" class="contact-info">
-        <p>A contact associated "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
+        <p>A contact associated with "{{contact.email}}" has been found, and saved because you have used this contact previously.</p>
 
         <button class="button gradient" @click.prevent="makeContactEditable(!edit_contact)">
           {{edit_contact ? "Finish Editing" : "Edit Contact"}}
@@ -93,7 +93,7 @@
       <div class="contact-help" v-if="edit_contact && !contact.id">
         <h5>Stay Connected</h5>
         <p>Your contact info will allow us to communicate with you when the status of your project has changed,
-          make sure you are using a real '@tmobile.com' address that you have access to.</p>
+          make sure you are using a real '@T-Mobile.com' address that you have access to.</p>
         <h5>Use a previously created contact</h5>
         <p>If you have created a contact on a previous 'Project Request' just type the email of that contact in the form and we'll find it for you.</p>
         <p>It's that easy!</p>
@@ -115,17 +115,13 @@
             <label>Phone</label>
             <span>{{contact.phone}}</span>
           </li>
-          <li v-if="contact.position">
-            <label>Position</label>
-            <span>{{contact.position}}</span>
-          </li>
-          <li v-if="contact.superior">
-            <label>Superior</label>
-            <span>{{contact.superior}}</span>
-          </li>
           <li v-if="contact.location">
             <label>State or Region</label>
             <span>{{contact.location}}</span>
+          </li>
+          <li v-if="contact.superior">
+            <label>Regional Director</label>
+            <span>{{contact.superior}}</span>
           </li>
         </ul>
       </div>
@@ -146,7 +142,6 @@ export default {
   components: {
     FloatLabel
   },
-  props: ['contactQuery'],
   data() {
     return {
       message: "",
@@ -154,21 +149,34 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['contact', 'contacts']),
+    ...mapGetters(['contact', 'contacts', 'authUser', 'project']),
     token(){
       return document.getElementsByName('csrf-token')[0].getAttribute('content')
     }
   },
   watch: {
+    '$route': function() {
+      if(this.project.contact_id) {
+        this.$store.dispatch('setContactProperty', ['id', this.project.contact_id])
+      } else if (this.contact.id) {
+        this.$store.dispatch('setContactProperty', ['id', this.contact.id])
+      } else if (this.authUser.id) {
+        this.$store.dispatch('setContactProperty', ['id', this.authUser.id])
+      }
+    },
+    'contact.id': function(id) {
+      if (this.contact.id != null) {
+        this.fetchContact(this.contact.id)
+      }
+    },
     'contact.email': function(newEmail, oldEmail) {
       if(newEmail != oldEmail && this.contact.email != null) {
         this.findContact(newEmail)
       }
-      this.fetchContact()
     },
-    contactQuery() {
-      if (this.contactQuery != null) {
-        this.fetchContact()
+    'project.contact_id':function(id) {
+      if(id != null) {
+        this.$store.dispatch('setContactProperty', ['id', id])
       }
     }
   },
@@ -178,57 +186,9 @@ export default {
       this.edit_contact = bool
     },
 
-
-    //contact methods
-    postContact(id) {
-      // Set Default Password for contact
-      var contactUser = {...this.contact}
-      contactUser.password = this.contact.email
-      contactUser.password_confirmation = this.contact.email
-
-      var axiosConfig = {
-        utf8 : "✓",
-        authenticity_token: this.token,
-        contact : contactUser,
-        project : this.projectId
-      }
-      if(!id || id == null || id == undefined) {
-        // If contact doesn't exist
-        this.axios.post('/api/v1/contacts/', axiosConfig)
-        .then(response => {
-          // IF SUCCESFUll
-          this.$emit("contactEmit", response.data.contact)
-          this.$notify({
-            title: response.data.contact.first_name + " created"
-          })
-          bus.$emit('submitProjectForm', response.data.contact.id)
-
-          if(!this.$auth.check()) {
-            this.loginContact()
-          }
-        })
-      } else if (id) {
-        //If contact exists
-        this.axios.patch('/api/v1/contacts/' + id, axiosConfig)
-        .then(response => {
-          // IF SUCCESFUll
-          this.$emit("contactEmit", response.data.contact)
-          this.$notify({
-            title: response.data.contact.first_name + " updated"
-          })
-          bus.$emit('submitProjectForm', response.data.contact.id)
-
-          if(!this.$auth.check()) {
-            this.loginContact()
-          }
-        })
-      }
-    },
-
-
-    fetchContact() {
-      if(this.contactQuery != null) {
-        this.axios.get('/api/v1/contacts/' + this.contactQuery  + '.json')
+    fetchContact(id) {
+      if(id != null) {
+        this.axios.get('/api/v1/contacts/' + id  + '.json')
         .then( response => {
           this.$store.dispatch('setContact', response.data)
           this.makeContactEditable(false)
@@ -239,33 +199,30 @@ export default {
       }
     },
 
-
     findContact(email) {
       var found = false
       if (this.contact.email && this.contact.email.indexOf('@') === -1 && this.contact.email.length > 1) {
         this.message = 'Please enter a valid email address'
-      } else if (this.contactQuery == null) {
+      } else if (this.contact.id == null) {
         this.message = ''
         // Find contact in this.contacts array that was formed on creation
         // Will find contact based on email entered in watched input
-        // Once it has been found it will emit an update to the contact_id
+        // Once it has been found it will emit an update to the project.contact_id
 
         this.contacts.find(c => {
           if (c.email == email) {
             console.log('find contact ' + email)
             this.$store.dispatch('setContactProperty', ['id', c.id])
-            this.$emit("contactEmit", {id: c.id})
             this.makeContactEditable(false)
           }
         })
 
-        this.fetchContact()
+        this.fetchContact(this.contact.id)
       }
     },
 
 
     resetContact() {
-      this.$emit('contactEmit', {id: null})
       this.$store.dispatch({
         type: 'setContactProperty',
         contact: {
@@ -275,9 +232,11 @@ export default {
           full_name: null,
           last_name: null,
           phone: null,
-          location: null
+          location: null,
+          superior: null
         }
       })
+      this.$validator.clean()
       this.makeContactEditable(true)
     },
 
@@ -315,15 +274,14 @@ export default {
       this.$store.dispatch('setContacts', response.data.contact)
     })
 
-    this.fetchContact()
-  },
-  mounted() {
-    bus.$on('postContact', (id) => {
-      this.postContact(id)
-    })
+    if(this.project.contact_id) {
+      this.fetchContact(this.project.contact_id)
+    } else if(this.authUser && this.project.contact_id == null) {
+      this.fetchContact(this.authUser.id)
+    }
   },
   beforeDestroy() {
-    bus.$off('postContact')
+    this.resetContact()
   }
 }
 </script>

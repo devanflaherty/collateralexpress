@@ -30,6 +30,9 @@ form {
         color: $primary-color!important;
       }
     }
+    textarea {
+      margin-bottom: 0;
+    }
   }
   .check-input {
     padding-top: 1rem;

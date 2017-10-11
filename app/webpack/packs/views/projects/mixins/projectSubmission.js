@@ -22,58 +22,70 @@ const ProjectSubmission = {
 
       if (!this.veeErrors.any()) {
         if(this.$route.name == "show") {
-          bus.$emit('submitProjectForm')
+          this.$store.dispatch("postProject").then(response => {
+            // If contact posts succesfully post project
+            // Post or Patch is handled in action
+            this.postProject(response.data)
+          }, error => {
+            // If error is returned
+            console.error(response.data.flash[0][1])
+            this.postProject(response.data, err)
+          })
         } else {
-          // If there are no errors we continue
-          if(this.contactQuery || this.project.contact_id) {
-            // Let set what Contact ID we send to contact Submission
-            var cid = null
-            if (this.contactQuery != null) {
-              cid = this.contactQuery
-            } else if (this.project.contact_id != null) {
-              cid = this.project.contact_id
-            }
-            // Since we found an ID we send it on and will patch that contact
-            bus.$emit('postContact', cid)
-          } else {
-            // Else we will send nothing and create a new contact
-            bus.$emit('postContact')
-          }
+          // If there are no errors we post the contact
+          this.$store.dispatch("postContact").then(response => {
+            // Post project
+            // Post or Patch is handled in action
+            this.postContact(response.data)
+
+            this.$store.dispatch("postProject").then(response => {
+              // If contact posts succesfully post project
+              // Post or Patch is handled in action
+              this.postProject(response.data)
+            }, error => {
+              // If error is returned
+              console.error(response.data.flash[0][1])
+              this.postProject(response.data, err)
+            })
+
+          }, error => {
+            // If error is returned for contact post
+            console.error(response.data.flash[0][1])
+            this.postContact(response.data, err)
+          })
         }
       } else {
         this.$notify({
           title: 'There are errors in your form',
-          type: 'alert',
+          type: 'warn',
           group: 'app'
         });
       }// validate end
     },
 
-    postProject() {
-      this.axios.post('/api/v1/projects/', this.axiosConfig)
-      .then(response => {
-        // IF SUCCESFUll
+    postProject(data, err) {
+      // IF SUCCESFUll
+      if(!err) {
         if(this.dzUpload) {
-          bus.$emit('uploadMedia', response.data.project.id)
+          bus.$emit('uploadMedia', data.project.id)
         }
 
-        this.$store.dispatch('setMessage', response.data.project.title + " has been created!")
+        this.$store.dispatch('setMessage', data.flash[0][1])
 
         this.$store.dispatch({
           type: 'setReveal',
           reveal_type: 'new',
-          title: response.data.project.title,
-          msg: "Congratulations, you just created your project.",
-          pid: response.data.project.id
+          title: data.project.title,
+          msg: data.flash[0][1],
+          pid: data.project.id
         })
 
         this.$store.dispatch({
           type: 'setFlash',
-          title:response.data.flash[0][1],
+          title:data.flash[0][1],
           group: 'app'
         })
-      })
-      .catch(error => {
+      } else if (err) {
         // IF THERE ARE ERRORS
         this.$store.dispatch({
           type: 'setReveal',
@@ -81,52 +93,37 @@ const ProjectSubmission = {
           title: this.project.title,
           msg: error.message,
         })
+        this.$store.dispatch({
+          type: 'setFlash',
+          title:response.data.flash[0][1],
+          type: 'warn',
+          group: 'app'
+        })
         this.axErrors(error.response, error.request, error.message);
-      });
+      }
     },
 
-    patchProject() {
-      this.axios.patch('/api/v1/projects/' + this.project.id, this.axiosConfig)
-      .then(response => {
-        // Successful
+    postContact(data, err) {
+      if(!err) {
+        console.log(data.flash[0][1])
+        // IF SUCCESFUll
+        this.$emit("contactEmit", data.contact)
+        this.$notify({
+          title: data.flash[0][1],
+          group: 'app'
+        })
 
-        if(this.dzUpload) {
-          bus.$emit('uploadMedia', response.data.project.id)
+        if(!this.$auth.check()) {
+          this.loginContact()
         }
-        this.$store.dispatch('setMessage', response.data.project.title + " has been created!")
-        // And then we will launch the Foundation Reveal
-        this.$store.dispatch({
-          type: 'setReveal',
-          reveal_type: 'update',
-          title: response.data.project.title,
-          msg: 'congratulations, you just updated your project.',
-          pid: response.data.project.id
+      } else {
+        // IF THERE ARE ERRORS
+        this.$notify({
+          title: data.flash[0][1],
+          group: 'app',
+          type: 'warn'
         })
-
-        // We also want to grab the flash that was sent in the response
-        this.$store.dispatch({
-          type: 'setFlash',
-          title:response.data.flash[0][1],
-          group: 'app'
-        })
-      })
-      .catch(error => {
-        // If there is an error we show the Foundation Reveal
-        this.$store.dispatch({
-          type: 'setReveal',
-          type: 'error',
-          title: response.data.project.title,
-          msg: error.message
-        })
-        // Get the flash
-        this.$store.dispatch({
-          type: 'setFlash',
-          title:response.data.flash[0][1],
-          group: 'app'
-        })
-        // and run our error function
-        this.axErrors(error.response, error.request, error.message);
-      });
+      }
     },
 
     axErrors(res,req,msg) {
@@ -161,6 +158,33 @@ const ProjectSubmission = {
         });
         console.log('Error', msg);
       }
+    },
+
+    loginContact() {
+      this.$auth.login({
+        url: '/api/v1/user_token',
+        data: {
+          auth: {email: this.contact.email, password: this.contact.email}
+        },
+        success: function (response) {
+          this.$notify({
+            title: 'Succesfully signed in ' + this.contact.email,
+            type: 'success',
+            group: 'auth'
+          })
+          this.$store.dispatch('setToken', response.data.jwt)
+        },
+        error: function (error) {
+          this.$notify({
+            title: 'Error signing in ' + this.contact.email,
+            text: 'We could not find a contact with that email.',
+            type: 'alert',
+            group: 'auth'
+          })
+        },
+        redirect: this.$route.path,
+        rememberMe: false,
+      });
     }
   },
   mounted() {

@@ -11,6 +11,10 @@
     <!--[if mso]><style> * { font-family: sans-serif !important; } </style><![endif]-->
 
     <style>
+      html {
+        margin: 0;
+        padding: 0;
+      }
       body {
         width: 100% !important;
         margin: 0; padding: 0;
@@ -75,7 +79,7 @@
 
                         <%= yield %>
 
-                        <p style="margin: 20px 0 50px ;">
+                        <p style="margin: 20px 0 25px ;">
                           <strong>The CoEx Team</strong><br />
                           <a href="https://collateralexpress.com" style="color: #EB0183;">https://collateralExpress.com</a>
                         </p>
@@ -86,34 +90,35 @@
 
                 </td>
               </tr>
-
-              <tr style="vertical-align: top; padding: 0;">
-                <td class="templateContainerPadding" align="center" valign="top" style="vertical-align: top; padding: 0;">
-
-                  <table id="footerContent" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 100%; color: #999999; font-size: 12px; background: #f7f7f7; margin: 0; padding: 0; border-radius: 4px;">
-                    <tr style="vertical-align: top; padding: 0;">
-                      <td valign="top" style="vertical-align: top; text-align: left; padding: 20px 40px;" align="left">
-                        <p style="margin: 20px 0;">
-                          If you feel this email was sent in error please contact us at <a href="mailto:<%= @support_email %>"><%= @support_email %></a>.
-                        </p>
-                        <p><a href="<%= @url %>" style="color: #666666;">Visit Site</a></p>
-
-                        <p style="margin: 20px 0;">
-                          &copy; 2017. Collateral Express, All Rights Reserved.
-                        </p>
-                      </td>
-                    </tr>
-
-                  </table>
-
-                </td>
-              </tr>
-
             </table>
 
           </td>
         </tr>
 
+      </table>
+
+      <table id="footerContent" style="border-spacing: 0; border-collapse: collapse; font-family: 'Open Sans', 'helvetica neue', helvetica, arial, geneva, sans-serif; width: 100%; color: #999999; font-size: 12px; background: #f7f7f7; margin: 0; padding: 0; border-radius: 4px;">
+        <tr style="vertical-align: top; padding: 0;">
+          <td valign="top" style="vertical-align: top; text-align: left; padding: 20px 0;" align="left">
+            <center>
+              <table id="templateContainer" style="border-spacing: 0; border-collapse: collapse; width: 600px; color: #4c4c4c; margin: 0; padding: 0; border: 0;">
+                <tr style="vertical-align: top; padding: 0;">
+                  <td style="vertical-align: top; text-align: left; padding: 0 40px" align="center" valign="top">
+                    <p style="margin: 20px 0;">
+                      If you feel this email was sent in error please contact us at <a href="mailto:<%= @support_email %>"><%= @support_email %></a>.
+                    </p>
+                    <p><a href="<%= @url %>" style="color: #666666;">Visit Site</a></p>
+
+                    <p style="margin: 20px 0;">
+                      &copy; 2017. Collateral Express, All Rights Reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </center>
+
+          </td>
+        </tr>
       </table>
 
     </center>

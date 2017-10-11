@@ -7,21 +7,24 @@
   ">
   <p style="padding: 32px 32px 0;">As an admin you have access to all projects at Collateral Express, and can manage and add Users.</p>
 
-  <a href="<%= @url %>/account/"
-    style="display:block;
-    margin: 0 32px 32px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 6px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 6px;
-    background: #EB0183;
-    background-image:background-image: linear-gradient(-180deg, #EB0183 0%, #FF3068 100%);">
-    Log In
-  </a>
+  <div style="margin: 0 32px 32px;">
+    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+      <tr>
+        <td bgcolor="#EB0183" width="100%"
+          style="padding: 6px;
+          -webkit-border-radius:6px;
+          border-radius:6px;
+          tect-align:center;" align="center">
+
+          <a href="<%= @url %>/account" target="_blank"
+            style="color: #ffffff; font-weight: 600; letter-spacing: 1px; text-align:center; text-transform: uppercase; text-decoration: none; display: inline-block;">
+            Log In &rarr;
+          </a>
+
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <p style="background-color: #f7f7f7; margin: 0; padding: 16px 32px;"><small>This email was sent out to you because an Admin used this email while creating a user at <%= @url %>.
   If you feel this email was sent in error please contact us <a href="mailto:<%= @support_email %>">here</a>.</small></p>

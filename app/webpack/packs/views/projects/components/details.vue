@@ -24,7 +24,7 @@
     </div>
 
     <div class="row">
-      <div class="columns small-12 medium-9 large-6">
+      <div class="columns small-12 medium-6 large-6">
         <div class="float-input">
           <label>*Due Date</label>
             <Datepicker
@@ -42,28 +42,23 @@
       </div>
       <div class="columns">
         <div class="float-input">
-          <label>Deliverables</label>
-          <select v-model="project.deliverables">
-            <option disabled value="0">Select the amount</option>
-            <option v-for="n in 10">{{n}}</option>
-          </select>
+          <label>Translation</label>
+          <div class="row">
+            <div class="columns">
+              <h5 style="margin-top: .5rem; padding-bottom: .5rem; border-bottom: 1px solid #838383">Does your project need to be translated?</h5>
+            </div>
+            <div class="columns shrink">
+              <div class="switch" style="margin-top: .25rem">
+                <input class="switch-input" id="translation" type="checkbox" name="exampleSwitch" v-model="project.translation">
+                <label class="switch-paddle" for="translation">
+                  <span class="show-for-sr">Request Translation</span>
+                  <span class="switch-active" style="color: white;" aria-hidden="true">Yes</span>
+                  <span class="switch-inactive" style="color: white;" aria-hidden="true">No</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="toggle-inputs">
-      <div class="check-input">
-        <h5>Does this project need translation?</h5>
-        <label for="projectTranslation">
-          <input style="display:none" id="projectTranslation" type="checkbox" v-model="project.translation">
-          <div v-if="project.translation" class="checked checked-true">
-            <icon name="check"></icon>
-          </div>
-          <div v-else class="checked">
-            <icon name="circle-thin"></icon>
-          </div>
-          <span>{{ project.translation ? "Project Needs Translation" : "Project doesn't need translation" }}</span>
-        </label>
       </div>
     </div>
   </div>

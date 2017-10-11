@@ -8,8 +8,10 @@
 
     <div class="row pad-small">
       <div class="column">
-        <h2>Gallery</h2>
-        <p>Things of beauty--crushing sales targets.</p>
+        <div class="hgroup">
+          <h2>Inspiration Gallery</h2>
+          <h5>Things of beauty. Crushing sales targets.</h5>
+        </div>
 
         <div class="row small-up-2 medium-up-3">
 
@@ -102,11 +104,25 @@ export default {
 
 <style scoped lang="scss">
 @import '../../../../assets/stylesheets/util/colors';
+  .hgroup {
+    h5 {
+      margin-bottom: 2rem;
+    }
+  }
+
+  #galleryReveal .close-button {
+    background: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 100px;
+    top:0;right: 0;
+  }
 
   .gallery-card {
     position: relative;
     overflow: hidden;
     border-radius: 6px;
+    margin-bottom: 2rem;
     &:before {
       display: block;
       content: '';
